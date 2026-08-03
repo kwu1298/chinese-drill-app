@@ -1381,6 +1381,13 @@ async function saveToken() {
   catch (e) { $('s-err').textContent = 'Could not load: ' + e.message; }
 }
 async function boot() {
+  // Escape hatch: opening the app at #reset forgets the stored token and
+  // goes straight to the connect screen, whatever state the app is in.
+  if (location.hash === '#reset') {
+    localStorage.removeItem('ghtok');
+    TOKEN = '';
+    history.replaceState(null, '', location.pathname);
+  }
   CFG = await (await fetch('./config.json')).json();
   $('s-repo').textContent = CFG.owner + '/' + CFG.repo;
   if ('serviceWorker' in navigator) {
@@ -1402,8 +1409,18 @@ async function boot() {
       return;
     }
     show('setup');
-    $('tok').value = TOKEN;      // it was saved; show it rather than imply it wasn't
-    $('s-err').textContent = 'Could not load: ' + e.message;
+    if (e.authFailed) {
+      // Do NOT prefill the dead token: a filled box reads as "already
+      // fixed" and invites saving the same rejected value. And GitHub only
+      // shows a token once, so the cure is a new one, not the old string.
+      $('tok').value = '';
+      $('s-err').textContent = e.message +
+          ' Mint a fresh token (github.com → Settings → Developer settings' +
+          ' → Fine-grained tokens) and paste it here.';
+    } else {
+      $('tok').value = TOKEN;    // saved and probably fine; show it
+      $('s-err').textContent = 'Could not load: ' + e.message;
+    }
   }
 }
 document.addEventListener('visibilitychange', () => {
