@@ -1,6 +1,6 @@
 {
-  "name": "Chinese",
-  "short_name": "Chinese",
+  "name": "Sound It Out",
+  "short_name": "Sound Out",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
