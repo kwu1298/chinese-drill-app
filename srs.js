@@ -7,6 +7,8 @@
 
 const SRS = {
   LEARNING_STEPS_MIN: [10, 30, 120],
+  // First-sight-correct = already known: skip the ladder. See drill.py.
+  KNOWN_MIN: 3 * 24 * 60,
   GRADUATED_MIN: 24 * 60,
   EASE_START: 2.5,
   EASE_FLOOR: 1.3,
@@ -43,8 +45,12 @@ const SRS = {
     const e = Object.assign({}, entry);
     let wait;
     if (correct) {
+      const firstSight = e.reps === 0 && e.lapses === 0;
       e.reps += 1;
-      if (e.step < SRS.LEARNING_STEPS_MIN.length) {
+      if (firstSight) {
+        wait = SRS.KNOWN_MIN;
+        e.step = SRS.LEARNING_STEPS_MIN.length;
+      } else if (e.step < SRS.LEARNING_STEPS_MIN.length) {
         wait = SRS.LEARNING_STEPS_MIN[e.step];
         e.step += 1;
       } else if (e.interval_min < SRS.GRADUATED_MIN) {

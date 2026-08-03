@@ -240,7 +240,7 @@
   <button class="primary" onclick="start('due')">Start<small id="b-sub"></small></button>
   <div class="modes">
     <button onclick="startCrank()">30 minutes</button>
-    <button onclick="start('new')">New</button>
+    <button onclick="startSort()">Sort</button>
     <button onclick="start('hardest')">Trouble</button>
     <button onclick="start('lesson')">Latest</button>
   </div>
@@ -621,13 +621,27 @@ function start(mode) {
   idx = 0; right = 0; wrong = 0;
   show('drill'); render();
 }
+let crankMode = 'due';
 function startCrank() {
   crankEnd = Date.now() + 30 * 60000;
+  crankMode = 'due';
   // Mirrors drill.py's timed_run. Without a budget that survives between
   // rounds, every round starts fresh at NEW_PER_SESSION and half an hour can
   // introduce sixty new words -- which is meeting them, not learning them.
   crankNewLeft = SRS.NEW_PER_SESSION * 2;
   start('due');
+}
+// Sort: chained rounds of nothing but never-seen cards, for triaging a deck
+// that is mostly words a heritage speaker already reads. First-sight-correct
+// promotes a card straight past the learning steps (grade() does that), so
+// each known word costs exactly one answer here -- the half hour is a
+// placement test, not a cram. The new-card drip deliberately does not apply:
+// sorting is not meeting new material, it is filing it.
+function startSort() {
+  crankEnd = Date.now() + 30 * 60000;
+  crankMode = 'new';
+  crankNewLeft = Infinity;
+  start('new');
 }
 
 function render() {
@@ -667,7 +681,19 @@ function render() {
   if (SRS.isTyped(c)) {
     renderTyped(box, c);
   } else {
-    const opts = c.options.slice();
+    // Draw three wrongs fresh from the pool each showing, so the card
+    // cannot be passed by remembering the layout instead of reading.
+    let opts;
+    if (c.pool && c.pool.length > 3) {
+      const w = c.pool.slice();
+      for (let i = w.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [w[i], w[j]] = [w[j], w[i]];
+      }
+      opts = w.slice(0, 3).concat([c.answer]);
+    } else {
+      opts = c.options.slice();
+    }
     for (let i = opts.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [opts[i], opts[j]] = [opts[j], opts[i]];
@@ -901,7 +927,7 @@ function next() {
   const more = crankEnd && Date.now() < crankEnd - 20000;
   // Every set ends on the paradigm: retrieval practice with both sides
   // shuffled, as a check that the system stuck and not just the cards.
-  runCapstone(more ? () => start('due') : null);
+  runCapstone(more ? () => start(crankMode) : null);
 }
 
 function sessionDone(matchSecs, ladderMsg) {
