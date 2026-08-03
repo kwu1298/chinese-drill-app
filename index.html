@@ -317,6 +317,15 @@ async function getFile(name) {
 // private repos rather than admit they exist. So a bare 404 is ambiguous
 // between "no access" and "no such file". Probe the repo itself to turn it
 // into something the user can actually act on.
+// Errors the token itself caused are tagged, because only those are worth
+// throwing you back to the setup screen. A flat tyre and a stolen car both
+// stop the journey; only one of them wants your paperwork.
+function authError(msg) {
+  const e = new Error(msg);
+  e.authFailed = true;
+  return e;
+}
+
 async function preflight() {
   let r;
   try {
@@ -325,23 +334,23 @@ async function preflight() {
     throw new Error('Cannot reach GitHub. Check the connection.');
   }
   if (r.status === 401) {
-    throw new Error('GitHub rejected the token. Paste the whole value \u2014 ' +
+    throw authError('GitHub rejected the token. Paste the whole value \u2014 ' +
         'it starts with github_pat_ and is one long line with no spaces.');
   }
   if (r.status === 404) {
-    throw new Error('That token cannot see ' + CFG.owner + '/' + CFG.repo +
+    throw authError('That token cannot see ' + CFG.owner + '/' + CFG.repo +
         '. Edit the token: Repository access \u2192 Only select repositories ' +
         '\u2192 ' + CFG.repo + ', and Permissions \u2192 Contents: ' +
         'Read and write.');
   }
   if (r.status === 403) {
-    throw new Error('Token blocked (403) \u2014 it may be pending approval, ' +
+    throw authError('Token blocked (403) \u2014 it may be pending approval, ' +
         'or hit a rate limit.');
   }
   if (!r.ok) throw new Error('GitHub error ' + r.status);
   const j = await r.json();
   if (j.permissions && j.permissions.push === false) {
-    throw new Error('Token is read-only, so progress could never be saved. ' +
+    throw authError('Token is read-only, so progress could never be saved. ' +
         'Set Permissions \u2192 Contents: Read and write.');
   }
 }
@@ -1256,7 +1265,18 @@ async function boot() {
     await loadAll();
     goHome();
   } catch (e) {
+    // loadAll() has already restored the cached deck by the time it throws,
+    // so a dropped connection or a rate limit is no reason to stop studying
+    // -- and every time this screen appeared with an empty box it read as
+    // "your token is gone", which it never was. Only a token GitHub actually
+    // rejected sends you back.
+    if (!e.authFailed && cards.length) {
+      goHome();
+      status(e.message + ' Studying from the copy on this device.', true);
+      return;
+    }
     show('setup');
+    $('tok').value = TOKEN;      // it was saved; show it rather than imply it wasn't
     $('s-err').textContent = 'Could not load: ' + e.message;
   }
 }
