@@ -149,7 +149,12 @@
     <button onclick="start('lesson')">Latest batch</button>
     <button onclick="start('all')">Practice</button>
   </div>
-  <button onclick="openTables()">Tables<small>pronouns and endings, as a grid</small></button>
+  <!-- The paradigm grid is inherited from the Arabic fork and unused here:
+       it is built around an eight-person pronoun table and the matching
+       round names those paradigm keys directly. Component families are the
+       Chinese fit for it. Hidden rather than deleted so the code path stays
+       exercised when tables.json comes back. -->
+  <button id="b-tables" onclick="openTables()" style="display:none">Tables<small>character families, as a grid</small></button>
   <button id="b-notif" onclick="enablePush()" style="display:none">Enable notifications</button>
   <div class="status" id="h-status"></div>
 </div>
