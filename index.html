@@ -129,6 +129,8 @@
   #answer .h{margin-top:11px;font-size:13.5px;line-height:1.55;
              color:var(--muted);max-width:34em;margin-left:auto;
              margin-right:auto}
+  #answer #next-btn{width:auto;margin:18px auto 0;display:block;
+        padding:11px 52px}
   #foot{margin:auto 0 8px;padding-top:12px;color:var(--dim);
         font:11px var(--mono);text-align:center;min-height:15px;
         letter-spacing:.1em}
@@ -492,7 +494,10 @@ async function loadAll() {
     status('');
     return true;
   } catch (e) {
-    if (!cards || !cards.length) throw e;
+    // A rejected token is not "offline". Rethrow it so boot() can route to
+    // the connect screen -- swallowing it here left the app limping on the
+    // cached deck with no way back to the token box.
+    if (e.authFailed || !cards || !cards.length) throw e;
     status('offline — using cached deck', true);
     return false;
   }
@@ -691,7 +696,9 @@ function renderTyped(box, c) {
   inp.spellcheck = false;
   inp.enterKeyHint = 'go';
   inp.placeholder = 'pinyin — tones optional';
-  inp.onkeydown = e => { if (e.key === 'Enter') submitTyped(c); };
+  inp.onkeydown = e => {
+    if (e.key === 'Enter') { e.stopPropagation(); submitTyped(c); }
+  };
   const go = document.createElement('button');
   go.className = 'primary';
   go.textContent = 'Check';
@@ -791,7 +798,7 @@ function submitTyped(c) {
 
   commitLocal(c, ok);
   if (maybeLeech(c, ok)) return;
-  setTimeout(next, ok ? 1000 : 2400);
+  if (ok) setTimeout(next, 1000); else waitForNext();
 }
 
 // The graded answer, in the block above the counter. Two lines: the reading
@@ -813,6 +820,34 @@ function showAnswer(ok, c) {
   }
 }
 
+// A wrong answer stays on screen until you ask for the next card. The
+// auto-advance threw away the one moment of the loop where learning
+// actually happens -- reading the correction. Right answers keep moving on
+// their own: there is nothing to study on a card you knew. (Leech cards
+// already waited, via their panel -- this makes every miss behave that way.)
+let awaitNext = false;
+function waitForNext() {
+  awaitNext = true;
+  const b = document.createElement('button');
+  b.className = 'primary';
+  b.id = 'next-btn';
+  b.textContent = 'Next';
+  b.onclick = goNext;
+  $('answer').appendChild(b);
+  $('foot').textContent = 'Enter for the next card';
+}
+function goNext() {
+  if (!awaitNext) return;
+  awaitNext = false;
+  next();
+}
+document.addEventListener('keydown', e => {
+  if (awaitNext && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault();
+    goNext();
+  }
+});
+
 function pick(el, opt, c) {
   if (locked) return;
   locked = true;
@@ -828,7 +863,7 @@ function pick(el, opt, c) {
 
   commitLocal(c, ok);
   if (maybeLeech(c, ok)) return;
-  setTimeout(next, ok ? 1000 : 2100);
+  if (ok) setTimeout(next, 1000); else waitForNext();
 }
 
 // The single local write path: grade, cache, queue the history line, sync.
@@ -1374,7 +1409,12 @@ async function boot() {
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { flushReviews(); }
   else if ($('home').classList.contains('on') && TOKEN) {
-    loadAll().then(renderHome).catch(() => {});
+    loadAll().then(renderHome).catch(e => {
+      if (!e.authFailed) return;
+      show('setup');
+      $('tok').value = TOKEN;
+      $('s-err').textContent = 'Could not load: ' + e.message;
+    });
   }
 });
 boot();
