@@ -17,13 +17,29 @@
   html{height:100%;display:flex;align-items:center;justify-content:center;
        background:#000}
   body{height:100%}
-  /* On a desktop the page is a phone-shaped panel rather than a tall thin
-     column stranded in the middle of a 2000px window. Below this width it
-     is a phone and the rules do nothing. */
-  @media (min-width:560px) and (min-height:720px){
-    body{height:auto;max-height:820px;min-height:640px;
+  /* Desktop is the primary device here, so it gets a real desktop layout --
+     wider, four stats across, and sized to its content. Capping it at phone
+     width left a 480px column marooned in a 2000px window with dead space
+     underneath, which is worse than the stretching it was fixing. */
+  @media (min-width:640px){
+    body{height:auto;max-height:none;min-height:0;max-width:760px;
          border:1px solid var(--line);border-radius:20px;
-         padding-left:26px;padding-right:26px}
+         padding:26px 30px 22px}
+    .kicker{margin-top:0}
+    h1{font-size:38px}
+    .tiles{grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+    .tile{padding:15px 8px}
+    .tile b{font-size:26px}
+    .bar{margin:22px 0 6px}
+    /* Four secondary actions in one row instead of two stacked pairs. */
+    .pair{gap:12px}
+    button{padding:15px 12px;margin-bottom:11px}
+    #done h1{margin:24px 0 8px}
+  }
+  /* The drill itself stays a narrow column even on a wide screen: a card is
+     one question and reading it should not require moving your eyes. */
+  @media (min-width:640px){
+    #drill,#done{max-width:520px;width:100%;margin:0 auto}
   }
   body{background:var(--bg);color:var(--fg);
        font:16px -apple-system,system-ui,sans-serif;
@@ -479,8 +495,12 @@ function renderHome() {
   $('h-due').textContent = s.due > 0 ? s.due + ' cards due' : 'All caught up';
   $('h-due').style.color = s.due > 0 ? '' : 'var(--green)';
   $('h-sub').textContent = s.seenCards + ' of ' + cards.length + ' cards started';
-  const pct = cards.length ? Math.round(100 * s.seenCards / cards.length) : 0;
-  $('h-bar').style.width = pct + '%';
+  // Round-to-nearest reported "0% of the deck seen" after a real session,
+  // which reads as "nothing happened". Below 1% show a decimal, and keep
+  // the bar visible so twelve answered cards look like progress.
+  const raw = cards.length ? 100 * s.seenCards / cards.length : 0;
+  const pct = raw > 0 && raw < 1 ? raw.toFixed(1) : Math.round(raw);
+  $('h-bar').style.width = Math.max(raw > 0 ? 0.8 : 0, raw) + '%';
   $('h-cap').textContent = pct + '% of the deck seen';
   $('t-due').textContent = s.due;
   $('t-due').style.color = s.due ? 'var(--amber)' : 'var(--green)';
