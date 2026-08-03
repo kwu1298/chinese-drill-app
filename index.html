@@ -187,7 +187,19 @@
                    to{transform:scale(1);opacity:1}}
   #done h1{font-size:22px;font-family:var(--sans);font-weight:500;
            margin:26px 0 6px;letter-spacing:0}
-  #done .sub{margin-bottom:auto;padding-bottom:18px}
+  #done .sub{padding-bottom:0}
+  /* sessionDone() sets .score: the count is the headline, set like the
+     due-count on home. The grid/match paths keep the plain 22px h1. */
+  #done h1.score{font:300 clamp(64px,15vw,96px)/0.92 var(--mono);
+                 margin-top:40px;letter-spacing:-.04em;
+                 font-variant-numeric:tabular-nums}
+  #done h1.score em{display:block;font:500 11px var(--sans);font-style:normal;
+                    letter-spacing:.2em;color:var(--dim);margin-top:12px;
+                    text-transform:uppercase}
+  .seal.sig{width:54px;height:54px;margin:28px auto auto;
+            box-shadow:inset 0 0 0 1px rgba(245,239,228,.28),
+                       inset 0 0 0 4px var(--cinnabar)}
+  .seal.sig .g{font-size:28px;margin-top:0}
 
   .status{font:11px var(--mono);color:var(--dim);text-align:center;
           min-height:15px;margin-bottom:6px;letter-spacing:.06em}
@@ -293,10 +305,13 @@
 </div>
 
 <div id="done" class="screen">
-  <!-- 印章. A session closes the way a teacher marks homework. -->
-  <div class="seal"><div class="n" id="seal-n">–</div><div class="g">读</div></div>
   <h1 id="done-line"></h1>
   <div class="sub" id="done-sub"></div>
+  <!-- 印章, at signature scale. On calligraphy the red seal is a small mark
+       in the corner, not the piece. Full-size it read as an error state --
+       in this app cinnabar means "wrong", and a 10-of-12 session was being
+       greeted by a giant red block. -->
+  <div class="seal sig"><div class="g">读</div></div>
   <button class="primary" onclick="start('due')">Again</button>
   <button onclick="goHome()">Home</button>
 </div>
@@ -891,8 +906,9 @@ function next() {
 
 function sessionDone(matchSecs, ladderMsg) {
   crankEnd = 0;
-  $('seal-n').textContent = right;
-  $('done-line').textContent = right + ' of ' + (right + wrong) + ' right';
+  const line = $('done-line');
+  line.className = 'score';
+  line.innerHTML = right + '<em>of ' + (right + wrong) + ' right</em>';
   const due = SRS.dueCards(cards, state, new Date()).length;
   const tail = due > 0 ? due + ' more still due' : 'all caught up';
   const bits = [];
