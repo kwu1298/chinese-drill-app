@@ -14,7 +14,7 @@ const SRS = {
   MAX_INTERVAL_MIN: 180 * 24 * 60,
   // Lapses before a card counts as a leech. Nothing here reschedules it --
   // see drill.py -- it only changes what the screen says after a miss.
-  LEECH_AT: 4,
+  LEECH_AT: 1,
   SESSION_CAP: 20,
   SIBLING_MIN_GAP: 6,
   NEW_PER_SESSION: 12,
