@@ -12,6 +12,9 @@ const SRS = {
   EASE_FLOOR: 1.3,
   EASE_PENALTY: 0.2,
   MAX_INTERVAL_MIN: 180 * 24 * 60,
+  // Lapses before a card counts as a leech. Nothing here reschedules it --
+  // see drill.py -- it only changes what the screen says after a miss.
+  LEECH_AT: 4,
   SESSION_CAP: 20,
   SIBLING_MIN_GAP: 6,
   NEW_PER_SESSION: 12,
@@ -30,6 +33,10 @@ const SRS = {
   entryFor(state, id) {
     return state[id] || { due: '1970-01-01T00:00:00', step: 0, interval_min: 0,
                           ease: SRS.EASE_START, reps: 0, lapses: 0 };
+  },
+
+  isLeech(entry) {
+    return (entry && entry.lapses || 0) >= SRS.LEECH_AT;
   },
 
   grade(entry, correct, now) {
@@ -59,22 +66,42 @@ const SRS = {
     return e;
   },
 
-  // Answers on two devices can arrive in any order; every answer increments
-  // reps or lapses, so the entry with the larger total has seen more history
-  // and wins. Ties (same count) break toward the later due date.
+  // Reconcile one card's two histories. Must not depend on argument order.
+  // Count then due date is not enough to decide: a card answered once on
+  // each device, wrong here and right there, matches on both, because a
+  // lapse and a first correct answer both schedule the first learning step.
+  // Keep going and break conservatively -- more lapses, then lower ease,
+  // then the shorter interval. See sync.py, which is the reference.
   mergeEntry(a, b) {
     if (!a) return b;
     if (!b) return a;
     const ca = a.reps + a.lapses, cb = b.reps + b.lapses;
     if (ca !== cb) return ca > cb ? a : b;
-    return a.due >= b.due ? a : b;
+    if (a.due !== b.due) return a.due > b.due ? a : b;
+    if (a.lapses !== b.lapses) return a.lapses > b.lapses ? a : b;
+    if (a.ease !== b.ease) return a.ease < b.ease ? a : b;
+    if (a.interval_min !== b.interval_min) {
+      return a.interval_min < b.interval_min ? a : b;
+    }
+    return a;
   },
 
+  // Sorted, matching sync.py: the result gets serialised and compared against
+  // the remote copy, so an order that depends on which side was passed first
+  // means a pointless write every time the two devices sync.
   mergeState(local, remote) {
     const out = {};
-    const keys = new Set([...Object.keys(local), ...Object.keys(remote)]);
+    const keys = [...new Set([...Object.keys(local), ...Object.keys(remote)])];
+    keys.sort();
     for (const k of keys) out[k] = SRS.mergeEntry(local[k], remote[k]);
     return out;
+  },
+
+  // Stable text for a state object, whatever order its keys were built in.
+  stringifyState(state) {
+    const out = {};
+    for (const k of Object.keys(state).sort()) out[k] = state[k];
+    return JSON.stringify(out, null, 1);
   },
 
   baseOf(id) { return id.slice(0, id.lastIndexOf(':')); },

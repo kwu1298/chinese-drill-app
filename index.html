@@ -60,6 +60,20 @@
   .typed input.wrong{border-color:var(--red);color:var(--red)}
   .typed input:disabled{opacity:1;-webkit-text-fill-color:currentColor}
   #d-sub{color:var(--muted);text-align:center;font-size:14px;margin:-4px 0 10px}
+  /* The contrast screen for a card that keeps being missed. Deliberately not
+     a quiz: nothing here is clickable except "Got it", because the point is
+     to stop testing and start explaining. */
+  .leech{margin-top:12px;border:1px solid var(--line);border-radius:12px;
+         background:var(--row);padding:14px;font-size:14px;line-height:1.45}
+  .leech .lead{color:var(--red);font-size:11px;font-weight:600;
+               letter-spacing:.07em;margin-bottom:10px}
+  .leech .why{color:var(--muted);margin-bottom:10px}
+  .leech .row{display:flex;align-items:baseline;gap:10px;padding:7px 0;
+              border-top:1px solid var(--line)}
+  .leech .row .hz{font-size:23px;min-width:52px}
+  .leech .row .py{color:var(--blue);min-width:66px;font-size:13px}
+  .leech .row .en{color:var(--muted);font-size:13px}
+  .leech .row.this .hz,.leech .row.this .py{color:var(--green)}
   #foot{margin:auto 0 12px;padding-top:12px;color:var(--muted);font-size:13px;
         text-align:center;min-height:38px}
   #done h1{margin:auto 0 8px}
@@ -317,7 +331,7 @@ async function pushState() {
   try {
     for (let attempt = 0; attempt < 6; attempt++) {
       const sha = await putFile('state.json',
-          JSON.stringify(state, null, 1), stateSha, 'phone: graded cards');
+          SRS.stringifyState(state), stateSha, 'phone: graded cards');
       if (sha) { stateSha = sha; break; }
       const remote = await getFile('state.json');       // conflict -> merge
       state = SRS.mergeState(state, JSON.parse(remote.text || '{}'));
@@ -555,6 +569,76 @@ function renderTyped(box, c) {
   inp.focus();
 }
 
+// hz -> {py, en}, read back off the deck so a confusable can be shown with
+// its reading and meaning without every card carrying a copy of them.
+let wordIndex = null;
+function indexWords() {
+  if (wordIndex) return wordIndex;
+  wordIndex = {};
+  for (const c of cards) {
+    const at = wordIndex[c.prompt] || (wordIndex[c.prompt] = {});
+    if (c.dir === 'hz2py' && !at.py) at.py = c.answer;
+    else if (c.dir === 'hz2en' && !at.en) at.en = c.answer;
+  }
+  return wordIndex;
+}
+
+// A card missed LEECH_AT times has earned an explanation rather than another
+// go at the same question. Show it beside the things it is actually losing
+// to, and wait for a tap: the auto-advance that works for an ordinary miss is
+// exactly what stops this one from ever being looked at.
+function leechPanel(c, onDone) {
+  const words = indexWords();
+  const mine = c.dir === 'py2hz' ? c.answer : c.prompt;
+  const near = c.near && c.near.length
+      ? c.near : (c.options || []).filter(o => o !== c.answer);
+
+  const box = document.createElement('div');
+  box.className = 'leech';
+  const lead = document.createElement('div');
+  lead.className = 'lead';
+  lead.textContent = 'MISSED ' + SRS.entryFor(state, c.id).lapses +
+                     ' TIMES — LOOK AT IT PROPERLY';
+  box.appendChild(lead);
+  if (c.hint) {
+    const why = document.createElement('div');
+    why.className = 'why';
+    why.textContent = c.hint;
+    box.appendChild(why);
+  }
+  const row = (hz, isMine) => {
+    const d = document.createElement('div');
+    d.className = 'row' + (isMine ? ' this' : '');
+    const info = words[hz] || {};
+    [['hz', hz], ['py', info.py || ''], ['en', info.en || '']]
+        .forEach(([cls, text]) => {
+          const s = document.createElement('span');
+          s.className = cls;
+          s.textContent = text;
+          d.appendChild(s);
+        });
+    return d;
+  };
+  box.appendChild(row(mine, true));
+  near.slice(0, 3).forEach(n => box.appendChild(row(n, false)));
+
+  const go = document.createElement('button');
+  go.className = 'primary';
+  go.style.marginTop = '12px';
+  go.textContent = 'Got it';
+  go.onclick = () => onDone();
+  box.appendChild(go);
+  return box;
+}
+
+// Called after commitLocal, so the lapse count on screen includes this miss.
+// True when the panel took over and nothing should auto-advance.
+function maybeLeech(c, ok) {
+  if (ok || !SRS.isLeech(SRS.entryFor(state, c.id))) return false;
+  $('opts').appendChild(leechPanel(c, next));
+  return true;
+}
+
 function submitTyped(c) {
   if (locked) return;
   const inp = $('answer');
@@ -572,6 +656,7 @@ function submitTyped(c) {
   if (navigator.vibrate) navigator.vibrate(ok ? 10 : [30, 40, 30]);
 
   commitLocal(c, ok);
+  if (maybeLeech(c, ok)) return;
   setTimeout(next, ok ? 1000 : 2400);
 }
 
@@ -590,6 +675,7 @@ function pick(el, opt, c) {
   if (navigator.vibrate) navigator.vibrate(ok ? 10 : [30, 40, 30]);
 
   commitLocal(c, ok);
+  if (maybeLeech(c, ok)) return;
   setTimeout(next, ok ? 1000 : 2100);
 }
 
