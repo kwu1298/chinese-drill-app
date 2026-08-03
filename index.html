@@ -14,167 +14,190 @@
 <link rel="apple-touch-icon" href="./icon-180.png?v=du">
 <title>Sound It Out</title>
 <style>
-  :root{--bg:#1c1c1e;--row:#26262a;--row2:#2c2c30;--fg:#f2f2f7;--muted:#8e8e93;
-        --dim:#636368;--line:#3a3a3c;--green:#30d158;--red:#ff453a;
-        --blue:#0a84ff;--amber:#ff9f0a}
+  /* ------------------------------------------------------------------
+     A scholar's desk, inverted. Ink, inkstone, paper, and the two colours
+     that world actually uses: 朱砂 cinnabar for a seal, 青瓷 celadon for
+     glaze. Both carry state here -- wrong and right -- rather than decorate.
+     ------------------------------------------------------------------ */
+  :root{
+    --ink:#14181A;        /* pine-soot black, faint cyan cast */
+    --stone:#1E2427;      /* the inkstone you grind on */
+    --stone-2:#252C30;
+    --paper:#E9E5DA;      /* warm off-white: ink on paper, reversed */
+    --muted:#8B9599;
+    --dim:#5F686C;
+    --rule:#2E3639;
+    --cinnabar:#C8402F;   /* 朱砂 — wrong, and the closing seal */
+    --celadon:#6FA88C;    /* 青瓷 — right */
+    --amber:#C9A227;
+
+    /* 楷体 is the face Chinese primers are set in -- brush-derived, and the
+       one you learn characters from. Hero only: it is weak small. */
+    --hanzi:'Kaiti SC','STKaiti','Kaiti TC','KaiTi','Songti SC','STSong',serif;
+    --sans:'PingFang SC',-apple-system,system-ui,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html{height:100%;display:flex;align-items:center;justify-content:center;
-       background:#000}
-  body{height:100%}
-  /* Desktop is the primary device here, so it gets a real desktop layout --
-     wider, four stats across, and sized to its content. Capping it at phone
-     width left a 480px column marooned in a 2000px window with dead space
-     underneath, which is worse than the stretching it was fixing. */
-  @media (min-width:640px){
-    body{height:auto;max-height:none;min-height:0;max-width:760px;
-         border:1px solid var(--line);border-radius:20px;
-         padding:26px 30px 22px}
-    .kicker{margin-top:0}
-    h1{font-size:38px}
-    .tiles{grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
-    .tile{padding:15px 8px}
-    .tile b{font-size:26px}
-    .bar{margin:22px 0 6px}
-    /* Four secondary actions in one row instead of two stacked pairs. */
-    .pair{gap:12px}
-    button{padding:15px 12px;margin-bottom:11px}
-    #done h1{margin:24px 0 8px}
-  }
-  /* The drill itself stays a narrow column even on a wide screen: a card is
-     one question and reading it should not require moving your eyes. */
-  @media (min-width:640px){
-    #drill,#done{max-width:520px;width:100%;margin:0 auto}
-  }
-  body{background:var(--bg);color:var(--fg);
-       font:16px -apple-system,system-ui,sans-serif;
-       padding:env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
+       background:#0C0F10}
+  body{height:100%;background:var(--ink);color:var(--paper);
+       font:16px var(--sans);
+       padding:env(safe-area-inset-top) 22px env(safe-area-inset-bottom);
        display:flex;flex-direction:column;overflow:hidden;
-       /* Built for a phone and never given a ceiling, so on a desktop
-          monitor every button stretched to the full width of the display.
-          Cap it and centre it; on a phone this changes nothing. */
-       max-width:480px;margin:0 auto;width:100%}
+       max-width:520px;margin:0 auto;width:100%}
+  @media (min-width:640px){
+    body{height:auto;max-width:600px;border:1px solid var(--rule);
+         border-radius:3px;padding:34px 40px 26px}
+  }
   .screen{display:none;flex:1;flex-direction:column;min-height:0}
   .screen.on{display:flex}
-  .kicker{font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--muted);
-          text-align:center;margin-top:28px}
-  h1{font-size:32px;font-weight:600;text-align:center;margin-top:10px}
-  .sub{color:var(--muted);text-align:center;margin-top:6px;font-size:14px}
-  .bar{height:8px;border-radius:4px;background:var(--row2);margin:20px 0 6px;overflow:hidden}
-  .bar i{display:block;height:100%;border-radius:4px;background:var(--green)}
-  .barcap{font-size:12px;color:var(--dim);text-align:center;margin-bottom:12px}
-  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 16px}
-  .tile{background:var(--row);border:1px solid var(--line);border-radius:12px;
-        padding:13px 6px;text-align:center}
-  .tile b{display:block;font-size:23px;font-weight:600}
-  .tile span{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--muted)}
-  button{appearance:none;border:1px solid var(--line);background:var(--row);
-         color:var(--fg);border-radius:12px;font:inherit;width:100%;
-         padding:14px 12px;margin-bottom:9px}
-  button:active{background:var(--row2)}
-  button.primary{border-color:var(--green);color:var(--green);font-weight:600;font-size:17px}
-  button.crank{border-color:var(--blue);color:var(--blue);font-weight:600}
-  button small{display:block;color:var(--muted);font-weight:400;font-size:12px;margin-top:3px}
-  .pair{display:flex;gap:10px}.pair button{flex:1}
-  /* A lone character at 29px is a smudge -- the question IS which strokes
-     these are. .short is set by render() when the prompt is a character or
-     a two-character word; a sentence stays at reading size. */
-  #prompt{flex:0 1 auto;display:flex;align-items:center;justify-content:center;
-          min-height:120px;text-align:center;font-size:26px;font-weight:500;
-          padding:10px 4px;line-height:1.25}
-  #prompt.short{font-size:68px;font-weight:400;letter-spacing:.04em}
-  .opts{display:flex;flex-direction:column;gap:10px}
-  .opt{display:flex;align-items:center;gap:14px;background:var(--row);
-       border:1px solid var(--line);border-radius:12px;padding:14px 14px;
-       font-size:17px;text-align:left;line-height:1.3}
-  /* Character options are one or two glyphs; give them room to be read. */
-  .opt.hz span{font-size:30px;letter-spacing:.04em}
-  .opt b{color:var(--muted);font-size:13px;font-weight:600;min-width:14px}
-  .opt.right{border-color:var(--green)}.opt.right,.opt.right b{color:var(--green)}
-  .opt.wrong{border-color:var(--red)}.opt.wrong,.opt.wrong b{color:var(--red)}
-  /* Typed answers (character -> reading). font-size:17px is not styling:
-     anything under 16px makes iOS Safari zoom the whole page on focus. */
-  .typed input{width:100%;background:var(--row);color:var(--fg);
-       border:1px solid var(--line);border-radius:12px;padding:15px 14px;
-       font:17px ui-monospace,monospace;text-align:center;margin-bottom:10px}
-  .typed input:focus{outline:none;border-color:var(--blue)}
-  .typed input.right{border-color:var(--green);color:var(--green)}
-  .typed input.wrong{border-color:var(--red);color:var(--red)}
+
+  /* eyebrow: names the deck, in both scripts, because both are the subject */
+  .kicker{font-size:10px;font-weight:500;letter-spacing:.22em;
+          color:var(--dim);text-align:center;margin-top:26px;
+          text-transform:uppercase}
+  @media (min-width:640px){ .kicker{margin-top:0} }
+
+  /* The count is the headline; the word "due" is a caption, not part of it.
+     Setting the whole phrase big made it wrap into two ragged lines. */
+  h1{font-size:clamp(64px,15vw,96px);font-weight:300;text-align:center;
+     margin-top:16px;font-family:var(--mono);letter-spacing:-.04em;
+     line-height:.92;font-variant-numeric:tabular-nums}
+  h1 em{display:block;font:500 11px var(--sans);font-style:normal;
+        letter-spacing:.2em;color:var(--dim);margin-top:12px;
+        text-transform:uppercase}
+  .sub{color:var(--muted);text-align:center;margin-top:10px;font-size:13px;
+       letter-spacing:.02em}
+
+  /* ---- 田字格: the practice square, and the signature of the whole app.
+     Faint crosshairs inside a ruled box -- how you are taught to place a
+     character. Functional, not ornament: it shows the proportions. ---- */
+  /* Practice paper is a ROW of squares, one character each -- so a
+     two-character word gets two cells, not one overflowing box. */
+  #prompt{display:flex;justify-content:center;flex:none;margin:0 auto}
+  .cell{position:relative;width:var(--cell);height:var(--cell);
+        border:1px solid var(--rule);margin-left:-1px;display:flex;
+        align-items:center;justify-content:center;font-family:var(--hanzi);
+        font-size:calc(var(--cell) * .74);line-height:1;font-weight:400}
+  .cell:first-child{margin-left:0}
+  .cell::before,.cell::after{content:'';position:absolute;opacity:.45}
+  .cell::before{left:50%;top:7%;bottom:7%;width:1px;
+    background:repeating-linear-gradient(to bottom,var(--rule) 0 4px,transparent 4px 9px)}
+  .cell::after{top:50%;left:7%;right:7%;height:1px;
+    background:repeating-linear-gradient(to right,var(--rule) 0 4px,transparent 4px 9px)}
+  /* A sentence leaves the grid entirely and sets as running text. */
+  #prompt.long{display:block;font:400 clamp(21px,5vw,27px)/1.55 var(--sans);
+               text-align:center;padding:20px 0}
+  #d-sub{color:var(--muted);text-align:center;font-size:13px;margin-top:14px}
+
+  .opts{display:flex;flex-direction:column;gap:9px;margin-top:22px}
+  .opt{display:flex;align-items:center;gap:15px;background:var(--stone);
+       border:1px solid transparent;border-radius:2px;padding:13px 15px;
+       font-size:16px;text-align:left;line-height:1.35;cursor:pointer;
+       transition:border-color .12s,background .12s}
+  .opt:hover{background:var(--stone-2)}
+  .opt b{color:var(--dim);font-family:var(--mono);font-size:11px;
+         font-weight:400;min-width:13px;letter-spacing:.06em}
+  .opt.hz span{font-family:var(--hanzi);font-size:31px;line-height:1.1}
+  .opt.right{border-color:var(--celadon)}
+  .opt.right span,.opt.right b{color:var(--celadon)}
+  .opt.wrong{border-color:var(--cinnabar)}
+  .opt.wrong span,.opt.wrong b{color:var(--cinnabar)}
+
+  .typed input{width:100%;background:var(--stone);color:var(--paper);
+       border:1px solid var(--rule);border-radius:2px;padding:15px 14px;
+       font:17px var(--mono);text-align:center;letter-spacing:.06em;
+       margin-bottom:9px}
+  .typed input::placeholder{color:var(--dim);letter-spacing:.04em}
+  .typed input:focus{outline:none;border-color:var(--muted)}
+  .typed input.right{border-color:var(--celadon);color:var(--celadon)}
+  .typed input.wrong{border-color:var(--cinnabar);color:var(--cinnabar)}
   .typed input:disabled{opacity:1;-webkit-text-fill-color:currentColor}
-  #d-sub{color:var(--muted);text-align:center;font-size:14px;margin:-4px 0 10px}
-  /* The contrast screen for a card that keeps being missed. Deliberately not
-     a quiz: nothing here is clickable except "Got it", because the point is
-     to stop testing and start explaining. */
-  .leech{margin-top:12px;border:1px solid var(--line);border-radius:12px;
-         background:var(--row);padding:14px;font-size:14px;line-height:1.45}
-  .leech .lead{color:var(--red);font-size:11px;font-weight:600;
-               letter-spacing:.07em;margin-bottom:10px}
-  .leech .why{color:var(--muted);margin-bottom:10px}
-  .leech .row{display:flex;align-items:baseline;gap:10px;padding:7px 0;
-              border-top:1px solid var(--line)}
-  .leech .row .hz{font-size:23px;min-width:52px}
-  .leech .row .py{color:var(--blue);min-width:66px;font-size:13px}
-  .leech .row .en{color:var(--muted);font-size:13px}
-  .leech .row.this .hz,.leech .row.this .py{color:var(--green)}
-  /* The graded answer used to share this strip: 13px muted grey at the very
-     bottom, wrapping a full mnemonic into 38px. Split in two -- #answer is
-     the thing you need to read, #foot is just the counter. */
-  #answer{margin-top:14px;text-align:center;min-height:74px}
-  #answer .a{font-size:27px;font-weight:600;line-height:1.25;letter-spacing:.02em}
-  #answer .a.right{color:var(--green)}
-  #answer .a.wrong{color:var(--red)}
-  #answer .h{margin-top:7px;font-size:14px;line-height:1.45;color:#b0b0b6}
-  #foot{margin:auto 0 10px;padding-top:10px;color:var(--dim);font-size:12px;
-        text-align:center;min-height:16px}
-  #done h1{margin:auto 0 8px}
-  #done .sub{margin-bottom:auto;padding-bottom:20px}
-  .status{font-size:12px;color:var(--dim);text-align:center;min-height:16px;margin-bottom:6px}
-  .status.err{color:var(--red)}
-  textarea{width:100%;background:var(--row);color:var(--fg);border:1px solid var(--line);
-           border-radius:12px;padding:12px;font:14px ui-monospace,monospace;min-height:84px;
-           margin:14px 0}
-  #setup p{color:var(--muted);font-size:14px;line-height:1.5;margin-top:12px}
-  .thead{display:flex;gap:7px;margin:0 0 6px 84px}
-  .thead span{flex:1;font-size:10px;font-weight:600;letter-spacing:.06em;
-              color:var(--dim);text-align:center}
-  .trow{display:flex;align-items:stretch;gap:7px;margin-bottom:7px}
-  .tlabel{width:78px;flex:none;display:flex;align-items:center;justify-content:flex-end;
-          font-size:12px;color:var(--muted);text-align:right;line-height:1.15}
-  .slot{flex:1;min-height:42px;border:1px dashed var(--line);border-radius:10px;
-        display:flex;align-items:center;justify-content:center;font-size:15px;
-        color:var(--fg);padding:2px 4px;text-align:center}
-  .slot.filled{border-style:solid;background:var(--row)}
-  .slot.sel{border-color:var(--blue)}
-  .slot.ok{border-color:var(--green);color:var(--green);background:transparent}
-  .slot.bad{border-color:var(--red);color:var(--red)}
-  .tray{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px;
-        padding-top:14px;border-top:1px solid var(--line)}
-  .gtile{background:var(--row);border:1px solid var(--line);border-radius:10px;
-        padding:10px 13px;font-size:15px}
-  .gtile.sel{border-color:var(--blue);color:var(--blue)}
-  .gtile.gone{opacity:0;pointer-events:none}
-  #g-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
-            padding-bottom:8px}
-  #g-bar{flex:none;padding-top:10px;border-top:1px solid var(--line);
-         background:var(--bg)}
-  #g-foot{color:var(--muted);font-size:13px;text-align:center;min-height:18px;
-          margin-bottom:9px}
-  #tables{overflow-y:auto}
-  .mwrap{display:flex;gap:10px;flex:1;min-height:0}
-  .mcol{flex:1;display:flex;flex-direction:column;gap:8px}
-  .mcard{flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;
-         background:var(--row);border:1px solid var(--line);border-radius:11px;
-         font-size:15px;text-align:center;padding:6px 8px;line-height:1.15;
-         transition:opacity .18s,border-color .12s}
-  .mcard.sel{border-color:var(--blue);color:var(--blue)}
-  .mcard.bad{border-color:var(--red);color:var(--red)}
-  .mcard.hit{border-color:var(--green);color:var(--green)}
-  .mcard.gone{opacity:0;pointer-events:none;border-color:transparent}
-  #m-bar{flex:none;padding-top:10px;border-top:1px solid var(--line)}
-  #m-foot{color:var(--muted);font-size:13px;text-align:center;min-height:18px;
-          margin-bottom:9px}
-  .seclabel{font-size:11px;font-weight:600;letter-spacing:.07em;color:var(--dim);
-            margin:18px 0 8px}
-  #setup a{color:var(--blue)}
+
+  /* The reading lands directly under the character, in the same optical
+     column, so the pairing is what you see. It used to appear at the very
+     bottom of the screen, unattached to the thing it belongs to. */
+  #answer{margin-top:20px;text-align:center;min-height:82px}
+  #answer .a{font:500 30px var(--sans);letter-spacing:0;line-height:1.25}
+  /* A reading is notation -- mono puts the tone marks where you expect. */
+  #answer .a.py{font:400 38px var(--mono);letter-spacing:.02em}
+  #answer .a.right{color:var(--celadon)}
+  /* On a miss the INPUT carries the red -- that is where the mistake was.
+     The right answer is just the truth and sets in paper, so the screen
+     teaches rather than scolds. */
+  #answer .a.wrong{color:var(--paper)}
+  #answer .h{margin-top:11px;font-size:13.5px;line-height:1.55;
+             color:var(--muted);max-width:34em;margin-left:auto;
+             margin-right:auto}
+  #foot{margin:auto 0 8px;padding-top:12px;color:var(--dim);
+        font:11px var(--mono);text-align:center;min-height:15px;
+        letter-spacing:.1em}
+
+  button{appearance:none;border:1px solid var(--rule);background:transparent;
+         color:var(--paper);border-radius:2px;font:15px var(--sans);
+         width:100%;padding:14px 12px;margin-bottom:9px;cursor:pointer;
+         transition:border-color .12s,background .12s}
+  button:hover{background:var(--stone)}
+  button:active{background:var(--stone-2)}
+  button.primary{border-color:var(--celadon);color:var(--celadon);
+                 font-size:16px;letter-spacing:.02em}
+  button.primary:hover{background:rgba(111,168,140,.07)}
+  button small{display:block;color:var(--dim);font-size:11.5px;margin-top:4px;
+               letter-spacing:.04em}
+  button.primary small{color:var(--muted)}
+  /* Secondary modes are a quiet row, not five things shouting equally. */
+  .modes{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+  @media (min-width:640px){ .modes{grid-template-columns:repeat(4,1fr)} }
+  .modes button{font-size:13px;padding:11px 8px;color:var(--muted)}
+  #b-notif{border:0;color:var(--dim);font-size:12.5px;padding:8px 0;
+           margin-top:4px}
+  #b-notif:hover{background:none;color:var(--muted)}
+  #b-notif small{font-size:11px;margin-top:2px}
+
+  /* ---- the week, as practice squares. Filled = you sat down that day. ---- */
+  .week{display:flex;gap:7px;justify-content:center;margin:26px 0 4px}
+  .day{width:26px;height:26px;border:1px solid var(--rule);position:relative}
+  .day.on{background:var(--celadon);border-color:var(--celadon)}
+  .day.today{box-shadow:0 0 0 1px var(--paper)}
+  .weekcap{text-align:center;font:10px var(--mono);color:var(--dim);
+           letter-spacing:.16em;margin-bottom:24px;text-transform:uppercase}
+
+  /* ---- one line of numbers, where four tiles used to be ---- */
+  .facts{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;
+         align-items:baseline;
+         font:11.5px var(--mono);color:var(--dim);letter-spacing:.06em;
+         margin-top:auto;padding-top:20px}
+  .facts b{color:var(--muted);font-weight:400}
+
+  /* ---- 印章: the seal. Stamped at the end of a session. ---- */
+  .seal{width:132px;height:132px;margin:0 auto;background:var(--cinnabar);
+        display:flex;flex-direction:column;align-items:center;
+        justify-content:center;color:#F5EFE4;border-radius:2px;
+        font-family:var(--hanzi);line-height:1}
+  .seal{box-shadow:inset 0 0 0 1px rgba(245,239,228,.28),
+                   inset 0 0 0 7px var(--cinnabar)}
+  .seal .n{font:400 44px var(--mono);letter-spacing:-.02em}
+  .seal .g{font-size:34px;margin-top:6px;opacity:.95}
+  @media (prefers-reduced-motion:no-preference){
+    .screen.on .seal{animation:stamp .22s cubic-bezier(.2,.9,.3,1.4) both}
+  }
+  @keyframes stamp{from{transform:scale(1.16);opacity:0}
+                   to{transform:scale(1);opacity:1}}
+  #done h1{font-size:22px;font-family:var(--sans);font-weight:500;
+           margin:26px 0 6px;letter-spacing:0}
+  #done .sub{margin-bottom:auto;padding-bottom:18px}
+
+  .status{font:11px var(--mono);color:var(--dim);text-align:center;
+          min-height:15px;margin-bottom:6px;letter-spacing:.06em}
+  .status.err{color:var(--cinnabar)}
+  textarea{width:100%;background:var(--stone);color:var(--paper);
+           border:1px solid var(--rule);border-radius:2px;padding:12px;
+           font:13px var(--mono);min-height:82px;margin:14px 0}
+  #setup p{color:var(--muted);font-size:14px;line-height:1.6;margin-top:12px}
+  #setup a{color:var(--celadon)}
+  #setup h1{font-size:26px;font-family:var(--sans);font-weight:500;
+            letter-spacing:0}
+  :focus-visible{outline:2px solid var(--muted);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -191,26 +214,21 @@
 </div>
 
 <div id="home" class="screen">
-  <div class="kicker">HSK 3</div>
+  <div class="kicker">HSK 3 · 第三册</div>
   <h1 id="h-due">…</h1>
   <div class="sub" id="h-sub"></div>
-  <div class="bar"><i id="h-bar" style="width:0%"></i></div>
-  <div class="barcap" id="h-cap"></div>
-  <div class="tiles">
-    <div class="tile"><b id="t-due" style="color:var(--amber)">–</b><span>DUE NOW</span></div>
-    <div class="tile"><b id="t-today" style="color:var(--blue)">–</b><span>DONE TODAY</span></div>
-    <div class="tile"><b id="t-acc" style="color:var(--green)">–</b><span>TODAY RIGHT</span></div>
-    <div class="tile"><b id="t-streak">–</b><span>DAY STREAK</span></div>
-  </div>
-  <button class="primary" onclick="start('due')">Start session<small id="b-sub"></small></button>
-  <button class="crank" onclick="startCrank()">30-minute session<small>rounds keep coming until time is up</small></button>
-  <div class="pair">
-    <button onclick="start('new')">New cards</button>
+
+  <!-- The week as practice squares: one cell a day, filled if you sat down.
+       Same square as the 田字格 on a card, which is the point. -->
+  <div class="week" id="h-week"></div>
+  <div class="weekcap" id="h-cap"></div>
+
+  <button class="primary" onclick="start('due')">Start<small id="b-sub"></small></button>
+  <div class="modes">
+    <button onclick="startCrank()">30 minutes</button>
+    <button onclick="start('new')">New</button>
     <button onclick="start('hardest')">Trouble</button>
-  </div>
-  <div class="pair">
-    <button onclick="start('lesson')">Latest batch</button>
-    <button onclick="start('all')">Practice</button>
+    <button onclick="start('lesson')">Latest</button>
   </div>
   <!-- The paradigm grid is inherited from the Arabic fork and unused here:
        it is built around an eight-person pronoun table and the matching
@@ -219,12 +237,16 @@
        exercised when tables.json comes back. -->
   <button id="b-tables" onclick="openTables()" style="display:none">Tables<small>character families, as a grid</small></button>
   <button id="b-notif" onclick="enablePush()" style="display:none">Enable notifications</button>
+
+  <!-- Four stat tiles became one line. You need a number and a button, not
+       a dashboard. -->
+  <div class="facts" id="h-facts"></div>
   <div class="status" id="h-status"></div>
 </div>
 
 <div id="drill" class="screen">
   <div class="kicker" id="d-kicker"></div>
-  <div id="prompt"></div>
+  <div class="tian"><div id="prompt"></div></div>
   <div id="d-sub"></div>
   <div class="opts" id="opts"></div>
   <div id="answer"></div>
@@ -269,6 +291,8 @@
 </div>
 
 <div id="done" class="screen">
+  <!-- 印章. A session closes the way a teacher marks homework. -->
+  <div class="seal"><div class="n" id="seal-n">–</div><div class="g">读</div></div>
   <h1 id="done-line"></h1>
   <div class="sub" id="done-sub"></div>
   <button class="primary" onclick="start('due')">Again</button>
@@ -476,10 +500,11 @@ async function loadAll() {
 
 /* -------------------------------- home ---------------------------------- */
 function localToday() { return SRS.iso(new Date()).slice(0, 10); }
+let days = {};                          // day -> [done, right], for the week
 function summary() {
   const now = new Date();
   const due = SRS.dueCards(cards, state, now).length;
-  const days = Object.assign({}, reviewDays);
+  days = Object.assign({}, reviewDays);
   for (const line of pendingReviews) {
     const r = JSON.parse(line); const d = r.ts.slice(0, 10);
     days[d] = days[d] || [0, 0]; days[d][0]++; if (r.correct) days[d][1]++;
@@ -496,21 +521,41 @@ function summary() {
 }
 function renderHome() {
   const s = summary();
-  $('h-due').textContent = s.due > 0 ? s.due + ' cards due' : 'All caught up';
+  $('h-due').innerHTML = s.due > 0
+      ? s.due + '<em>cards due</em>'
+      : '<span style="font-size:.5em">caught up</span><em>nothing waiting</em>';
   $('h-due').style.color = s.due > 0 ? '' : 'var(--green)';
-  $('h-sub').textContent = s.seenCards + ' of ' + cards.length + ' cards started';
-  // Round-to-nearest reported "0% of the deck seen" after a real session,
-  // which reads as "nothing happened". Below 1% show a decimal, and keep
-  // the bar visible so twelve answered cards look like progress.
+  $('h-sub').textContent = s.seenCards
+      ? s.seenCards + ' of ' + cards.length + ' characters met'
+      : cards.length + ' cards, none met yet';
+
+  // Seven practice squares, oldest on the left. Filled means you sat down.
+  const week = $('h-week');
+  week.innerHTML = '';
+  const today = new Date();
+  let run = 0;
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today.getTime() - i * 86400000);
+    const key = SRS.iso(d).slice(0, 10);
+    const did = (days[key] || [0])[0] > 0;
+    if (did) run++;
+    const cell = document.createElement('div');
+    cell.className = 'day' + (did ? ' on' : '') + (i === 0 ? ' today' : '');
+    cell.title = key + (did ? ' — ' + days[key][0] + ' answered' : ' — nothing');
+    week.appendChild(cell);
+  }
+  $('h-cap').textContent = s.streak > 0
+      ? s.streak + (s.streak === 1 ? ' day running' : ' days running')
+      : 'last seven days';
+
+  // One line where four tiles were. A number and a button is the whole job.
+  const facts = [];
+  facts.push('<b>' + s.today + '</b> today');
+  if (s.acc !== null) facts.push('<b>' + s.acc + '%</b> right');
   const raw = cards.length ? 100 * s.seenCards / cards.length : 0;
-  const pct = raw > 0 && raw < 1 ? raw.toFixed(1) : Math.round(raw);
-  $('h-bar').style.width = Math.max(raw > 0 ? 0.8 : 0, raw) + '%';
-  $('h-cap').textContent = pct + '% of the deck seen';
-  $('t-due').textContent = s.due;
-  $('t-due').style.color = s.due ? 'var(--amber)' : 'var(--green)';
-  $('t-today').textContent = s.today;
-  $('t-acc').textContent = s.acc === null ? '—' : s.acc + '%';
-  $('t-streak').textContent = s.streak;
+  facts.push('<b>' + (raw > 0 && raw < 1 ? raw.toFixed(1) : Math.round(raw))
+             + '%</b> of the deck');
+  $('h-facts').innerHTML = facts.join('<span style="opacity:.4">·</span>');
   $('b-sub').textContent = s.due > 0
       ? Math.min(s.due, SRS.SESSION_CAP) + ' cards waiting' : 'practice round';
   if (navigator.setAppBadge) {
@@ -569,11 +614,27 @@ function render() {
   const c = queue[idx];
   locked = false;
   $('d-kicker').textContent = SRS.KICKERS[c.dir] || 'CHOOSE THE ANSWER';
+  // One practice square per character; a sentence drops out of the grid.
   const pr = $('prompt');
-  pr.textContent = c.prompt;
+  pr.innerHTML = '';
+  const glyphs = [...c.prompt];
+  if (glyphs.length <= 4) {
+    pr.className = '';
+    pr.style.setProperty('--cell',
+        'min(' + Math.floor(74 / glyphs.length) + 'vw, ' +
+        (glyphs.length === 1 ? 190 : glyphs.length === 2 ? 132 : 104) + 'px)');
+    for (const ch of glyphs) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.textContent = ch;
+      pr.appendChild(cell);
+    }
+  } else {
+    pr.className = 'long';
+    pr.textContent = c.prompt;
+  }
   // A character or a short word gets set large; a sentence has to stay at
   // reading size or it will not fit.
-  pr.className = c.prompt.length <= 4 ? 'short' : '';
   $('answer').innerHTML = '';
   // The word a 多音字 is being read inside, when the character alone is
   // ambiguous: 觉 is jué in 觉得 and jiào in 睡觉.
@@ -617,7 +678,10 @@ function renderTyped(box, c) {
   wrap.className = 'typed';
   const inp = document.createElement('input');
   inp.type = 'text';
-  inp.id = 'answer';
+  // NOT "answer": that id belongs to the graded-answer block below, and
+  // getElementById returns whichever comes first in the document -- so
+  // showAnswer() was writing innerHTML into this input and vanishing.
+  inp.id = 'typed-input';
   // A phone keyboard left to itself turns "jing" into "Jing" or "king", and
   // both would be marked wrong for a reason that has nothing to do with
   // Chinese. Kill every correction feature it has.
@@ -710,13 +774,15 @@ function maybeLeech(c, ok) {
 
 function submitTyped(c) {
   if (locked) return;
-  const inp = $('answer');
+  const inp = $('typed-input');
   const typed = (inp.value || '').trim();
   if (!typed) return;              // an empty box is not a wrong answer
   locked = true;
   const ok = SRS.checkTyped(c, typed);
   inp.disabled = true;
   inp.classList.add(ok ? 'right' : 'wrong');
+  const go = inp.parentNode.querySelector('button');
+  if (go) go.style.display = 'none';
   // Always show the tone-marked reading, right or wrong: tones are folded
   // away for grading, so this screen is the only place they get taught.
   showAnswer(ok, c);
@@ -735,7 +801,8 @@ function showAnswer(ok, c) {
   const box = $('answer');
   box.innerHTML = '';
   const a = document.createElement('div');
-  a.className = 'a ' + (ok ? 'right' : 'wrong');
+  a.className = 'a ' + (ok ? 'right' : 'wrong') +
+      (SRS.isTyped(c) ? ' py' : '');
   a.textContent = ok ? c.answer : c.answer;
   box.appendChild(a);
   if (!ok && c.hint) {
@@ -789,8 +856,8 @@ function next() {
 
 function sessionDone(matchSecs, ladderMsg) {
   crankEnd = 0;
-  $('done-line').textContent =
-      'Done — ' + right + '/' + (right + wrong) + ' right';
+  $('seal-n').textContent = right;
+  $('done-line').textContent = right + ' of ' + (right + wrong) + ' right';
   const due = SRS.dueCards(cards, state, new Date()).length;
   const tail = due > 0 ? due + ' more still due' : 'all caught up';
   const bits = [];
