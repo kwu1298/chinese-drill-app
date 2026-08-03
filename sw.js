@@ -2,7 +2,11 @@
 // offline, from the last sync), and turns Web Push messages from the Mac
 // into native notifications.
 'use strict';
-const CACHE = 'chinese-v1';
+// deploy-webapp.sh rewrites this line with a hash of the deployed files.
+// A fixed name meant an installed app could keep serving the old shell
+// from cache and there was no way to tell it otherwise short of
+// deleting the app.
+const CACHE = 'chinese-c0e1ab59a6';
 const SHELL = ['./', './index.html', './srs.js', './config.json',
                './manifest.webmanifest', './icon-180.png', './icon-512.png'];
 
@@ -11,7 +15,12 @@ self.addEventListener('install', e => {
               .then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
-  e.waitUntil(self.clients.claim());
+  e.waitUntil((async () => {
+    for (const k of await caches.keys()) {
+      if (k !== CACHE) await caches.delete(k);   // drop every older build
+    }
+    await self.clients.claim();
+  })());
 });
 
 // Network-first for the shell so updates land, cache as fallback for offline.
