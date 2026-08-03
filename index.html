@@ -7,7 +7,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1c1c1e">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" href="./icon-180.png">
+<!-- Chrome and iOS cache manifest icons in a store keyed by URL, so a
+     redrawn icon at the same filename is never re-fetched -- the old
+     Arabic glyph survived three deploys that way. Bump ?v= with the
+     art. -->
+<link rel="apple-touch-icon" href="./icon-180.png?v=du">
 <title>Sound It Out</title>
 <style>
   :root{--bg:#1c1c1e;--row:#26262a;--row2:#2c2c30;--fg:#f2f2f7;--muted:#8e8e93;
