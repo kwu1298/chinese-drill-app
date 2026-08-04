@@ -645,6 +645,10 @@ function startSort() {
 }
 
 function render() {
+  // A new card silences the old one's audio: a long sentence could still be
+  // mid-playback a second after a correct answer, leaving you reading card
+  // N+1 while hearing the tail of card N.
+  if (window.speechSynthesis) { try { speechSynthesis.cancel(); } catch (e) {} }
   const c = queue[idx];
   locked = false;
   $('d-kicker').textContent = SRS.KICKERS[c.dir] || 'CHOOSE THE ANSWER';
