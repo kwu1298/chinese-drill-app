@@ -845,7 +845,36 @@ function submitTyped(c) {
 // The graded answer, in the block above the counter. Two lines: the reading
 // or meaning you needed, then the mnemonic. Both used to be one 13px grey
 // string wrapped into a 38px strip at the bottom of the screen.
+/* Speak the graded card. Always the HANZI, never the pinyin string: the
+   synthesiser reads characters with correct tones, which is the one thing
+   grading deliberately ignores -- so every card teaches its tones by ear
+   at the exact moment the eye has the pairing. Silent if no zh voice. */
+let zhVoice = null;
+function findZhVoice() {
+  const vs = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+  zhVoice = vs.find(v => v.lang === 'zh-CN') ||
+            vs.find(v => v.lang.startsWith('zh')) || null;
+}
+if (window.speechSynthesis) {
+  findZhVoice();
+  speechSynthesis.onvoiceschanged = findZhVoice;
+}
+function speakCard(c) {
+  if (!window.speechSynthesis || !zhVoice) return;
+  const hz = (c.dir === 'py2hz' ? c.answer : c.prompt)
+      .replace(/[【】]/g, '');
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(hz);
+    u.voice = zhVoice;
+    u.lang = zhVoice.lang;
+    u.rate = 0.95;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
 function showAnswer(ok, c) {
+  speakCard(c);
   const box = $('answer');
   box.innerHTML = '';
   const a = document.createElement('div');
