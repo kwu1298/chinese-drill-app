@@ -324,6 +324,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
+const BUILD = '2442bf4b3a';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -886,7 +887,10 @@ function showAnswer(ok, c) {
       (SRS.isTyped(c) ? ' py' : '');
   a.textContent = ok ? c.answer : c.answer;
   box.appendChild(a);
-  if (!ok && c.hint) {
+  // On a miss the hint teaches. On the meaning cards (成语) the hint IS the
+  // pinyin, and hiding it on a correct answer meant a right answer never
+  // showed you how the thing is said -- exactly Kevin's complaint.
+  if (c.hint && (!ok || c.dir === 'hz2en')) {
     const h = document.createElement('div');
     h.className = 'h';
     h.textContent = c.hint;
@@ -1498,9 +1502,28 @@ async function boot() {
     }
   }
 }
+// A PWA left open never reloads itself: Kevin's tab served a day-old app
+// and a day-old deck, complete with a card type that had been retired. On
+// every return to the tab, compare the deployed build against our own and
+// turn the status line into a one-tap reload when they differ.
+async function checkForUpdate() {
+  try {
+    const t = await (await fetch('./sw.js', { cache: 'no-store' })).text();
+    const m = t.match(/chinese-([0-9a-f]+)/);
+    if (!m || BUILD.indexOf('_') === 0 || m[1] === BUILD) return;
+    const el = $('h-status');
+    el.textContent = 'updated — tap to reload';
+    el.className = 'status';
+    el.style.cursor = 'pointer';
+    el.style.color = 'var(--celadon)';
+    el.onclick = () => location.reload();
+  } catch (e) {}
+}
+
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { flushReviews(); }
   else if ($('home').classList.contains('on') && TOKEN) {
+    checkForUpdate();
     loadAll().then(renderHome).catch(e => {
       if (!e.authFailed) return;
       show('setup');
