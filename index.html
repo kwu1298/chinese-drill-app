@@ -324,7 +324,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = 'c590164982';   // deploy-webapp.sh stamps this
+const BUILD = '19c692ec29';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -845,7 +845,7 @@ function submitTyped(c) {
 
   commitLocal(c, ok);
   if (maybeLeech(c, ok)) return;
-  if (ok) setTimeout(next, 1000); else waitForNext();
+  if (ok) advanceWhenSpoken(); else waitForNext();
 }
 
 // The graded answer, in the block above the counter. Two lines: the reading
@@ -942,6 +942,22 @@ function goNext() {
   awaitNext = false;
   next();
 }
+// On a correct answer, advance when the voice finishes rather than on a
+// fixed second -- a two-syllable clip was getting its tail chopped by the
+// next card's render. Bounded at 3.5s so a stuck clip cannot stall the
+// session; whichever of ended/timeout fires first wins, once.
+function advanceWhenSpoken() {
+  let fired = false;
+  const go = () => { if (!fired) { fired = true; next(); } };
+  const t = setTimeout(go, 3500);
+  if (audioEl && !audioEl.ended) {
+    audioEl.onended = () => { clearTimeout(t);
+      setTimeout(go, 250); };            // a beat of air after the voice
+  } else {
+    clearTimeout(t);
+    setTimeout(go, 1000);
+  }
+}
 document.addEventListener('keydown', e => {
   if (awaitNext && (e.key === 'Enter' || e.key === ' ')) {
     e.preventDefault();
@@ -964,7 +980,7 @@ function pick(el, opt, c) {
 
   commitLocal(c, ok);
   if (maybeLeech(c, ok)) return;
-  if (ok) setTimeout(next, 1000); else waitForNext();
+  if (ok) advanceWhenSpoken(); else waitForNext();
 }
 
 // The single local write path: grade, cache, queue the history line, sync.
