@@ -324,7 +324,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = '59279251c3';   // deploy-webapp.sh stamps this
+const BUILD = 'c590164982';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -650,6 +650,7 @@ function render() {
   // mid-playback a second after a correct answer, leaving you reading card
   // N+1 while hearing the tail of card N.
   if (window.speechSynthesis) { try { speechSynthesis.cancel(); } catch (e) {} }
+  if (audioEl) { try { audioEl.pause(); } catch (e) {} }
   const c = queue[idx];
   locked = false;
   $('d-kicker').textContent = SRS.KICKERS[c.dir] || 'CHOOSE THE ANSWER';
@@ -855,6 +856,10 @@ function submitTyped(c) {
    grading deliberately ignores -- so every card teaches its tones by ear
    at the exact moment the eye has the pairing. Silent if no zh voice. */
 let zhVoice = null;
+let audioMap = null;                     // speak-text -> pre-generated clip
+let audioEl = null;
+fetch('./audio-map.json').then(r => r.ok ? r.json() : null)
+    .then(m => { audioMap = m; }).catch(() => {});
 function findZhVoice() {
   // Rank, don't take the first: Chrome ships Google's network voice, which
   // is far better Mandarin than the OS's compact voice -- but it sorts
@@ -872,9 +877,20 @@ if (window.speechSynthesis) {
   speechSynthesis.onvoiceschanged = findZhVoice;
 }
 function speakCard(c) {
-  if (!window.speechSynthesis || !zhVoice) return;
   const hz = (c.dir === 'py2hz' ? c.answer : c.prompt)
       .replace(/[【】]/g, '');
+  // Pre-generated Fish Audio clip first -- 嘉岚3.0, the voice Kevin picked
+  // by ear -- and the synthesiser only as the fallback for cards added
+  // since the last gen-audio run.
+  if (audioMap && audioMap[hz]) {
+    try {
+      if (audioEl) audioEl.pause();
+      audioEl = new Audio('./audio/' + audioMap[hz]);
+      audioEl.play().catch(() => {});
+      return;
+    } catch (e) {}
+  }
+  if (!window.speechSynthesis || !zhVoice) return;
   try {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(hz);
