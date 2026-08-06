@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14181A">
+<title>Daily Story — Chinese Drill</title>
+<style>
+  /* Scholar's desk, same palette as index.html. This page is for READING:
+     hanzi is the hero, pinyin and English are crutches that start hidden. */
+  :root{
+    --ink:#14181A;
+    --stone:#1E2427;
+    --stone-2:#252C30;
+    --paper:#E9E5DA;
+    --muted:#8B9599;
+    --dim:#5F686C;
+    --rule:#2E3639;
+    --cinnabar:#C8402F;
+    --celadon:#6FA88C;
+    --hanzi:'Kaiti SC','STKaiti','Kaiti TC','KaiTi','Songti SC','STSong',serif;
+    --sans:'PingFang SC',-apple-system,system-ui,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{min-height:100%;background:#0C0F10}
+  body{background:var(--ink);color:var(--paper);font:16px var(--sans);
+       max-width:560px;margin:0 auto;min-height:100vh;
+       padding:calc(env(safe-area-inset-top) + 18px) 22px
+               calc(env(safe-area-inset-bottom) + 40px)}
+  @media (min-width:640px){
+    body{border-left:1px solid var(--rule);border-right:1px solid var(--rule);
+         padding:34px 40px 48px}
+  }
+
+  a.back{color:var(--dim);text-decoration:none;font-size:13px;
+         letter-spacing:.06em}
+  a.back:hover{color:var(--muted)}
+
+  .kicker{font-size:10px;font-weight:500;letter-spacing:.22em;color:var(--dim);
+          text-transform:uppercase;margin-top:22px}
+  #title-py{font-family:var(--mono);font-size:15px;color:var(--celadon);
+            margin-top:14px;letter-spacing:-.02em}
+  #title-hz{font-family:var(--hanzi);font-size:34px;line-height:1.25;
+            margin-top:4px}
+
+  /* the two crutch toggles + play-all live together above the text */
+  .controls{display:flex;gap:8px;margin:22px 0 6px;flex-wrap:wrap}
+  button{background:none;border:1px solid var(--rule);color:var(--muted);
+         border-radius:2px;font:13px var(--sans);letter-spacing:.04em;
+         padding:8px 14px;cursor:pointer}
+  button:active{background:var(--stone)}
+  button.on{border-color:var(--celadon);color:var(--celadon)}
+  button.playing{border-color:var(--cinnabar);color:var(--cinnabar)}
+
+  .sent{border:1px solid var(--rule);border-radius:3px;background:var(--stone);
+        padding:16px 16px 14px;margin-top:12px;position:relative}
+  .sent .hz{font-family:var(--hanzi);font-size:31px;line-height:1.5;
+            padding-right:44px}
+  .sent .py{display:none;font-family:var(--mono);font-size:13px;
+            color:var(--celadon);margin-top:10px;line-height:1.5;
+            letter-spacing:-.02em}
+  .sent .en{display:none;font-size:14px;color:var(--muted);margin-top:8px;
+            line-height:1.45}
+  body.show-py .sent .py{display:block}
+  body.show-en .sent .en{display:block}
+
+  .sent .play{position:absolute;top:12px;right:12px;width:34px;height:34px;
+              padding:0;font-size:12px;line-height:32px;text-align:center;
+              color:var(--dim)}
+  .sent.playing{border-color:var(--celadon)}
+  .sent.playing .play{border-color:var(--celadon);color:var(--celadon)}
+
+  /* missing / stale story */
+  #empty{display:none;margin-top:48px;color:var(--muted);line-height:1.6}
+  #empty h2{font-size:17px;font-weight:500;color:var(--paper);
+            margin-bottom:10px}
+  #empty code{font-family:var(--mono);font-size:13px;color:var(--celadon);
+              background:var(--stone);padding:2px 7px;border-radius:2px}
+  #stale{display:none;margin-top:16px;font-size:13px;color:var(--dim);
+         border:1px solid var(--rule);border-radius:2px;padding:9px 12px;
+         line-height:1.5}
+  #stale code{font-family:var(--mono);font-size:12px;color:var(--celadon)}
+  #story{display:none}
+</style>
+</head>
+<body>
+  <a class="back" href="./index.html">&larr; drill</a>
+
+  <div id="story">
+    <div class="kicker" id="date"></div>
+    <div id="title-py"></div>
+    <div id="title-hz"></div>
+    <div id="stale"></div>
+    <div class="controls">
+      <button id="tg-py">pinyin</button>
+      <button id="tg-en">English</button>
+      <button id="play-all">&#9654; play all</button>
+    </div>
+    <div id="sentences"></div>
+  </div>
+
+  <div id="empty">
+    <h2>No story yet today</h2>
+    <p>The daily story is generated on the Mac from the characters you
+       already know. To make one, run:</p>
+    <p style="margin:12px 0"><code>python3 gen-story.py</code></p>
+    <p>then redeploy, and today's story will appear here. Read the hanzi
+       first &mdash; pinyin and English stay hidden until you ask.</p>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var current = null;        // the one Audio element allowed to play
+  var seq = null;            // {active:true} while "play all" runs
+
+  function stopClip() {
+    if (current) { current.pause(); current = null; }
+    var rows = document.querySelectorAll('.sent.playing');
+    for (var i = 0; i < rows.length; i++) rows[i].classList.remove('playing');
+  }
+
+  function stopAll() {
+    if (seq) seq.active = false;
+    seq = null;
+    stopClip();
+    var b = $('play-all');
+    b.classList.remove('playing');
+    b.innerHTML = '&#9654; play all';
+  }
+
+  function playClip(file, row, onDone) {
+    stopClip();
+    var a = new Audio('./audio/' + file);
+    current = a;
+    if (row) row.classList.add('playing');
+    var finish = function () {
+      if (row) row.classList.remove('playing');
+      if (current === a) { current = null; if (onDone) onDone(); }
+    };
+    a.addEventListener('ended', finish);
+    a.addEventListener('error', finish);
+    a.play().catch(finish);
+  }
+
+  function wireToggles() {
+    function toggle(btn, cls) {
+      btn.addEventListener('click', function () {
+        document.body.classList.toggle(cls);
+        btn.classList.toggle('on', document.body.classList.contains(cls));
+      });
+    }
+    toggle($('tg-py'), 'show-py');
+    toggle($('tg-en'), 'show-en');
+  }
+
+  function render(story) {
+    var today = new Date();
+    var iso = today.getFullYear() + '-' +
+        String(today.getMonth() + 1).padStart(2, '0') + '-' +
+        String(today.getDate()).padStart(2, '0');
+
+    $('date').textContent = story.date || '';
+    $('title-py').textContent = story.title_py || '';
+    $('title-hz').textContent = story.title_hz || '';
+
+    if (story.date && story.date !== iso) {
+      var st = $('stale');
+      st.style.display = 'block';
+      st.innerHTML = 'This story is from ' + story.date +
+        '. For a fresh one, run <code>python3 gen-story.py</code> ' +
+        'on the Mac and redeploy.';
+    }
+
+    var box = $('sentences');
+    var rows = [];
+    story.sentences.forEach(function (s) {
+      var row = document.createElement('div');
+      row.className = 'sent';
+
+      var hz = document.createElement('div');
+      hz.className = 'hz';
+      hz.textContent = s.hz;
+      row.appendChild(hz);
+
+      var py = document.createElement('div');
+      py.className = 'py';
+      py.textContent = s.py;
+      row.appendChild(py);
+
+      var en = document.createElement('div');
+      en.className = 'en';
+      en.textContent = s.en;
+      row.appendChild(en);
+
+      if (s.audio) {
+        var btn = document.createElement('button');
+        btn.className = 'play';
+        btn.innerHTML = '&#9654;';
+        btn.setAttribute('aria-label', 'play sentence');
+        btn.addEventListener('click', function () {
+          if (current && row.classList.contains('playing')) { stopAll(); }
+          else { stopAll(); playClip(s.audio, row, null); }
+        });
+        row.appendChild(btn);
+      }
+      box.appendChild(row);
+      rows.push(row);
+    });
+
+    $('play-all').addEventListener('click', function () {
+      if (seq) { stopAll(); return; }
+      stopAll();
+      var run = { active: true };
+      seq = run;
+      var i = 0;
+      var next = function () {
+        if (!run.active) return;                   // stopped mid-run
+        if (i >= story.sentences.length) { stopAll(); return; }
+        var s = story.sentences[i], row = rows[i];
+        i += 1;
+        if (s.audio) {
+          playClip(s.audio, row, function () {
+            if (run.active) setTimeout(next, 350);
+          });
+        } else { next(); }
+      };
+      $('play-all').classList.add('playing');
+      $('play-all').innerHTML = '&#9632; stop';
+      next();
+    });
+
+    wireToggles();
+    $('story').style.display = 'block';
+  }
+
+  fetch('./story.json', { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error('missing'); return r.json(); })
+    .then(function (story) {
+      if (!story || !story.sentences || !story.sentences.length) {
+        throw new Error('empty');
+      }
+      render(story);
+    })
+    .catch(function () { $('empty').style.display = 'block'; });
+}());
+</script>
+</body>
+</html>

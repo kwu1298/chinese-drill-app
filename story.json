@@ -1,0 +1,37 @@
+{
+ "date": "2026-08-06",
+ "title_py": "jiā zhōng fàn",
+ "title_hz": "家中饭",
+ "sentences": [
+  {
+   "hz": "今天，妈妈在家做饭，爸爸做菜，我和姐姐坐在椅子上。",
+   "py": "Jīn tiān, māma zài jiā zuò fàn, bàba zuò cài, wǒ hé jiějie zuò zài yǐzi shàng.",
+   "en": "Today, Mom cooks at home, Dad prepares the vegetables, and my older sister and I sit on the chairs.",
+   "audio": "6fa014618091.mp3"
+  },
+  {
+   "hz": "今天有米饭和菜，大家都很高兴。",
+   "py": "Jīn tiān yǒu mǐfàn hé cài, dàjiā dōu hěn gāoxìng.",
+   "en": "Today there is rice and food, and everyone is very happy.",
+   "audio": "9799bbafc6a6.mp3"
+  },
+  {
+   "hz": "妈妈叫大家吃饭，爸爸说今天菜很好吃。",
+   "py": "Māma jiào dàjiā chī fàn, bàba shuō jīn tiān cài hěn hǎo chī.",
+   "en": "Mom calls everyone to eat, and Dad says today's food is delicious.",
+   "audio": "9b093876da07.mp3"
+  },
+  {
+   "hz": "我说“家人一起吃饭，我很高兴。”",
+   "py": "Wǒ shuō “jiā rén yì qǐ chī fàn, wǒ hěn gāo xìng.”",
+   "en": "I say, “I am very happy when the family eats together.”",
+   "audio": "f2181a23b4dd.mp3"
+  },
+  {
+   "hz": "吃饭后，妈妈看电视，爸爸读书，我和姐姐说话。",
+   "py": "Chī fàn hòu, māma kàn diàn shì, bàba dú shū, wǒ hé jiějie shuō huà.",
+   "en": "After dinner, Mom watches television, Dad reads, and my sister and I talk.",
+   "audio": "a71718221f2a.mp3"
+  }
+ ]
+}

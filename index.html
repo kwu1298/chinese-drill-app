@@ -171,6 +171,16 @@
          margin-top:auto;padding-top:20px}
   .facts b{color:var(--muted);font-weight:400}
 
+  /* ---- characters known: the number a reader actually grows. Cards flatter
+     (three words can share one hanzi); this only moves when a new character
+     enters the eye. A hairline bar walks it to the next milestone. ---- */
+  .known{text-align:center;margin-top:10px;font:12px var(--mono);
+         color:var(--muted);letter-spacing:.06em}
+  .known b{color:var(--paper);font-weight:400}
+  .known .nx{color:var(--dim)}
+  .kbar{width:150px;height:2px;margin:8px auto 0;background:var(--rule)}
+  .kbar i{display:block;height:100%;width:0;background:var(--celadon)}
+
   /* ---- 印章: the seal. Stamped at the end of a session. ---- */
   .seal{width:132px;height:132px;margin:0 auto;background:var(--cinnabar);
         display:flex;flex-direction:column;align-items:center;
@@ -200,6 +210,21 @@
             box-shadow:inset 0 0 0 1px rgba(245,239,228,.28),
                        inset 0 0 0 4px var(--cinnabar)}
   .seal.sig .g{font-size:28px;margin-top:0}
+  /* A crossed milestone earns the seal one bigger stamping: the count of
+     characters known, cut into the stone. Same stamp keyframe, no more. */
+  .seal.sig.milestone{width:90px;height:90px;
+            box-shadow:inset 0 0 0 1px rgba(245,239,228,.28),
+                       inset 0 0 0 5px var(--cinnabar)}
+  .seal.sig.milestone .n{font:400 30px var(--mono);letter-spacing:-.02em}
+  .seal.sig.milestone .g{font-size:16px;margin-top:3px;opacity:.9}
+  /* One quiet line of what the session actually changed, and — on the render
+     that crosses a threshold — the milestone spelled out under the score. */
+  .spark{text-align:center;font:11.5px var(--mono);color:var(--dim);
+         letter-spacing:.06em;margin-top:12px}
+  .spark b{color:var(--celadon);font-weight:400}
+  .mileline{text-align:center;margin-top:14px;font:500 14px var(--sans);
+            color:var(--paper);letter-spacing:.02em}
+  .mileline .zi{font-family:var(--hanzi)}
 
   .status{font:11px var(--mono);color:var(--dim);text-align:center;
           min-height:15px;margin-bottom:6px;letter-spacing:.06em}
@@ -232,6 +257,11 @@
   <h1 id="h-due">…</h1>
   <div class="sub" id="h-sub"></div>
 
+  <!-- Distinct hanzi met at least once — the real progress number for a
+       learner who is here to READ — and the walk to the next milestone. -->
+  <div class="known" id="h-known"></div>
+  <div class="kbar" id="h-kbar"><i></i></div>
+
   <!-- The week as practice squares: one cell a day, filled if you sat down.
        Same square as the 田字格 on a card, which is the point. -->
   <div class="week" id="h-week"></div>
@@ -244,6 +274,7 @@
     <button onclick="start('hardest')">Trouble</button>
     <button onclick="start('lesson')">Latest</button>
   </div>
+  <button onclick="location.href='./story.html'">Today's story<small>a few sentences, only characters you know</small></button>
   <!-- The paradigm grid is inherited from the Arabic fork and unused here:
        it is built around an eight-person pronoun table and the matching
        round names those paradigm keys directly. Component families are the
@@ -307,11 +338,15 @@
 <div id="done" class="screen">
   <h1 id="done-line"></h1>
   <div class="sub" id="done-sub"></div>
+  <!-- The session spark: what this sitting concretely changed. And, only on
+       the render that crosses a character milestone, the milestone line. -->
+  <div class="spark" id="done-spark" style="display:none"></div>
+  <div class="mileline" id="done-mile" style="display:none"></div>
   <!-- 印章, at signature scale. On calligraphy the red seal is a small mark
        in the corner, not the piece. Full-size it read as an error state --
        in this app cinnabar means "wrong", and a 10-of-12 session was being
        greeted by a giant red block. -->
-  <div class="seal sig"><div class="g">读</div></div>
+  <div class="seal sig" id="done-seal"><div class="g">读</div></div>
   <button class="primary" onclick="start('due')">Again</button>
   <button onclick="goHome()">Home</button>
 </div>
@@ -324,7 +359,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = '19c692ec29';   // deploy-webapp.sh stamps this
+const BUILD = '965c0ad3d9';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -332,6 +367,7 @@ let pendingReviews = JSON.parse(localStorage.getItem('pendingReviews') || '[]');
 let reviewDays = {};                    // day -> [done, right] from repo history
 let queue = [], idx = 0, right = 0, wrong = 0, locked = false, crankEnd = 0;
 let crankNewLeft = 0;                   // new-card budget for the whole crank
+let sessionKnown = null;                // known-char set when the sitting began
 let pushBusy = false, pushDirty = false;
 
 const $ = id => document.getElementById(id);
@@ -522,6 +558,34 @@ async function loadAll() {
 /* -------------------------------- home ---------------------------------- */
 function localToday() { return SRS.iso(new Date()).slice(0, 10); }
 let days = {};                          // day -> [done, right], for the week
+
+/* ----------------------- characters known ------------------------------- */
+/* Distinct hanzi across the prompts of every card met at least once. This is
+   the number a READER grows -- card counts flatter it (three words can share
+   one character), so the two are shown as different things. Milestones are
+   fixed thresholds, not levels: crossing one is recorded once and never
+   re-celebrated. localStorage can be unavailable (private mode); every read
+   and write here shrugs instead of throwing. */
+const MILESTONES = [25, 50, 100, 150, 200, 300, 400, 500, 650, 800,
+                    1000, 1250, 1500];
+const HANZI_CH = /[一-鿿]/;               // 一-鿿
+function knownCharSet() {
+  const set = new Set();
+  for (const c of cards) {
+    if (SRS.entryFor(state, c.id).reps > 0) {
+      for (const ch of String(c.prompt || '').replace(/[【】]/g, '')) {
+        if (HANZI_CH.test(ch)) set.add(ch);
+      }
+    }
+  }
+  return set;
+}
+function lsNum(key) {
+  try { return Number(localStorage.getItem(key)) || 0; } catch (e) { return 0; }
+}
+function lsPut(key, val) {
+  try { localStorage.setItem(key, String(val)); } catch (e) {}
+}
 function summary() {
   const now = new Date();
   const due = SRS.dueCards(cards, state, now).length;
@@ -538,7 +602,7 @@ function summary() {
   const seenCards = cards.filter(c => SRS.entryFor(state, c.id).reps > 0).length;
   return { due, today: today[0],
            acc: today[0] ? Math.round(100 * today[1] / today[0]) : null,
-           streak, seenCards };
+           streak, seenCards, known: knownCharSet().size };
 }
 function renderHome() {
   const s = summary();
@@ -546,9 +610,26 @@ function renderHome() {
       ? s.due + '<em>cards due</em>'
       : '<span style="font-size:.5em">caught up</span><em>nothing waiting</em>';
   $('h-due').style.color = s.due > 0 ? '' : 'var(--green)';
+  // "cards", not "characters": the line right below counts real characters,
+  // and the two numbers must not read as the same thing disagreeing.
   $('h-sub').textContent = s.seenCards
-      ? s.seenCards + ' of ' + cards.length + ' characters met'
+      ? s.seenCards + ' of ' + cards.length + ' cards met'
       : cards.length + ' cards, none met yet';
+
+  // The characters-known line, and a hairline bar walking the stretch from
+  // the last milestone to the next. Past the final milestone the bar retires.
+  const nextM = MILESTONES.find(m => m > s.known) || null;
+  $('h-known').innerHTML = '<b>' + s.known + '</b> characters known' +
+      (nextM ? ' <span class="nx">· next ' + nextM + '</span>' : '');
+  const kbar = $('h-kbar');
+  if (nextM) {
+    const prevM = MILESTONES.filter(m => m <= s.known).pop() || 0;
+    kbar.style.display = '';
+    kbar.firstElementChild.style.width =
+        Math.round(100 * (s.known - prevM) / (nextM - prevM)) + '%';
+  } else {
+    kbar.style.display = 'none';
+  }
 
   // Seven practice squares, oldest on the left. Filled means you sat down.
   const week = $('h-week');
@@ -565,9 +646,13 @@ function renderHome() {
     cell.title = key + (did ? ' — ' + days[key][0] + ' answered' : ' — nothing');
     week.appendChild(cell);
   }
-  $('h-cap').textContent = s.streak > 0
-      ? s.streak + (s.streak === 1 ? ' day running' : ' days running')
-      : 'last seven days';
+  // Current streak beside the best ever. Honest on both sides: a missed day
+  // resets the current, and the best only moves when it is genuinely beaten.
+  let best = lsNum('bestStreak');
+  if (s.streak > best) { best = s.streak; lsPut('bestStreak', best); }
+  $('h-cap').textContent = (s.streak > 0
+      ? 'streak ' + s.streak : 'last seven days') +
+      (best > 0 ? ' · best ' + best : '');
 
   // One line where four tiles were. A number and a button is the whole job.
   const facts = [];
@@ -618,6 +703,9 @@ function start(mode) {
     crankNewLeft = Math.max(
         0, crankNewLeft - q.filter(p => p[1].reps === 0).length);
   }
+  // Snapshot the known set once per sitting -- a crank re-enters start()
+  // every round -- so the done screen can diff what this sitting added.
+  if (sessionKnown === null) sessionKnown = knownCharSet();
   queue = q.map(([card]) => card);
   idx = 0; right = 0; wrong = 0;
   show('drill'); render();
@@ -1006,6 +1094,17 @@ function next() {
   runCapstone(more ? () => start(crankMode) : null);
 }
 
+// The grid and matching games reach the done screen without sessionDone();
+// this wipes the spark and milestone artifacts a card session left behind,
+// and puts the signature seal back at signature scale.
+function clearDoneExtras() {
+  $('done-spark').style.display = 'none';
+  $('done-mile').style.display = 'none';
+  const seal = $('done-seal');
+  seal.className = 'seal sig';
+  seal.innerHTML = '<div class="g">读</div>';
+}
+
 function sessionDone(matchSecs, ladderMsg) {
   crankEnd = 0;
   const line = $('done-line');
@@ -1018,6 +1117,45 @@ function sessionDone(matchSecs, ladderMsg) {
   if (matchSecs != null) bits.push('matched in ' + matchSecs + 's');
   bits.push(tail);
   $('done-sub').textContent = bits.join('   ·   ');
+
+  clearDoneExtras();
+  // The spark: what this sitting concretely changed. New characters are the
+  // diff against the snapshot start() took; a right answer is a card that
+  // will not be asked again today.
+  const known = knownCharSet();
+  let fresh = 0;
+  if (sessionKnown) {
+    for (const ch of known) { if (!sessionKnown.has(ch)) fresh++; }
+  }
+  sessionKnown = null;
+  const spark = [];
+  if (fresh > 0) {
+    spark.push('<b>+' + fresh + '</b> new character' +
+               (fresh === 1 ? '' : 's') + ' met');
+  }
+  if (right > 0) {
+    spark.push(right + ' card' + (right === 1 ? ' leaves' : 's leave') +
+               ' today’s queue');
+  }
+  if (spark.length) {
+    $('done-spark').innerHTML =
+        spark.join(' <span style="opacity:.4">·</span> ');
+    $('done-spark').style.display = '';
+  }
+
+  // A crossed milestone gets its one moment: the seal grows to milestone
+  // scale with the number cut into it. lastMilestone remembers the highest
+  // threshold already stamped, so each is celebrated exactly once.
+  const hit = MILESTONES.filter(m => known.size >= m).pop() || 0;
+  if (hit > lsNum('lastMilestone')) {
+    lsPut('lastMilestone', hit);
+    const seal = $('done-seal');
+    seal.className = 'seal sig milestone';
+    seal.innerHTML = '<div class="n">' + hit + '</div><div class="g">字</div>';
+    $('done-mile').innerHTML = hit + ' characters — ' + hit +
+        ' <span class="zi">字</span>';
+    $('done-mile').style.display = '';
+  }
   show('done');
 }
 
@@ -1231,6 +1369,7 @@ function checkGrid() {
     $('done-sub').textContent = pct === 100
         ? 'perfect, the whole paradigm'
         : 'the misses are back in your queue for today';
+    clearDoneExtras();
     show('done');
     flushReviews();
     return;
@@ -1449,6 +1588,7 @@ function finishMatch() {
 
   if (after) { after(); return; }              // crank: straight into the next set
   if (capstone) { sessionDone(secs, ladderMsg); return; }
+  clearDoneExtras();
   $('done-line').textContent = ladderMsg || ('Matched \u2014 ' + secs + 's');
   $('done-sub').textContent = moved
       ? secs + 's   ·   ' + clean + '/' + size + ' clean'
