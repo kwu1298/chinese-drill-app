@@ -324,7 +324,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = '2442bf4b3a';   // deploy-webapp.sh stamps this
+const BUILD = '59279251c3';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -856,9 +856,16 @@ function submitTyped(c) {
    at the exact moment the eye has the pairing. Silent if no zh voice. */
 let zhVoice = null;
 function findZhVoice() {
+  // Rank, don't take the first: Chrome ships Google's network voice, which
+  // is far better Mandarin than the OS's compact voice -- but it sorts
+  // after the local ones, so first-match found the worst voice available.
   const vs = window.speechSynthesis ? speechSynthesis.getVoices() : [];
-  zhVoice = vs.find(v => v.lang === 'zh-CN') ||
-            vs.find(v => v.lang.startsWith('zh')) || null;
+  const zh = vs.filter(v => v.lang.replace('_', '-').startsWith('zh'));
+  zhVoice = zh.find(v => /Google/i.test(v.name) && /CN|普通/i.test(v.name + v.lang)) ||
+            zh.find(v => !v.localService) ||
+            zh.find(v => /Enhanced|Premium/i.test(v.name)) ||
+            zh.find(v => v.lang.replace('_', '-') === 'zh-CN') ||
+            zh[0] || null;
 }
 if (window.speechSynthesis) {
   findZhVoice();
