@@ -82,13 +82,36 @@
          line-height:1.5}
   #stale code{font-family:var(--mono);font-size:12px;color:var(--celadon)}
   #story{display:none}
+
+  /* tappable words: tap what you couldn't read; it becomes tomorrow's lead */
+  .sent .hz .w{cursor:pointer;border-bottom:2px solid transparent}
+  .sent .hz .w.mark{color:var(--cinnabar);border-bottom-color:var(--cinnabar)}
+  .hint-tap{font-size:11.5px;color:var(--dim);margin-top:14px;
+            letter-spacing:.04em}
+
+  /* archive navigation */
+  .nav{display:flex;justify-content:space-between;align-items:center;
+       margin-top:22px}
+  .nav button{padding:6px 12px;font-size:12px}
+  .nav button[disabled]{opacity:.3;cursor:default}
+
+  /* the finish bar: one honest self-report, logged to the sync repo */
+  #done-bar{margin-top:26px;border-top:1px solid var(--rule);padding-top:16px}
+  #done-bar .q{font-size:13px;color:var(--muted);margin-bottom:10px}
+  #done-bar .opts{display:flex;gap:8px;flex-wrap:wrap}
+  #logged{display:none;font:12px var(--mono);color:var(--celadon);
+          margin-top:12px;letter-spacing:.06em}
 </style>
 </head>
 <body>
   <a class="back" href="./index.html">&larr; drill</a>
 
   <div id="story">
-    <div class="kicker" id="date"></div>
+    <div class="nav">
+      <button id="nav-prev">&lsaquo; older</button>
+      <div class="kicker" id="date" style="margin-top:0"></div>
+      <button id="nav-next">newer &rsaquo;</button>
+    </div>
     <div id="title-py"></div>
     <div id="title-hz"></div>
     <div id="stale"></div>
@@ -98,6 +121,17 @@
       <button id="play-all">&#9654; play all</button>
     </div>
     <div id="sentences"></div>
+    <div class="hint-tap">tap any word you couldn't read — it goes into
+      tomorrow's story</div>
+    <div id="done-bar">
+      <div class="q">Done reading — how did it go?</div>
+      <div class="opts">
+        <button data-r="cold">read it cold</button>
+        <button data-r="pinyin">needed pinyin</button>
+        <button data-r="rough">rough</button>
+      </div>
+      <div id="logged"></div>
+    </div>
   </div>
 
   <div id="empty">
@@ -116,6 +150,8 @@
   var $ = function (id) { return document.getElementById(id); };
   var current = null;        // the one Audio element allowed to play
   var seq = null;            // {active:true} while "play all" runs
+  var marked = [];           // words tapped as unreadable, for the log
+  var stats = { py: 0, en: 0, plays: 0 };
 
   function stopClip() {
     if (current) { current.pause(); current = null; }
@@ -133,6 +169,7 @@
   }
 
   function playClip(file, row, onDone) {
+    stats.plays += 1;
     stopClip();
     var a = new Audio('./audio/' + file);
     current = a;
@@ -155,6 +192,8 @@
     }
     toggle($('tg-py'), 'show-py');
     toggle($('tg-en'), 'show-en');
+    $('tg-py').addEventListener('click', function(){ stats.py += 1; });
+    $('tg-en').addEventListener('click', function(){ stats.en += 1; });
   }
 
   function render(story) {
@@ -183,7 +222,36 @@
 
       var hz = document.createElement('div');
       hz.className = 'hz';
-      hz.textContent = s.hz;
+      if (s.words && s.words.length) {
+        // Rebuild from the ORIGINAL sentence so punctuation survives:
+        // words are matched in order and everything between them (。，！？)
+        // passes through as plain text. Dropping the punctuation made the
+        // sentences harder to read than having no segmentation at all.
+        var pos = 0;
+        s.words.forEach(function (w) {
+          var at = s.hz.indexOf(w.hz, pos);
+          if (at < 0) return;                    // segmentation drift: skip
+          if (at > pos) {
+            hz.appendChild(document.createTextNode(s.hz.slice(pos, at)));
+          }
+          var sp = document.createElement('span');
+          sp.className = 'w';
+          sp.textContent = w.hz;
+          sp.addEventListener('click', function () {
+            var i = marked.findIndex(function (m) { return m.hz === w.hz; });
+            if (i >= 0) { marked.splice(i, 1); sp.classList.remove('mark'); }
+            else { marked.push({ hz: w.hz, py: w.py || '' });
+                   sp.classList.add('mark'); }
+          });
+          hz.appendChild(sp);
+          pos = at + w.hz.length;
+        });
+        if (pos < s.hz.length) {
+          hz.appendChild(document.createTextNode(s.hz.slice(pos)));
+        }
+      } else {
+        hz.textContent = s.hz;
+      }
       row.appendChild(hz);
 
       var py = document.createElement('div');
@@ -237,13 +305,120 @@
     $('story').style.display = 'block';
   }
 
-  fetch('./story.json', { cache: 'no-store' })
-    .then(function (r) { if (!r.ok) throw new Error('missing'); return r.json(); })
+  /* ---- reading log: one line per finished read, into the sync repo ----
+     Same rail as the drill's reviews: contents-API append with the token
+     already in localStorage. The generator reads this back tomorrow —
+     difficulty from your report, trouble words woven into the next story. */
+  function ghAppend(name, obj, done, fail) {
+    var tok = null;
+    try { tok = localStorage.getItem('ghtok'); } catch (e) {}
+    if (!tok) { fail('connect the drill first (token missing)'); return; }
+    fetch('./config.json').then(function (r) { return r.json(); })
+      .then(function (cfg) {
+        var base = 'https://api.github.com/repos/' + cfg.owner + '/' +
+                   cfg.repo + '/contents/' + name;
+        var H = { 'Authorization': 'Bearer ' + tok,
+                  'Accept': 'application/vnd.github+json' };
+        return fetch(base, { headers: H }).then(function (r) {
+          if (r.status === 404) return { text: '', sha: null };
+          return r.json().then(function (j) {
+            return { text: atob(j.content.replace(/\n/g, '')), sha: j.sha };
+          });
+        }).then(function (f) {
+          var body = { message: 'story: reading log',
+                       content: btoa(unescape(encodeURIComponent(
+                           f.text + JSON.stringify(obj) + '\n'))) };
+          if (f.sha) body.sha = f.sha;
+          return fetch(base, { method: 'PUT', headers: H,
+                               body: JSON.stringify(body) });
+        });
+      })
+      .then(function (r) {
+        if (r && r.ok) done(); else fail('HTTP ' + (r && r.status));
+      })
+      .catch(function (e) { fail(e.message); });
+  }
+
+  function wireReport(story) {
+    var btns = document.querySelectorAll('#done-bar .opts button');
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        btns.forEach(function (x) { x.disabled = true; });
+        b.classList.add('on');
+        ghAppend('story-log.jsonl', {
+          ts: new Date().toISOString(),
+          story: story.date || '',
+          report: b.getAttribute('data-r'),
+          marked: marked,
+          toggles: { py: stats.py, en: stats.en },
+          plays: stats.plays
+        }, function () {
+          var n = 0;
+          try {
+            var k = 'storyLogged-' + story.date;
+            if (!localStorage.getItem(k)) {
+              localStorage.setItem(k, '1');
+              n = (parseInt(localStorage.getItem('storiesRead') || '0', 10)
+                   || 0) + 1;
+              localStorage.setItem('storiesRead', String(n));
+            } else {
+              n = parseInt(localStorage.getItem('storiesRead') || '0', 10);
+            }
+          } catch (e) {}
+          var el = $('logged');
+          el.style.display = 'block';
+          el.textContent = 'logged ✓' + (n ? ' · ' + n + ' stories read' : '') +
+              (marked.length ? ' · ' + marked.length +
+               ' word(s) headed for tomorrow' : '');
+        }, function (msg) {
+          btns.forEach(function (x) { x.disabled = false; });
+          var el = $('logged');
+          el.style.display = 'block';
+          el.style.color = 'var(--cinnabar)';
+          el.textContent = 'could not log: ' + msg;
+        });
+      });
+    });
+  }
+
+  /* ---- which story: ?d=YYYY-MM-DD from the archive, else today ---- */
+  function loadStory() {
+    var d = new URLSearchParams(location.search).get('d');
+    var url = d ? './stories/' + d + '.json' : './story.json';
+    return fetch(url, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('missing'); return r.json(); });
+  }
+
+  function wireNav(story) {
+    fetch('./stories/index.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : { dates: [] }; })
+      .then(function (idx) {
+        var dates = idx.dates || [];
+        var i = dates.indexOf(story.date);
+        var prev = i > 0 ? dates[i - 1] : null;
+        var next = (i >= 0 && i < dates.length - 1) ? dates[i + 1] : null;
+        var bp = $('nav-prev'), bn = $('nav-next');
+        if (prev) bp.addEventListener('click', function () {
+          location.search = '?d=' + prev; });
+        else bp.disabled = true;
+        if (next) bn.addEventListener('click', function () {
+          location.search = '?d=' + next; });
+        else bn.disabled = true;
+      })
+      .catch(function () {
+        $('nav-prev').disabled = true;
+        $('nav-next').disabled = true;
+      });
+  }
+
+  loadStory()
     .then(function (story) {
       if (!story || !story.sentences || !story.sentences.length) {
         throw new Error('empty');
       }
       render(story);
+      wireNav(story);
+      wireReport(story);
     })
     .catch(function () { $('empty').style.display = 'block'; });
 }());
