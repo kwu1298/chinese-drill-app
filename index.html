@@ -359,7 +359,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = '554165470c';   // deploy-webapp.sh stamps this
+const BUILD = '1af8e8417a';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -408,6 +408,14 @@ async function getFile(name) {
   if (r.status === 404) return { text: null, sha: null };
   if (!r.ok) throw new Error(name + ': HTTP ' + r.status);
   const j = await r.json();
+  // Files over 1MB come back with content:"" from the contents API — the deck
+  // crossed that line when every card grew a breakdown. The sha keys the blob
+  // API (good to 100MB). Same fallback as sync._get and test-phone.js.
+  if (j.content === '' && j.size > 0) {
+    const b = await gh(`/repos/${CFG.owner}/${CFG.repo}/git/blobs/${j.sha}`);
+    if (!b.ok) throw new Error(name + ' blob: HTTP ' + b.status);
+    j.content = (await b.json()).content;
+  }
   return { text: dec(j.content), sha: j.sha };
 }
 
