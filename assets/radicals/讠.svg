@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="100" viewBox="0 0 220 100">
+ <g fill="none" stroke="#6fa88c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M36,62 L36,78 Q36,86 44,86 L60,86 Q68,86 68,78 L68,62"/>
+  <path d="M30,62 H74"/>
+  <path d="M44,48 Q52,40 60,48"/>
+  <path d="M36,32 Q52,18 68,32"/>
+ </g>
+ <path d="M103,50 H121 M113,42 L121,50 L113,58" fill="none" stroke="#8b9599" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+ <text x="170" y="78" font-family="Kaiti SC,STKaiti,Kaiti,serif" font-size="80" fill="#e9e5da" text-anchor="middle">讠</text>
+</svg>

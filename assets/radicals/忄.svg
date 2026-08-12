@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="100" viewBox="0 0 220 100">
+ <g fill="none" stroke="#6fa88c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M52,88 C42,78 34,62 36,42 C37,27 46,23 51,33 L52,42 L53,33 C58,23 67,27 68,42 C70,62 62,78 52,88 Z"/>
+ </g>
+ <path d="M103,50 H121 M113,42 L121,50 L113,58" fill="none" stroke="#8b9599" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+ <text x="170" y="78" font-family="Kaiti SC,STKaiti,Kaiti,serif" font-size="80" fill="#e9e5da" text-anchor="middle">忄</text>
+</svg>

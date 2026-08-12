@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="100" viewBox="0 0 220 100">
+ <g fill="none" stroke="#6fa88c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M52,88 C34,76 20,58 24,38 C27,22 44,18 50,30 L52,36 L54,30 C60,18 77,22 80,38 C84,58 70,76 52,88 Z"/>
+ </g>
+ <path d="M103,50 H121 M113,42 L121,50 L113,58" fill="none" stroke="#8b9599" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+ <text x="170" y="78" font-family="Kaiti SC,STKaiti,Kaiti,serif" font-size="80" fill="#e9e5da" text-anchor="middle">心</text>
+</svg>

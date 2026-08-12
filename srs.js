@@ -41,6 +41,37 @@ const SRS = {
     return (entry && entry.lapses || 0) >= SRS.LEECH_AT;
   },
 
+  // A card that has never been answered at all. Only a TRUE first sight: a
+  // card missed while still unseen (reps 0, lapses up) is back to being
+  // tested, not taught. Mirrors drill.py's build_payload/grade test exactly
+  // -- the phone and the Mac must agree on which meeting is the first one,
+  // or a card teaches on one device and tests on the other.
+  firstSight(entry) {
+    return entry.reps === 0 && (entry.lapses || 0) === 0;
+  },
+
+  // What the phone shows above the options as teaching, mirroring the
+  // `teach` field drill.py's build_payload sends the Mac window: the card's
+  // breakdown, on first sight only. On a review this is a test, and nothing
+  // that states the answer may be on screen before the grade -- the same
+  // rule that keeps a decompose review's ▶ hidden until the answer is in.
+  // (Yes, on an exact-fit phonetic first sight this hands over the folded
+  // reading, and a first-sight right still promotes to KNOWN_MIN. Accepted
+  // on purpose -- see drill.py's build_payload comment.)
+  teachFor(card, entry) {
+    return SRS.firstSight(entry) ? (card.breakdown || '') : '';
+  },
+
+  // Whether this card may offer 阿姨 (āyí)'s spoken lesson at all, mirroring
+  // drill.py: a decompose card always (the lesson IS its subject -- though
+  // on a review the ▶ stays hidden until after grading), anything else only
+  // alongside its teach line, i.e. on first sight. Existence of the clip is
+  // the caller's problem: the Mac checks the disk, the phone checks the
+  // deploy manifest.
+  lessonGate(card, entry) {
+    return card.cat === 'decompose' || SRS.firstSight(entry);
+  },
+
   grade(entry, correct, now) {
     const e = Object.assign({}, entry);
     let wait;

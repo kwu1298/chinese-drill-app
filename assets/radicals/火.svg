@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="100" viewBox="0 0 220 100">
+ <g fill="none" stroke="#6fa88c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M28,88 Q52,80 76,88"/>
+  <path d="M52,84 C42,66 62,50 52,18"/>
+  <path d="M38,84 C28,70 34,56 42,46"/>
+  <path d="M66,84 C76,70 70,56 62,46"/>
+ </g>
+ <path d="M103,50 H121 M113,42 L121,50 L113,58" fill="none" stroke="#8b9599" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+ <text x="170" y="78" font-family="Kaiti SC,STKaiti,Kaiti,serif" font-size="80" fill="#e9e5da" text-anchor="middle">火</text>
+</svg>

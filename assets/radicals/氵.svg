@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="100" viewBox="0 0 220 100">
+ <g fill="none" stroke="#6fa88c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M56,8 C42,22 68,36 54,50 C40,64 66,78 52,92"/>
+  <path d="M30,20 L25,29"/><path d="M80,40 L85,49"/><path d="M28,66 L23,75"/>
+ </g>
+ <path d="M103,50 H121 M113,42 L121,50 L113,58" fill="none" stroke="#8b9599" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+ <text x="170" y="78" font-family="Kaiti SC,STKaiti,Kaiti,serif" font-size="80" fill="#e9e5da" text-anchor="middle">氵</text>
+</svg>

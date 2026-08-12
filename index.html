@@ -90,6 +90,34 @@
                text-align:center;padding:20px 0}
   #d-sub{color:var(--muted);text-align:center;font-size:13px;margin-top:14px}
 
+  /* ---- teach at first sight, same rule as the Mac window: a never-seen
+     card is an explanation, not a test. The line sets in PAPER, not the
+     hint grey -- on a first meeting this line IS the card. Reviews never
+     show it; for them the breakdown stays in the post-miss hint. ---- */
+  #d-teach{display:none;text-align:center;margin-top:14px;font-size:13.5px;
+           line-height:1.55;color:var(--paper);max-width:34em;
+           margin-left:auto;margin-right:auto}
+  /* The radical's pictograph -- oracle-bone sketch, arrow, modern form.
+     The SVGs are drawn on the app's own palette (celadon line, paper
+     glyph) so they sit on the ink background as if native. The phone has
+     no flank beside the 田字格 the way the Mac window does, so the morph
+     story reads as a preface line above the practice square instead. */
+  #d-art{display:none;text-align:center;margin-top:12px}
+  #d-art img{max-width:200px;width:56vw;height:auto;max-height:76px}
+  /* Teaching adds rows the screen was not budgeted for (art, the teach
+     line, the ▶) and the body never scrolls; the drill screen may, so a
+     tall first meeting on a small phone degrades to a scroll instead of
+     clipping the options. */
+  #drill{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  /* 阿姨 (āyí)'s ▶: quiet and celadon, like the Mac's. Not a full-width
+     button -- it is an offer, not a step in the loop. */
+  #d-lesson{display:none;text-align:center;margin-top:4px}
+  #d-lesson button{width:auto;border:none;background:transparent;
+           color:var(--celadon);font-size:19px;padding:6px 30px;margin:0}
+  #d-script{display:none;margin-top:6px;font-size:13px;line-height:1.6;
+            color:var(--muted);max-width:34em;margin-left:auto;
+            margin-right:auto;text-align:center}
+
   .opts{display:flex;flex-direction:column;gap:9px;margin-top:22px}
   .opt{display:flex;align-items:center;gap:15px;background:var(--stone);
        border:1px solid transparent;border-radius:2px;padding:13px 15px;
@@ -291,8 +319,11 @@
 
 <div id="drill" class="screen">
   <div class="kicker" id="d-kicker"></div>
+  <div id="d-art"></div>
   <div class="tian"><div id="prompt"></div></div>
   <div id="d-sub"></div>
+  <div id="d-teach"></div>
+  <div id="d-lesson"><button onclick="playLesson()">▶</button><div id="d-script"></div></div>
   <div class="opts" id="opts"></div>
   <div id="answer"></div>
   <div id="foot"></div>
@@ -359,7 +390,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = '1af8e8417a';   // deploy-webapp.sh stamps this
+const BUILD = 'efe6cc8d39';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -403,11 +434,23 @@ function enc(str) {
   }
   return btoa(bin);
 }
-async function getFile(name) {
+// `known` is an optional {sha, text} of a locally-cached copy. The contents
+// API names the file's sha in its (small) metadata response either way, so
+// when the cached sha still matches there is nothing new to download and the
+// cached text is returned as-is. This matters for exactly one file: the deck
+// is ~1.4MB, which is past the contents API's 1MB inline-content line, so
+// without a cache to compare against every open of the app re-fetched it in
+// full through the blob API (~1.9MB of base64, twice a day on cell data, for
+// a file that changes maybe once a week). Small files still arrive inline in
+// the metadata response, where skipping the decode would save nothing.
+async function getFile(name, known) {
   const r = await gh(fileUrl(name));
   if (r.status === 404) return { text: null, sha: null };
   if (!r.ok) throw new Error(name + ': HTTP ' + r.status);
   const j = await r.json();
+  if (known && known.sha === j.sha && typeof known.text === 'string') {
+    return { text: known.text, sha: j.sha };
+  }
   // Files over 1MB come back with content:"" from the contents API — the deck
   // crossed that line when every card grew a breakdown. The sha keys the blob
   // API (good to 100MB). Same fallback as sync._get and test-phone.js.
@@ -519,7 +562,11 @@ async function loadAll() {
   try {
     await preflight();
     const [c, s, rv, rp] = await Promise.all([
-      getFile('cards.json'), getFile('state.json'),
+      // The deck rides with its sha so an unchanged deck costs one metadata
+      // call instead of a 1.9MB blob download -- see getFile.
+      getFile('cards.json', { sha: localStorage.getItem('cachedCardsSha'),
+                              text: cached }),
+      getFile('state.json'),
       getFile('reviews.jsonl'), getFile('reviews-phone.jsonl')]);
     if (c.text === null) {
       throw new Error('cards.json is missing from ' + CFG.repo + '.');
@@ -538,6 +585,7 @@ async function loadAll() {
                            remoteState);
     stateSha = s.sha;
     localStorage.setItem('cachedCards', c.text);
+    localStorage.setItem('cachedCardsSha', c.sha);
     localStorage.setItem('cachedState', JSON.stringify(state));
     reviewDays = {};
     const seen = new Set();
@@ -747,18 +795,72 @@ function render() {
   // N+1 while hearing the tail of card N.
   if (window.speechSynthesis) { try { speechSynthesis.cancel(); } catch (e) {} }
   if (audioEl) { try { audioEl.pause(); } catch (e) {} }
+  stopLesson();
   const c = queue[idx];
   locked = false;
   $('d-kicker').textContent = SRS.KICKERS[c.dir] || 'CHOOSE THE ANSWER';
+
+  // Teach at first sight, exactly as the Mac window does (drill.py's
+  // build_payload sends `teach` there; the phone builds its own payloads,
+  // so the same rule lives in SRS.teachFor and test-phone.js holds the two
+  // to it). A review shows nothing here: nothing that states the answer may
+  // be visible before the grade.
+  const entry = SRS.entryFor(state, c.id);
+  const teach = SRS.teachFor(c, entry);
+  const teachEl = $('d-teach');
+  teachEl.textContent = teach;
+  teachEl.style.display = teach ? 'block' : 'none';
+
+  // The radical's pictograph, first sight only, gated on the teach line
+  // being up for the same reason it is: on a review this card is a test,
+  // and a sketch of an eye hands over "eye" while the prompt is still on
+  // screen. Same c.teach && one-glyph gate as drill_ui.js. The SVGs ride
+  // the Pages deploy (deploy-webapp.sh copies assets/radicals in), so the
+  // stamped path resolves relatively; a deck built before the art, or a
+  // deploy that missed it, just renders the card as before (onerror).
+  const artEl = $('d-art');
+  artEl.innerHTML = '';
+  artEl.style.display = 'none';
+  if (teach && c.image && [...c.prompt].length === 1) {
+    const im = document.createElement('img');
+    im.src = './' + c.image;
+    im.alt = '';
+    im.onload = () => { artEl.style.display = 'block'; };
+    artEl.appendChild(im);
+  }
+
+  // 阿姨 (āyí)'s spoken lesson, mirroring drill.py's two rules: offered only
+  // where the explanation is on screen (a decompose card, or anything
+  // showing its teach line), and only when the clip really shipped -- the
+  // deploy writes lessons/manifest.json from the mp3s it actually copied,
+  // so a visible ▶ always plays. On a decompose REVIEW the lesson literally
+  // speaks the answer, so the ▶ appears only after grading (showAnswer
+  // unhides it), exactly like the Mac's choose()/submit() reveal.
+  lessonEntry = null;
+  const lessonBox = $('d-lesson');
+  lessonBox.style.display = 'none';
+  $('d-script').style.display = 'none';
+  if (LESSONS && c.lessonKey && SRS.lessonGate(c, entry)) {
+    const le = LESSONS.lessons[c.lessonKey];
+    if (le && LESSON_CLIPS.has(le.audio)) {
+      lessonEntry = le;
+      if (teach) lessonBox.style.display = 'block';
+    }
+  }
   // One practice square per character; a sentence drops out of the grid.
   const pr = $('prompt');
   pr.innerHTML = '';
   const glyphs = [...c.prompt];
   if (glyphs.length <= 4) {
     pr.className = '';
+    // A first meeting carries its teach line (and maybe art and a ▶)
+    // below, so the squares give up some height to keep the options on
+    // screen -- the same trade drill_ui.js makes (116 vs 156).
     pr.style.setProperty('--cell',
         'min(' + Math.floor(74 / glyphs.length) + 'vw, ' +
-        (glyphs.length === 1 ? 190 : glyphs.length === 2 ? 132 : 104) + 'px)');
+        (glyphs.length === 1 ? (teach ? 132 : 190)
+                             : glyphs.length === 2 ? (teach ? 108 : 132)
+                                                   : 104) + 'px)');
     for (const ch of glyphs) {
       const cell = document.createElement('div');
       cell.className = 'cell';
@@ -956,6 +1058,48 @@ let audioMap = null;                     // speak-text -> pre-generated clip
 let audioEl = null;
 fetch('./audio-map.json').then(r => r.ok ? r.json() : null)
     .then(m => { audioMap = m; }).catch(() => {});
+
+/* 阿姨 (āyí)'s character lessons. The deck carries only a lessonKey per card
+   (the scripts live once in lessons/lessons.json -- see build-deck.py);
+   both the table and the clips ship with THIS page, on GitHub Pages,
+   fetched lazily per press. Pages over the private sync repo was a real
+   choice: the sync route keeps the files private but costs an authenticated
+   API call per clip plus a cache the phone would have to evict; Pages is a
+   plain relative URL the phone's HTTP cache (and sw.js) handles for free.
+   The content is a TTS voicing generic character etymology -- nothing
+   personal rides in it -- so public hosting loses nothing worth an API
+   round-trip per press. lessons/manifest.json is written by
+   deploy-webapp.sh from the mp3s it actually copied: only 68 of 261
+   scripts have paid clips today, and a ▶ that plays nothing teaches
+   distrust. Either fetch failing just means no ▶ anywhere, never a broken
+   one. */
+let LESSONS = null;                      // lessons/lessons.json, keyed table
+let LESSON_CLIPS = new Set();            // mp3s the deploy really shipped
+let lessonEntry = null;                  // current card's lesson, when offered
+let lessonEl = null;
+fetch('./lessons/lessons.json').then(r => r.ok ? r.json() : null)
+    .then(j => { LESSONS = j; }).catch(() => {});
+fetch('./lessons/manifest.json').then(r => r.ok ? r.json() : null)
+    .then(j => { if (Array.isArray(j)) LESSON_CLIPS = new Set(j); })
+    .catch(() => {});
+
+function stopLesson() {
+  if (lessonEl) { try { lessonEl.pause(); } catch (e) {} lessonEl = null; }
+}
+// Played on demand from the ▶; a second press while she is talking stops
+// her -- a lesson you have heard must be skippable. The script text (pinyin
+// on every hanzi) lands under the button, so eyes and ears get the same
+// lesson. Mirrors drill_ui.js's playLesson.
+function playLesson() {
+  if (lessonEl) { stopLesson(); return; }
+  if (!lessonEntry) return;
+  lessonEl = new Audio('./lessons/audio/' + lessonEntry.audio);
+  lessonEl.onended = () => { lessonEl = null; };
+  lessonEl.play().catch(() => { lessonEl = null; });
+  const s = $('d-script');
+  s.textContent = lessonEntry.text;
+  s.style.display = 'block';
+}
 function findZhVoice() {
   // Rank, don't take the first: Chrome ships Google's network voice, which
   // is far better Mandarin than the OS's compact voice -- but it sorts
@@ -999,6 +1143,11 @@ function speakCard(c) {
 
 function showAnswer(ok, c) {
   speakCard(c);
+  // The answer is spoken for; the lesson may talk now. This is the
+  // decompose-review reveal: render() offered the lesson but kept the ▶
+  // hidden because pre-grade it would turn the test back into a teach and
+  // earn the promotion anyway (see drill_ui.js's choose()).
+  if (lessonEntry) $('d-lesson').style.display = 'block';
   const box = $('answer');
   box.innerHTML = '';
   const a = document.createElement('div');

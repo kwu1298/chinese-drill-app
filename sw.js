@@ -6,7 +6,7 @@
 // A fixed name meant an installed app could keep serving the old shell
 // from cache and there was no way to tell it otherwise short of
 // deleting the app.
-const CACHE = 'chinese-1af8e8417a';
+const CACHE = 'chinese-efe6cc8d39';
 const SHELL = ['./', './index.html', './srs.js', './config.json',
                './manifest.webmanifest', './icon-180.png?v=du', './icon-512.png?v=du'];
 
@@ -24,9 +24,18 @@ self.addEventListener('activate', e => {
 });
 
 // Network-first for the shell so updates land, cache as fallback for offline.
+// Ranged requests are left to the browser: a media element asks for its mp3
+// with `Range: bytes=0-`, and the Cache API is the wrong tool for that
+// conversation -- cache.put refuses a 206, and a stored plain-200 replayed
+// at a ranged request is a documented way to stall Chrome's media stack.
+// The HTTP cache speaks 206 natively, and the lesson clips' names are the
+// sha1 of what 阿姨 (āyí) says (see build-deck.py), so with Pages' ETag a
+// re-listen costs a 304 at most. This is also exactly how the word clips in
+// ./audio have always reached the ear, so the ▶ inherits a proven road.
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;      // GitHub API goes straight out
+  if (e.request.headers.get('range')) return;      // media: HTTP cache's job
   e.respondWith(
     fetch(e.request).then(r => {
       const copy = r.clone();
