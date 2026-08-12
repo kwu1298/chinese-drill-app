@@ -62,14 +62,24 @@ const SRS = {
     return SRS.firstSight(entry) ? (card.breakdown || '') : '';
   },
 
-  // Whether this card may offer 阿姨 (āyí)'s spoken lesson at all, mirroring
-  // drill.py: a decompose card always (the lesson IS its subject -- though
-  // on a review the ▶ stays hidden until after grading), anything else only
-  // alongside its teach line, i.e. on first sight. Existence of the clip is
-  // the caller's problem: the Mac checks the disk, the phone checks the
-  // deploy manifest.
+  // Every lesson key this card may offer, mirroring drill.py's payload
+  // join: the stamped list when the word holds more than one explained
+  // character (经理 offers 经's and 理's), else the single key. Any card
+  // with keys offers them on every showing -- reviews included, because
+  // right after a missed review is the most teachable moment a card has.
+  // Existence of the clips is the caller's problem: the Mac checks the
+  // disk, the phone checks the deploy manifest.
+  lessonKeysFor(card) {
+    return card.lessonKeys || (card.lessonKey ? [card.lessonKey] : []);
+  },
+
+  // Whether the ▶s may be on screen BEFORE the grade: only alongside the
+  // teach line -- a first meeting is an explanation. Every other showing
+  // earns its ▶s when the answer is committed (showAnswer reveals them,
+  // the Mac's choose()/submit() do the same), because a lesson states the
+  // answer and nothing that states the answer may precede the grade.
   lessonGate(card, entry) {
-    return card.cat === 'decompose' || SRS.firstSight(entry);
+    return SRS.teachFor(card, entry) !== '';
   },
 
   grade(entry, correct, now) {

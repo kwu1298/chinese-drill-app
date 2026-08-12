@@ -117,6 +117,31 @@
   #d-script{display:none;margin-top:6px;font-size:13px;line-height:1.6;
             color:var(--muted);max-width:34em;margin-left:auto;
             margin-right:auto;text-align:center}
+  #d-lesson-btns{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+
+  /* The leech panel: the MISSED n× lead, the hand-written note, 阿姨
+     (āyí)'s ▶(s), then one row per confusable -- 「经理 (jīnglǐ) —
+     manager」, the missed word set in celadon. These classes had NO rules
+     at all: the rows rendered as three bare inline spans with no spacing
+     and no hierarchy, 「经理jīnglǐ」, which for someone who cannot read
+     bare hanzi contrasts nothing. */
+  .leech{margin-top:14px;text-align:left;background:var(--stone);
+         border:1px solid var(--rule);border-radius:2px;padding:14px 16px}
+  .leech .lead{font:11px var(--mono);letter-spacing:.1em;
+               color:var(--cinnabar);margin-bottom:8px}
+  .leech .why{font-size:13px;line-height:1.55;color:var(--muted);
+              margin-bottom:10px}
+  .leech .lessons{display:flex;gap:6px;margin:0 0 8px;flex-wrap:wrap}
+  .leech .lessons button{width:auto;border:none;background:transparent;
+              color:var(--celadon);font-size:15px;padding:4px 10px;margin:0}
+  .leech .script{font-size:13px;line-height:1.6;color:var(--muted);
+              margin-bottom:10px}
+  .leech .row{display:flex;align-items:baseline;gap:8px;padding:5px 0;
+              flex-wrap:wrap}
+  .leech .row .hz{font-family:var(--hanzi);font-size:22px;line-height:1.2}
+  .leech .row .py{font:15px var(--mono);color:var(--paper)}
+  .leech .row .en{font-size:14px;color:var(--muted)}
+  .leech .row.this .hz,.leech .row.this .py{color:var(--celadon)}
 
   .opts{display:flex;flex-direction:column;gap:9px;margin-top:22px}
   .opt{display:flex;align-items:center;gap:15px;background:var(--stone);
@@ -323,7 +348,7 @@
   <div class="tian"><div id="prompt"></div></div>
   <div id="d-sub"></div>
   <div id="d-teach"></div>
-  <div id="d-lesson"><button onclick="playLesson()">▶</button><div id="d-script"></div></div>
+  <div id="d-lesson"><div id="d-lesson-btns"></div><div id="d-script"></div></div>
   <div class="opts" id="opts"></div>
   <div id="answer"></div>
   <div id="foot"></div>
@@ -390,7 +415,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = 'efe6cc8d39';   // deploy-webapp.sh stamps this
+const BUILD = '5dab86f395';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -829,23 +854,31 @@ function render() {
     artEl.appendChild(im);
   }
 
-  // 阿姨 (āyí)'s spoken lesson, mirroring drill.py's two rules: offered only
-  // where the explanation is on screen (a decompose card, or anything
-  // showing its teach line), and only when the clip really shipped -- the
-  // deploy writes lessons/manifest.json from the mp3s it actually copied,
-  // so a visible ▶ always plays. On a decompose REVIEW the lesson literally
-  // speaks the answer, so the ▶ appears only after grading (showAnswer
-  // unhides it), exactly like the Mac's choose()/submit() reveal.
-  lessonEntry = null;
+  // 阿姨 (āyí)'s spoken lessons, mirroring drill.py's rules: one ▶ per
+  // explained character in the word (经理 offers 经's and 理's, labeled
+  // when there is more than one), and only for clips that really shipped
+  // -- the deploy writes lessons/manifest.json from the mp3s it actually
+  // copied, so a visible ▶ always plays. On a REVIEW a lesson literally
+  // speaks the answer, so the ▶s appear only after grading (showAnswer
+  // unhides them), exactly like the Mac's choose()/submit() reveal; a
+  // first meeting is an explanation and shows them at once.
+  lessonEntries = [];
+  lessonScriptTarget = null;
   const lessonBox = $('d-lesson');
   lessonBox.style.display = 'none';
   $('d-script').style.display = 'none';
-  if (LESSONS && c.lessonKey && SRS.lessonGate(c, entry)) {
-    const le = LESSONS.lessons[c.lessonKey];
-    if (le && LESSON_CLIPS.has(le.audio)) {
-      lessonEntry = le;
-      if (teach) lessonBox.style.display = 'block';
+  if (LESSONS) {
+    for (const key of SRS.lessonKeysFor(c)) {
+      const le = LESSONS.lessons[key];
+      if (le && LESSON_CLIPS.has(le.audio)) {
+        lessonEntries.push(Object.assign(
+            { hz: key.replace(/^rad:/, '') }, le));
+      }
     }
+  }
+  if (lessonEntries.length) {
+    buildLessonButtons($('d-lesson-btns'));
+    if (SRS.lessonGate(c, entry)) lessonBox.style.display = 'block';
   }
   // One practice square per character; a sentence drops out of the grid.
   const pr = $('prompt');
@@ -955,15 +988,23 @@ function renderTyped(box, c) {
 }
 
 // hz -> {py, en}, read back off the deck so a confusable can be shown with
-// its reading and meaning without every card carrying a copy of them.
+// its reading and meaning without every card carrying a copy of them. The
+// gloss rides the py2hz prompt ("jīnglǐ — manager"): hz2en cards were
+// retired for vocab on 2026-08-03 (only 成语 keep them), and reading the
+// gloss from them alone left every vocab row meaningless -- 「经理jīnglǐ」
+// with nothing saying what a manager is. Mirrors drill.py's word_index.
 let wordIndex = null;
 function indexWords() {
   if (wordIndex) return wordIndex;
   wordIndex = {};
   for (const c of cards) {
-    const at = wordIndex[c.prompt] || (wordIndex[c.prompt] = {});
+    const hz = c.dir === 'py2hz' ? c.answer : c.prompt;
+    const at = wordIndex[hz] || (wordIndex[hz] = {});
     if (c.dir === 'hz2py' && !at.py) at.py = c.answer;
     else if (c.dir === 'hz2en' && !at.en) at.en = c.answer;
+    else if (c.dir === 'py2hz' && !at.en && c.prompt.includes(' — ')) {
+      at.en = c.prompt.slice(c.prompt.indexOf(' — ') + 3);
+    }
   }
   return wordIndex;
 }
@@ -991,17 +1032,38 @@ function leechPanel(c, onDone) {
     why.textContent = c.hint;
     box.appendChild(why);
   }
+  // 阿姨 (āyí)'s ▶(s), inside the panel: the grade is committed, so the
+  // leak rule is satisfied, and a card missed this many times is exactly
+  // the one whose characters deserve their spoken explanation. Same
+  // buttons as under the square; the tapped script sets inside the panel
+  // so it is read where the eyes already are.
+  if (lessonEntries.length) {
+    const lrow = document.createElement('div');
+    lrow.className = 'lessons';
+    buildLessonButtons(lrow);
+    box.appendChild(lrow);
+    const scr = document.createElement('div');
+    scr.className = 'script';
+    scr.style.display = 'none';
+    box.appendChild(scr);
+    lessonScriptTarget = scr;
+  }
+  // Each confusable reads 「经理 (jīnglǐ) — manager」: the reading in
+  // parens so it does not run into the word, the gloss after a dash --
+  // a contrast between words whose meanings are missing contrasts nothing.
   const row = (hz, isMine) => {
     const d = document.createElement('div');
     d.className = 'row' + (isMine ? ' this' : '');
     const info = words[hz] || {};
-    [['hz', hz], ['py', info.py || ''], ['en', info.en || '']]
-        .forEach(([cls, text]) => {
-          const s = document.createElement('span');
-          s.className = cls;
-          s.textContent = text;
-          d.appendChild(s);
-        });
+    const bits = [['hz', hz]];
+    if (info.py) bits.push(['py', '(' + info.py + ')']);
+    if (info.en) bits.push(['en', '— ' + info.en]);
+    bits.forEach(([cls, text]) => {
+      const s = document.createElement('span');
+      s.className = cls;
+      s.textContent = text;
+      d.appendChild(s);
+    });
     return d;
   };
   box.appendChild(row(mine, true));
@@ -1075,8 +1137,11 @@ fetch('./audio-map.json').then(r => r.ok ? r.json() : null)
    one. */
 let LESSONS = null;                      // lessons/lessons.json, keyed table
 let LESSON_CLIPS = new Set();            // mp3s the deploy really shipped
-let lessonEntry = null;                  // current card's lesson, when offered
+let lessonEntries = [];                  // current card's lessons, in word order
+let lessonScriptTarget = null;           // where the tapped script sets, when
+                                         // not the card's own #d-script
 let lessonEl = null;
+let lessonPlaying = -1;                  // index into lessonEntries, -1 = none
 fetch('./lessons/lessons.json').then(r => r.ok ? r.json() : null)
     .then(j => { LESSONS = j; }).catch(() => {});
 fetch('./lessons/manifest.json').then(r => r.ok ? r.json() : null)
@@ -1085,20 +1150,42 @@ fetch('./lessons/manifest.json').then(r => r.ok ? r.json() : null)
 
 function stopLesson() {
   if (lessonEl) { try { lessonEl.pause(); } catch (e) {} lessonEl = null; }
+  lessonPlaying = -1;
 }
-// Played on demand from the ▶; a second press while she is talking stops
-// her -- a lesson you have heard must be skippable. The script text (pinyin
-// on every hanzi) lands under the button, so eyes and ears get the same
+// Played on demand from a ▶ (one per explained character; 经理 carries
+// 经's and 理's, each labeled). A second press on the SAME ▶ while she is
+// talking stops her -- a lesson you have heard must be skippable -- and
+// pressing the other character's ▶ switches to it. The script text (pinyin
+// on every hanzi) lands under the buttons, so eyes and ears get the same
 // lesson. Mirrors drill_ui.js's playLesson.
-function playLesson() {
-  if (lessonEl) { stopLesson(); return; }
-  if (!lessonEntry) return;
-  lessonEl = new Audio('./lessons/audio/' + lessonEntry.audio);
-  lessonEl.onended = () => { lessonEl = null; };
-  lessonEl.play().catch(() => { lessonEl = null; });
-  const s = $('d-script');
-  s.textContent = lessonEntry.text;
+function playLesson(i) {
+  i = i || 0;
+  const was = lessonPlaying;
+  if (lessonEl) { stopLesson(); if (was === i) return; }
+  const le = lessonEntries[i];
+  if (!le) return;
+  lessonEl = new Audio('./lessons/audio/' + le.audio);
+  lessonEl.onended = () => { lessonEl = null; lessonPlaying = -1; };
+  lessonEl.play().catch(() => { lessonEl = null; lessonPlaying = -1; });
+  lessonPlaying = i;
+  const s = lessonScriptTarget || $('d-script');
+  s.textContent = le.text;
   s.style.display = 'block';
+}
+// The ▶ row itself, built wherever lessons are offered: under the practice
+// square (render) and inside the leech panel, which is the moment a missed
+// word's characters most deserve their explanation. A single lesson keeps
+// the bare ▶; two or more get labels -- 「▶ 经 (jīng)」「▶ 理 (lǐ)」 -- so
+// Kevin knows which half of the word each button explains.
+function buildLessonButtons(box) {
+  box.innerHTML = '';
+  lessonEntries.forEach((le, i) => {
+    const b = document.createElement('button');
+    b.textContent = lessonEntries.length > 1
+        ? '▶ ' + le.hz + (le.py ? ' (' + le.py + ')' : '') : '▶';
+    b.onclick = () => playLesson(i);
+    box.appendChild(b);
+  });
 }
 function findZhVoice() {
   // Rank, don't take the first: Chrome ships Google's network voice, which
@@ -1143,11 +1230,13 @@ function speakCard(c) {
 
 function showAnswer(ok, c) {
   speakCard(c);
-  // The answer is spoken for; the lesson may talk now. This is the
-  // decompose-review reveal: render() offered the lesson but kept the ▶
-  // hidden because pre-grade it would turn the test back into a teach and
-  // earn the promotion anyway (see drill_ui.js's choose()).
-  if (lessonEntry) $('d-lesson').style.display = 'block';
+  // The answer is spoken for; the lessons may talk now. This is the
+  // review reveal: render() built the ▶s but kept them hidden because
+  // pre-grade a lesson states the answer and would turn the test back
+  // into a teach, earning the promotion anyway (see drill_ui.js's
+  // choose()). Post-grade the answer is committed, and a just-missed
+  // review is the moment the explanation is worth the most.
+  if (lessonEntries.length) $('d-lesson').style.display = 'block';
   const box = $('answer');
   box.innerHTML = '';
   const a = document.createElement('div');
