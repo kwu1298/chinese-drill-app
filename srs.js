@@ -148,6 +148,11 @@ const SRS = {
     hz2py: 'TYPE THE READING',
     py2hz: 'CHOOSE THE CHARACTER',
     hz2en: 'CHOOSE THE MEANING',
+    // The component curriculum (built in build-deck.py): ordinary
+    // four-option cards everywhere except the never-seen ordering, where
+    // an explainer goes before its uses. Mirrors drill.py's KICKERS.
+    parts: 'PICK THE PART THAT CARRIES THE SOUND',
+    radical: 'CHOOSE WHAT THIS RADICAL MARKS',
   },
 
   preferredDir(base, dirs) {
@@ -169,6 +174,66 @@ const SRS = {
       if (nx !== ny) return nx - ny;
       return x[1].due < y[1].due ? -1 : x[1].due > y[1].due ? 1 : 0;
     });
+    return out;
+  },
+
+  // What meeting this card unlocks for cards behind it, or null. A radical's
+  // intro card explains the radical; a decompose card explains a character.
+  // Everything else is a consumer, not a producer. drill.py's _provides
+  // returns tuples; strings ("radical:目", "char:睡") are the JS equivalent
+  // of a hashable key.
+  provides(card) {
+    const item = card.id.split(':')[1];
+    if (card.cat === 'intro') return 'radical:' + item;
+    if (card.cat === 'decompose') return 'char:' + item;
+    return null;
+  },
+
+  // The explainers this card would rather be introduced after. A decompose
+  // card leans on its semantic radical (build-deck.py stamps it into `uses`);
+  // a word leans on the decompose card of each character in it. Preferences
+  // between never-seen cards, never gates: a word whose characters have no
+  // decompose card -- half the deck, see drill.py's breakdown() -- is
+  // introduced exactly as before.
+  requires(card) {
+    if (card.cat === 'intro') return [];
+    if (card.cat === 'decompose') {
+      return card.uses ? ['radical:' + card.uses] : [];
+    }
+    // The item part of the id is the word itself for vocab cards; 多音字
+    // items carry the disambiguating word after an @, and sentence items are
+    // synthetic tags with no hanzi at all, which yield nothing here.
+    const item = card.id.split(':')[1].split('@')[0];
+    return Array.from(item).filter(ch => ch >= '一' && ch <= '鿿')
+                           .map(ch => 'char:' + ch);
+  },
+
+  // Never-seen cards, reordered so explanations come before their uses.
+  // First meetings are explanations, so meet the pieces before the things
+  // made of them: a radical's card before the decompose cards that hang off
+  // it, a character's decompose card before the words containing it. Stable
+  // otherwise -- a card keeps its queue position except that its explainers,
+  // when they are also waiting to be introduced, are pulled in front of it.
+  // An explainer that is missing or already met costs nothing, and the
+  // NEW_PER_SESSION truncation downstream then tends to cut whole chains
+  // rather than orphaning a word from its explanation.
+  prereqSort(pairs) {
+    const provider = {};
+    pairs.forEach((pair, idx) => {
+      const key = SRS.provides(pair[0]);
+      if (key !== null && !(key in provider)) provider[key] = idx;
+    });
+    const out = [], emitted = new Array(pairs.length).fill(false);
+    const emit = i => {
+      if (emitted[i]) return;
+      emitted[i] = true;      // marked before recursing, so a malformed
+      for (const req of SRS.requires(pairs[i][0])) {  // cycle cannot hang
+        const j = provider[req];
+        if (j !== undefined) emit(j);
+      }
+      out.push(pairs[i]);
+    };
+    for (let i = 0; i < pairs.length; i++) emit(i);
     return out;
   },
 
@@ -229,6 +294,13 @@ const SRS = {
     newHeld = newHeld.concat(newPrimary.filter(p => reviewed.has(SRS.baseOf(p[0].id))));
     newPrimary = newPrimary.filter(p => !reviewed.has(SRS.baseOf(p[0].id)));
 
+    // Explanations before their uses, applied before the NEW_PER_SESSION
+    // cut below takes its slice: pulling a word's explainers in front of it
+    // is what makes the limited intro slots come out as complete teaching
+    // chains (radical, then anatomy, then the word) instead of words whose
+    // explanation missed the cut.
+    newPrimary = SRS.prereqSort(newPrimary);
+
     const limitNew = (newCap === undefined || newCap === null)
         ? SRS.NEW_PER_SESSION : newCap;
     let picked = seenPrimary.slice(0, cap);
@@ -247,11 +319,25 @@ const SRS = {
     }
 
     const out = [];
-    for (const tier of [picked.filter(p => p[1].reps > 0),
-                        picked.filter(p => p[1].reps === 0)]) {
+    for (const [isNew, tier] of [[false, picked.filter(p => p[1].reps > 0)],
+                                 [true, picked.filter(p => p[1].reps === 0)]]) {
       const remaining = tier.slice();
       while (remaining.length) {
-        const scored = remaining.map((cand, i) => [SRS.penalty(cand, out, gap), i]);
+        let idxs = remaining.map((_, i) => i);
+        if (isNew) {
+          // The interleave shuffles for variety, which could put a word
+          // ahead of the explainer prereqSort placed for it. So a
+          // never-seen card whose explainer is also still waiting is not
+          // a candidate yet. Intro cards require nothing, so the candidate
+          // list cannot come up empty -- but a scheduler must not be able
+          // to deadlock on its own deck, hence the guard.
+          const waiting = new Set(remaining.map(p => SRS.provides(p[0])));
+          waiting.delete(null);
+          const ready = idxs.filter(i =>
+              !SRS.requires(remaining[i][0]).some(r => waiting.has(r)));
+          idxs = ready.length ? ready : idxs;
+        }
+        const scored = idxs.map(i => [SRS.penalty(remaining[i], out, gap), i]);
         const best = Math.min(...scored.map(s => s[0]));
         const near = scored.filter(s => s[0] <= best + SRS.ORDER_SLACK)
                            .map(s => s[1]);
