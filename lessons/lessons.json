@@ -465,11 +465,11 @@
   "球": {
    "kind": "char",
    "py": "qiú",
-   "text": "这个字是「球」(qiú)。是「篮球」(lánqiú) 的「球」。它有两个部分：「王」(wáng) 是意思部分，意思是 king；「求」(qiú) 是声音部分——「求」告诉你发音：qiú。比如：「网球」(wǎngqiú)、「打篮球」(dǎ lán qiú)。",
-   "say": "这个字是「球」。是「篮球」的「球」。它有两个部分：「王」是意思部分，意思是 king；「求」是声音部分，「求」告诉你发音。比如：「网球」、「打篮球」。",
-   "pyline": "zhège zì shì «qiú». shì «lánqiú» de «qiú». tā yǒu liǎng ge bùfen: «wáng» shì yìsi bùfen, yìsi shì king; «qiú» shì shēngyīn bùfen, «qiú» gàosu nǐ fāyīn. bǐrú: «wǎngqiú», «dǎ lán qiú».",
-   "en": "This character is 球 — the 球 from 篮球 (lánqiú, basketball). It has two parts: 王 is the meaning part — king; 求 tells you the sound: qiú. For example: 网球 (wǎngqiú, tennis), 打篮球 (dǎ lán qiú, to play basketball).",
-   "audio": "b29cad9394d9.mp3"
+   "text": "这个字是「球」(qiú)。是「篮球」(lánqiú) 的「球」。它有两个部分：「王」(wáng) 是意思部分，意思是 jade；「求」(qiú) 是声音部分——「求」告诉你发音：qiú。比如：「网球」(wǎngqiú)、「打篮球」(dǎ lán qiú)。",
+   "say": "这个字是「球」。是「篮球」的「球」。它有两个部分：「王」是意思部分，意思是 jade；「求」是声音部分，「求」告诉你发音。比如：「网球」、「打篮球」。",
+   "pyline": "zhège zì shì «qiú». shì «lánqiú» de «qiú». tā yǒu liǎng ge bùfen: «wáng» shì yìsi bùfen, yìsi shì jade; «qiú» shì shēngyīn bùfen, «qiú» gàosu nǐ fāyīn. bǐrú: «wǎngqiú», «dǎ lán qiú».",
+   "en": "This character is 球 — the 球 from 篮球 (lánqiú, basketball). It has two parts: 王 is the meaning part — jade; 求 tells you the sound: qiú. For example: 网球 (wǎngqiú, tennis), 打篮球 (dǎ lán qiú, to play basketball).",
+   "audio": "a45083f7b268.mp3"
   },
   "游": {
    "kind": "char",
@@ -546,11 +546,11 @@
   "服": {
    "kind": "char",
    "py": "fu",
-   "text": "这个字是「服」(fu)。是「舒服」(shūfu) 的「服」。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 moon；声音部分告诉你发音：fú。比如：「衣服」(yī fu)、「服务员」(fú wù yuán)。",
-   "say": "这个字是「服」。是「舒服」的「服」。它有两个部分：「月字旁」是意思部分，意思是 moon；声音部分告诉你发音。比如：「衣服」、「服务员」。",
-   "pyline": "zhège zì shì «fu». shì «shūfu» de «fu». tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì moon; shēngyīn bùfen gàosu nǐ fāyīn. bǐrú: «yī fu», «fú wù yuán».",
-   "en": "This character is 服 — the 服 from 舒服 (shūfu, comfortable). It has two parts: the 月 radical is the meaning part — moon; the sound part tells you the reading: fú. For example: 衣服 (yī fu, clothes), 服务员 (fú wù yuán, waiter).",
-   "audio": "f694e1101f7d.mp3"
+   "text": "这个字是「服」(fu)。是「舒服」(shūfu) 的「服」。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 boat (old form)；声音部分告诉你发音：fú。比如：「衣服」(yī fu)、「服务员」(fú wù yuán)。",
+   "say": "这个字是「服」。是「舒服」的「服」。它有两个部分：「月字旁」是意思部分，意思是 boat (old form)；声音部分告诉你发音。比如：「衣服」、「服务员」。",
+   "pyline": "zhège zì shì «fu». shì «shūfu» de «fu». tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì boat (old form); shēngyīn bùfen gàosu nǐ fāyīn. bǐrú: «yī fu», «fú wù yuán».",
+   "en": "This character is 服 — the 服 from 舒服 (shūfu, comfortable). It has two parts: the 月 radical is the meaning part — boat (old form); the sound part tells you the reading: fú. For example: 衣服 (yī fu, clothes), 服务员 (fú wù yuán, waiter).",
+   "audio": "2a380bb88aad.mp3"
   },
   "样": {
    "kind": "char",
@@ -564,11 +564,11 @@
   "现": {
    "kind": "char",
    "py": "xiàn",
-   "text": "这个字是「现」(xiàn)。意思是 present。它有两个部分：「王」(wáng) 是意思部分，意思是 king；「见」(jiàn) 是声音部分——发音有一点像「见」(jiàn)。比如：「现在」(xiànzài)、「发现」(fāxiàn)。",
-   "say": "这个字是「现」。意思是 present。它有两个部分：「王」是意思部分，意思是 king；「见」是声音部分，发音有一点像「见」。比如：「现在」、「发现」。",
-   "pyline": "zhège zì shì «xiàn». yìsi shì present. tā yǒu liǎng ge bùfen: «wáng» shì yìsi bùfen, yìsi shì king; «jiàn» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «jiàn». bǐrú: «xiànzài», «fāxiàn».",
-   "en": "This character is 现 — present. It has two parts: 王 is the meaning part — king; 见 hints at the sound — a bit like jiàn. For example: 现在 (xiànzài, now), 发现 (fāxiàn, to find).",
-   "audio": "84de6353251f.mp3"
+   "text": "这个字是「现」(xiàn)。意思是 present。它有两个部分：「王」(wáng) 是意思部分，意思是 jade；「见」(jiàn) 是声音部分——发音有一点像「见」(jiàn)。比如：「现在」(xiànzài)、「发现」(fāxiàn)。",
+   "say": "这个字是「现」。意思是 present。它有两个部分：「王」是意思部分，意思是 jade；「见」是声音部分，发音有一点像「见」。比如：「现在」、「发现」。",
+   "pyline": "zhège zì shì «xiàn». yìsi shì present. tā yǒu liǎng ge bùfen: «wáng» shì yìsi bùfen, yìsi shì jade; «jiàn» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «jiàn». bǐrú: «xiànzài», «fāxiàn».",
+   "en": "This character is 现 — present. It has two parts: 王 is the meaning part — jade; 见 hints at the sound — a bit like jiàn. For example: 现在 (xiànzài, now), 发现 (fāxiàn, to find).",
+   "audio": "91ebcd4224f0.mp3"
   },
   "病": {
    "kind": "char",
@@ -645,11 +645,11 @@
   "园": {
    "kind": "char",
    "py": "yuán",
-   "text": "这个字是「园」(yuán)。意思是 garden。它有两个部分：「囗」(大口框 dàkǒukuàng) 是意思部分，意思是 erect；「元」(yuán) 是声音部分——「元」告诉你发音：yuán。比如：「公园」(gōngyuán)、「去公园」(qù gōngyuán)。",
-   "say": "这个字是「园」。意思是 garden。它有两个部分：「大口框」是意思部分，意思是 erect；「元」是声音部分，「元」告诉你发音。比如：「公园」、「去公园」。",
-   "pyline": "zhège zì shì «yuán». yìsi shì garden. tā yǒu liǎng ge bùfen: «dàkǒukuàng» shì yìsi bùfen, yìsi shì erect; «yuán» shì shēngyīn bùfen, «yuán» gàosu nǐ fāyīn. bǐrú: «gōngyuán», «qù gōngyuán».",
-   "en": "This character is 园 — garden. It has two parts: the 囗 radical is the meaning part — erect; 元 tells you the sound: yuán. For example: 公园 (gōngyuán, park), 去公园 (qù gōngyuán, to go to the park).",
-   "audio": "6fc832571882.mp3"
+   "text": "这个字是「园」(yuán)。意思是 garden。它有两个部分：「囗」(大口框 dàkǒukuàng) 是意思部分，意思是 enclosure；「元」(yuán) 是声音部分——「元」告诉你发音：yuán。比如：「公园」(gōngyuán)、「去公园」(qù gōngyuán)。",
+   "say": "这个字是「园」。意思是 garden。它有两个部分：「大口框」是意思部分，意思是 enclosure；「元」是声音部分，「元」告诉你发音。比如：「公园」、「去公园」。",
+   "pyline": "zhège zì shì «yuán». yìsi shì garden. tā yǒu liǎng ge bùfen: «dàkǒukuàng» shì yìsi bùfen, yìsi shì enclosure; «yuán» shì shēngyīn bùfen, «yuán» gàosu nǐ fāyīn. bǐrú: «gōngyuán», «qù gōngyuán».",
+   "en": "This character is 园 — garden. It has two parts: the 囗 radical is the meaning part — enclosure; 元 tells you the sound: yuán. For example: 公园 (gōngyuán, park), 去公园 (qù gōngyuán, to go to the park).",
+   "audio": "0bbf21de60b5.mp3"
   },
   "忙": {
    "kind": "char",
@@ -681,20 +681,20 @@
   "放": {
    "kind": "char",
    "py": "fàng",
-   "text": "这个字是「放」(fàng)。意思是 to put。它有两个部分：「攵」(反文旁 fǎnwénpáng) 是意思部分，意思是 rap；「方」(fāng) 是声音部分——「方」告诉你发音：fàng。比如：「放心」(fàng xīn)、「放学」(fàngxué)。",
-   "say": "这个字是「放」。意思是 to put。它有两个部分：「反文旁」是意思部分，意思是 rap；「方」是声音部分，「方」告诉你发音。比如：「放心」、「放学」。",
-   "pyline": "zhège zì shì «fàng». yìsi shì to put. tā yǒu liǎng ge bùfen: «fǎnwénpáng» shì yìsi bùfen, yìsi shì rap; «fāng» shì shēngyīn bùfen, «fāng» gàosu nǐ fāyīn. bǐrú: «fàng xīn», «fàngxué».",
-   "en": "This character is 放 — to put. It has two parts: the 攵 radical is the meaning part — rap; 方 tells you the sound: fàng. For example: 放心 (fàng xīn, to be at ease), 放学 (fàngxué, school lets out).",
-   "audio": "d919eba3618c.mp3"
+   "text": "这个字是「放」(fàng)。意思是 to put。它有两个部分：「攵」(反文旁 fǎnwénpáng) 是意思部分，意思是 hand with a stick；「方」(fāng) 是声音部分——「方」告诉你发音：fàng。比如：「放心」(fàng xīn)、「放学」(fàngxué)。",
+   "say": "这个字是「放」。意思是 to put。它有两个部分：「反文旁」是意思部分，意思是 hand with a stick；「方」是声音部分，「方」告诉你发音。比如：「放心」、「放学」。",
+   "pyline": "zhège zì shì «fàng». yìsi shì to put. tā yǒu liǎng ge bùfen: «fǎnwénpáng» shì yìsi bùfen, yìsi shì hand with a stick; «fāng» shì shēngyīn bùfen, «fāng» gàosu nǐ fāyīn. bǐrú: «fàng xīn», «fàngxué».",
+   "en": "This character is 放 — to put. It has two parts: the 攵 radical is the meaning part — hand with a stick; 方 tells you the sound: fàng. For example: 放心 (fàng xīn, to be at ease), 放学 (fàngxué, school lets out).",
+   "audio": "8e9e7155ae54.mp3"
   },
   "新": {
    "kind": "char",
    "py": "xīn",
-   "text": "这个字是「新」(xīn)。意思是 new。它有两个部分：「斤」(jīn) 是意思部分，意思是 a catty (approximately 600 g)；「亲」(qīn) 是声音部分——发音有一点像「亲」(qīn)。比如：「新鲜」(xīnxiān)、「新闻」(xīnwén)。",
-   "say": "这个字是「新」。意思是 new。它有两个部分：「斤」是意思部分，意思是 a catty (approximately 600 g)；「亲」是声音部分，发音有一点像「亲」。比如：「新鲜」、「新闻」。",
-   "pyline": "zhège zì shì «xīn». yìsi shì new. tā yǒu liǎng ge bùfen: «jīn» shì yìsi bùfen, yìsi shì a catty (approximately 600 g); «qīn» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «qīn». bǐrú: «xīnxiān», «xīnwén».",
-   "en": "This character is 新 — new. It has two parts: 斤 is the meaning part — a catty (approximately 600 g); 亲 hints at the sound — a bit like qīn. For example: 新鲜 (xīnxiān, fresh), 新闻 (xīnwén, news).",
-   "audio": "5a5e3ff8de3b.mp3"
+   "text": "这个字是「新」(xīn)。意思是 new。它有两个部分：「斤」(jīn) 是意思部分，意思是 axe；「亲」(qīn) 是声音部分——发音有一点像「亲」(qīn)。比如：「新鲜」(xīnxiān)、「新闻」(xīnwén)。",
+   "say": "这个字是「新」。意思是 new。它有两个部分：「斤」是意思部分，意思是 axe；「亲」是声音部分，发音有一点像「亲」。比如：「新鲜」、「新闻」。",
+   "pyline": "zhège zì shì «xīn». yìsi shì new. tā yǒu liǎng ge bùfen: «jīn» shì yìsi bùfen, yìsi shì axe; «qīn» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «qīn». bǐrú: «xīnxiān», «xīnwén».",
+   "en": "This character is 新 — new. It has two parts: 斤 is the meaning part — axe; 亲 hints at the sound — a bit like qīn. For example: 新鲜 (xīnxiān, fresh), 新闻 (xīnwén, news).",
+   "audio": "c7fe34299602.mp3"
   },
   "照": {
    "kind": "char",
@@ -798,11 +798,11 @@
   "攻": {
    "kind": "char",
    "py": "gōng",
-   "text": "这个字是「攻」(gōng)。是「攻打」(gōng dǎ) 的「攻」。它有两个部分：「攵」(反文旁 fǎnwénpáng) 是意思部分，意思是 rap；「工」(gōng) 是声音部分——「工」告诉你发音：gōng。比如：「攻略」(gōnglüè)、「旅游攻略」(lǚyóu gōnglüè)。",
-   "say": "这个字是「攻」。是「攻打」的「攻」。它有两个部分：「反文旁」是意思部分，意思是 rap；「工」是声音部分，「工」告诉你发音。比如：「攻略」、「旅游攻略」。",
-   "pyline": "zhège zì shì «gōng». shì «gōng dǎ» de «gōng». tā yǒu liǎng ge bùfen: «fǎnwénpáng» shì yìsi bùfen, yìsi shì rap; «gōng» shì shēngyīn bùfen, «gōng» gàosu nǐ fāyīn. bǐrú: «gōnglüè», «lǚyóu gōnglüè».",
-   "en": "This character is 攻 — the 攻 from 攻打 (gōng dǎ, to attack). It has two parts: the 攵 radical is the meaning part — rap; 工 tells you the sound: gōng. For example: 攻略 (gōnglüè, a strategy guide), 旅游攻略 (lǚyóu gōnglüè, a travel guide).",
-   "audio": "a27433dd8cee.mp3"
+   "text": "这个字是「攻」(gōng)。是「攻打」(gōng dǎ) 的「攻」。它有两个部分：「攵」(反文旁 fǎnwénpáng) 是意思部分，意思是 hand with a stick；「工」(gōng) 是声音部分——「工」告诉你发音：gōng。比如：「攻略」(gōnglüè)、「旅游攻略」(lǚyóu gōnglüè)。",
+   "say": "这个字是「攻」。是「攻打」的「攻」。它有两个部分：「反文旁」是意思部分，意思是 hand with a stick；「工」是声音部分，「工」告诉你发音。比如：「攻略」、「旅游攻略」。",
+   "pyline": "zhège zì shì «gōng». shì «gōng dǎ» de «gōng». tā yǒu liǎng ge bùfen: «fǎnwénpáng» shì yìsi bùfen, yìsi shì hand with a stick; «gōng» shì shēngyīn bùfen, «gōng» gàosu nǐ fāyīn. bǐrú: «gōnglüè», «lǚyóu gōnglüè».",
+   "en": "This character is 攻 — the 攻 from 攻打 (gōng dǎ, to attack). It has two parts: the 攵 radical is the meaning part — hand with a stick; 工 tells you the sound: gōng. For example: 攻略 (gōnglüè, a strategy guide), 旅游攻略 (lǚyóu gōnglüè, a travel guide).",
+   "audio": "805aa29078f1.mp3"
   },
   "校": {
    "kind": "char",
@@ -1221,11 +1221,11 @@
   "神": {
    "kind": "char",
    "py": "shén",
-   "text": "这个字是「神」(shén)。是「神奇」(shénqí) 的「神」。它有两个部分：「礻」(示字旁 shìzìpáng) 是意思部分，意思是 cult；「申」(shēn) 是声音部分——「申」告诉你发音：shén。比如：「神仙」(shénxiān)。",
-   "say": "这个字是「神」。是「神奇」的「神」。它有两个部分：「示字旁」是意思部分，意思是 cult；「申」是声音部分，「申」告诉你发音。比如：「神仙」。",
-   "pyline": "zhège zì shì «shén». shì «shénqí» de «shén». tā yǒu liǎng ge bùfen: «shìzìpáng» shì yìsi bùfen, yìsi shì cult; «shēn» shì shēngyīn bùfen, «shēn» gàosu nǐ fāyīn. bǐrú: «shénxiān».",
-   "en": "This character is 神 — the 神 from 神奇 (shénqí, magical). It has two parts: the 礻 radical is the meaning part — cult; 申 tells you the sound: shén. For example: 神仙 (shénxiān, immortal).",
-   "audio": "5b838901ec8b.mp3"
+   "text": "这个字是「神」(shén)。是「神奇」(shénqí) 的「神」。它有两个部分：「礻」(示字旁 shìzìpáng) 是意思部分，意思是 altar; spirit；「申」(shēn) 是声音部分——「申」告诉你发音：shén。比如：「神仙」(shénxiān)。",
+   "say": "这个字是「神」。是「神奇」的「神」。它有两个部分：「示字旁」是意思部分，意思是 altar; spirit；「申」是声音部分，「申」告诉你发音。比如：「神仙」。",
+   "pyline": "zhège zì shì «shén». shì «shénqí» de «shén». tā yǒu liǎng ge bùfen: «shìzìpáng» shì yìsi bùfen, yìsi shì altar; spirit; «shēn» shì shēngyīn bùfen, «shēn» gàosu nǐ fāyīn. bǐrú: «shénxiān».",
+   "en": "This character is 神 — the 神 from 神奇 (shénqí, magical). It has two parts: the 礻 radical is the meaning part — altar; spirit; 申 tells you the sound: shén. For example: 神仙 (shénxiān, immortal).",
+   "audio": "7d3fd035bb05.mp3"
   },
   "箱": {
    "kind": "char",
@@ -1779,29 +1779,29 @@
   "故": {
    "kind": "char",
    "py": "gù",
-   "text": "这个字是「故」(gù)。是「故事」(gùshì) 的「故」。它有两个部分：「攵」(反文旁 fǎnwénpáng) 是意思部分，意思是 rap；「古」(gǔ) 是声音部分——「古」告诉你发音：gù。",
-   "say": "这个字是「故」。是「故事」的「故」。它有两个部分：「反文旁」是意思部分，意思是 rap；「古」是声音部分，「古」告诉你发音。",
-   "pyline": "zhège zì shì «gù». shì «gùshì» de «gù». tā yǒu liǎng ge bùfen: «fǎnwénpáng» shì yìsi bùfen, yìsi shì rap; «gǔ» shì shēngyīn bùfen, «gǔ» gàosu nǐ fāyīn.",
-   "en": "This character is 故 — the 故 from 故事 (gùshì, story). It has two parts: the 攵 radical is the meaning part — rap; 古 tells you the sound: gù.",
-   "audio": "2c1fdfe44326.mp3"
+   "text": "这个字是「故」(gù)。是「故事」(gùshì) 的「故」。它有两个部分：「攵」(反文旁 fǎnwénpáng) 是意思部分，意思是 hand with a stick；「古」(gǔ) 是声音部分——「古」告诉你发音：gù。",
+   "say": "这个字是「故」。是「故事」的「故」。它有两个部分：「反文旁」是意思部分，意思是 hand with a stick；「古」是声音部分，「古」告诉你发音。",
+   "pyline": "zhège zì shì «gù». shì «gùshì» de «gù». tā yǒu liǎng ge bùfen: «fǎnwénpáng» shì yìsi bùfen, yìsi shì hand with a stick; «gǔ» shì shēngyīn bùfen, «gǔ» gàosu nǐ fāyīn.",
+   "en": "This character is 故 — the 故 from 故事 (gùshì, story). It has two parts: the 攵 radical is the meaning part — hand with a stick; 古 tells you the sound: gù.",
+   "audio": "68624e0d405b.mp3"
   },
   "教": {
    "kind": "char",
    "py": "jiāo",
-   "text": "这个字是「教」(jiāo)。是「教室」(jiàoshì) 的「教」。它有两个部分：「攵」(反文旁 fǎnwénpáng) 是意思部分，意思是 rap；「孝」(xiào) 是声音部分——发音有一点像「孝」(xiào)。",
-   "say": "这个字是「教」。是「教室」的「教」。它有两个部分：「反文旁」是意思部分，意思是 rap；「孝」是声音部分，发音有一点像「孝」。",
-   "pyline": "zhège zì shì «jiāo». shì «jiàoshì» de «jiāo». tā yǒu liǎng ge bùfen: «fǎnwénpáng» shì yìsi bùfen, yìsi shì rap; «xiào» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «xiào».",
-   "en": "This character is 教 — the 教 from 教室 (jiàoshì, classroom). It has two parts: the 攵 radical is the meaning part — rap; 孝 hints at the sound — a bit like xiào.",
-   "audio": "81e10c958601.mp3"
+   "text": "这个字是「教」(jiāo)。是「教室」(jiàoshì) 的「教」。它有两个部分：「攵」(反文旁 fǎnwénpáng) 是意思部分，意思是 hand with a stick；「孝」(xiào) 是声音部分——发音有一点像「孝」(xiào)。",
+   "say": "这个字是「教」。是「教室」的「教」。它有两个部分：「反文旁」是意思部分，意思是 hand with a stick；「孝」是声音部分，发音有一点像「孝」。",
+   "pyline": "zhège zì shì «jiāo». shì «jiàoshì» de «jiāo». tā yǒu liǎng ge bùfen: «fǎnwénpáng» shì yìsi bùfen, yìsi shì hand with a stick; «xiào» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «xiào».",
+   "en": "This character is 教 — the 教 from 教室 (jiàoshì, classroom). It has two parts: the 攵 radical is the meaning part — hand with a stick; 孝 hints at the sound — a bit like xiào.",
+   "audio": "57949f546515.mp3"
   },
   "斧": {
    "kind": "char",
    "py": "fǔ",
-   "text": "这个字是「斧」(fǔ)。是「斧头」(fǔtou) 的「斧」。它有两个部分：「斤」(jīn) 是意思部分，意思是 a catty (approximately 600 g)；「父」(fù) 是声音部分——「父」告诉你发音：fǔ。",
-   "say": "这个字是「斧」。是「斧头」的「斧」。它有两个部分：「斤」是意思部分，意思是 a catty (approximately 600 g)；「父」是声音部分，「父」告诉你发音。",
-   "pyline": "zhège zì shì «fǔ». shì «fǔtou» de «fǔ». tā yǒu liǎng ge bùfen: «jīn» shì yìsi bùfen, yìsi shì a catty (approximately 600 g); «fù» shì shēngyīn bùfen, «fù» gàosu nǐ fāyīn.",
-   "en": "This character is 斧 — the 斧 from 斧头 (fǔtou, axe). It has two parts: 斤 is the meaning part — a catty (approximately 600 g); 父 tells you the sound: fǔ.",
-   "audio": "32c620502899.mp3"
+   "text": "这个字是「斧」(fǔ)。是「斧头」(fǔtou) 的「斧」。它有两个部分：「斤」(jīn) 是意思部分，意思是 axe；「父」(fù) 是声音部分——「父」告诉你发音：fǔ。",
+   "say": "这个字是「斧」。是「斧头」的「斧」。它有两个部分：「斤」是意思部分，意思是 axe；「父」是声音部分，「父」告诉你发音。",
+   "pyline": "zhège zì shì «fǔ». shì «fǔtou» de «fǔ». tā yǒu liǎng ge bùfen: «jīn» shì yìsi bùfen, yìsi shì axe; «fù» shì shēngyīn bùfen, «fù» gàosu nǐ fāyīn.",
+   "en": "This character is 斧 — the 斧 from 斧头 (fǔtou, axe). It has two parts: 斤 is the meaning part — axe; 父 tells you the sound: fǔ.",
+   "audio": "98d093d4796e.mp3"
   },
   "望": {
    "kind": "char",
@@ -2013,11 +2013,11 @@
   "理": {
    "kind": "char",
    "py": "lǐ",
-   "text": "这个字是「理」(lǐ)。是「经理」(jīnglǐ) 的「理」。它有两个部分：「王」(wáng) 是意思部分，意思是 king；「里」(lǐ) 是声音部分——「里」告诉你发音：lǐ。",
-   "say": "这个字是「理」。是「经理」的「理」。它有两个部分：「王」是意思部分，意思是 king；「里」是声音部分，「里」告诉你发音。",
-   "pyline": "zhège zì shì «lǐ». shì «jīnglǐ» de «lǐ». tā yǒu liǎng ge bùfen: «wáng» shì yìsi bùfen, yìsi shì king; «lǐ» shì shēngyīn bùfen, «lǐ» gàosu nǐ fāyīn.",
-   "en": "This character is 理 — the 理 from 经理 (jīnglǐ, manager). It has two parts: 王 is the meaning part — king; 里 tells you the sound: lǐ.",
-   "audio": "f64b007ccffc.mp3"
+   "text": "这个字是「理」(lǐ)。是「经理」(jīnglǐ) 的「理」。它有两个部分：「王」(wáng) 是意思部分，意思是 jade；「里」(lǐ) 是声音部分——「里」告诉你发音：lǐ。",
+   "say": "这个字是「理」。是「经理」的「理」。它有两个部分：「王」是意思部分，意思是 jade；「里」是声音部分，「里」告诉你发音。",
+   "pyline": "zhège zì shì «lǐ». shì «jīnglǐ» de «lǐ». tā yǒu liǎng ge bùfen: «wáng» shì yìsi bùfen, yìsi shì jade; «lǐ» shì shēngyīn bùfen, «lǐ» gàosu nǐ fāyīn.",
+   "en": "This character is 理 — the 理 from 经理 (jīnglǐ, manager). It has two parts: 王 is the meaning part — jade; 里 tells you the sound: lǐ.",
+   "audio": "1b6e5d7b90ff.mp3"
   },
   "瓶": {
    "kind": "char",
@@ -2202,11 +2202,11 @@
   "胎": {
    "kind": "char",
    "py": "tāi",
-   "text": "这个字是「胎」(tāi)。是「备胎」(bèitāi) 的「胎」。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 moon；「台」(tái) 是声音部分——「台」告诉你发音：tāi。",
-   "say": "这个字是「胎」。是「备胎」的「胎」。它有两个部分：「月字旁」是意思部分，意思是 moon；「台」是声音部分，「台」告诉你发音。",
-   "pyline": "zhège zì shì «tāi». shì «bèitāi» de «tāi». tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì moon; «tái» shì shēngyīn bùfen, «tái» gàosu nǐ fāyīn.",
-   "en": "This character is 胎 — the 胎 from 备胎 (bèitāi, spare tyre). It has two parts: the 月 radical is the meaning part — moon; 台 tells you the sound: tāi.",
-   "audio": "6cf5ea2700c5.mp3"
+   "text": "这个字是「胎」(tāi)。是「备胎」(bèitāi) 的「胎」。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 flesh (月 as 肉)；「台」(tái) 是声音部分——「台」告诉你发音：tāi。",
+   "say": "这个字是「胎」。是「备胎」的「胎」。它有两个部分：「月字旁」是意思部分，意思是 flesh (月 as 肉)；「台」是声音部分，「台」告诉你发音。",
+   "pyline": "zhège zì shì «tāi». shì «bèitāi» de «tāi». tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì flesh (月 as 肉); «tái» shì shēngyīn bùfen, «tái» gàosu nǐ fāyīn.",
+   "en": "This character is 胎 — the 胎 from 备胎 (bèitāi, spare tyre). It has two parts: the 月 radical is the meaning part — flesh (月 as 肉); 台 tells you the sound: tāi.",
+   "audio": "d431265163cd.mp3"
   },
   "胡": {
    "kind": "char",
@@ -2220,11 +2220,11 @@
   "腿": {
    "kind": "char",
    "py": "tuǐ",
-   "text": "这个字是「腿」(tuǐ)。意思是 leg。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 moon；「退」(tuì) 是声音部分——「退」告诉你发音：tuǐ。",
-   "say": "这个字是「腿」。意思是 leg。它有两个部分：「月字旁」是意思部分，意思是 moon；「退」是声音部分，「退」告诉你发音。",
-   "pyline": "zhège zì shì «tuǐ». yìsi shì leg. tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì moon; «tuì» shì shēngyīn bùfen, «tuì» gàosu nǐ fāyīn.",
-   "en": "This character is 腿 — leg. It has two parts: the 月 radical is the meaning part — moon; 退 tells you the sound: tuǐ.",
-   "audio": "c8d410dd91d2.mp3"
+   "text": "这个字是「腿」(tuǐ)。意思是 leg。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 flesh (月 as 肉)；「退」(tuì) 是声音部分——「退」告诉你发音：tuǐ。",
+   "say": "这个字是「腿」。意思是 leg。它有两个部分：「月字旁」是意思部分，意思是 flesh (月 as 肉)；「退」是声音部分，「退」告诉你发音。",
+   "pyline": "zhège zì shì «tuǐ». yìsi shì leg. tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì flesh (月 as 肉); «tuì» shì shēngyīn bùfen, «tuì» gàosu nǐ fāyīn.",
+   "en": "This character is 腿 — leg. It has two parts: the 月 radical is the meaning part — flesh (月 as 肉); 退 tells you the sound: tuǐ.",
+   "audio": "fc061c2b790f.mp3"
   },
   "英": {
    "kind": "char",
