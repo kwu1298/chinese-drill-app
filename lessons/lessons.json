@@ -2202,11 +2202,11 @@
   "胎": {
    "kind": "char",
    "py": "tāi",
-   "text": "这个字是「胎」(tāi)。是「备胎」(bèitāi) 的「胎」。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 flesh (月 as 肉)；「台」(tái) 是声音部分——「台」告诉你发音：tāi。",
-   "say": "这个字是「胎」。是「备胎」的「胎」。它有两个部分：「月字旁」是意思部分，意思是 flesh (月 as 肉)；「台」是声音部分，「台」告诉你发音。",
-   "pyline": "zhège zì shì «tāi». shì «bèitāi» de «tāi». tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì flesh (月 as 肉); «tái» shì shēngyīn bùfen, «tái» gàosu nǐ fāyīn.",
-   "en": "This character is 胎 — the 胎 from 备胎 (bèitāi, spare tyre). It has two parts: the 月 radical is the meaning part — flesh (月 as 肉); 台 tells you the sound: tāi.",
-   "audio": "d431265163cd.mp3"
+   "text": "这个字是「胎」(tāi)。是「备胎」(bèitāi) 的「胎」。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 flesh；「台」(tái) 是声音部分——「台」告诉你发音：tāi。",
+   "say": "这个字是「胎」。是「备胎」的「胎」。它有两个部分：「月字旁」是意思部分，意思是 flesh；「台」是声音部分，「台」告诉你发音。",
+   "pyline": "zhège zì shì «tāi». shì «bèitāi» de «tāi». tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì flesh; «tái» shì shēngyīn bùfen, «tái» gàosu nǐ fāyīn.",
+   "en": "This character is 胎 — the 胎 from 备胎 (bèitāi, spare tyre). It has two parts: the 月 radical is the meaning part — flesh; 台 tells you the sound: tāi.",
+   "audio": "33e119df1ed1.mp3"
   },
   "胡": {
    "kind": "char",
@@ -2220,11 +2220,11 @@
   "腿": {
    "kind": "char",
    "py": "tuǐ",
-   "text": "这个字是「腿」(tuǐ)。意思是 leg。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 flesh (月 as 肉)；「退」(tuì) 是声音部分——「退」告诉你发音：tuǐ。",
-   "say": "这个字是「腿」。意思是 leg。它有两个部分：「月字旁」是意思部分，意思是 flesh (月 as 肉)；「退」是声音部分，「退」告诉你发音。",
-   "pyline": "zhège zì shì «tuǐ». yìsi shì leg. tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì flesh (月 as 肉); «tuì» shì shēngyīn bùfen, «tuì» gàosu nǐ fāyīn.",
-   "en": "This character is 腿 — leg. It has two parts: the 月 radical is the meaning part — flesh (月 as 肉); 退 tells you the sound: tuǐ.",
-   "audio": "fc061c2b790f.mp3"
+   "text": "这个字是「腿」(tuǐ)。意思是 leg。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 flesh；「退」(tuì) 是声音部分——「退」告诉你发音：tuǐ。",
+   "say": "这个字是「腿」。意思是 leg。它有两个部分：「月字旁」是意思部分，意思是 flesh；「退」是声音部分，「退」告诉你发音。",
+   "pyline": "zhège zì shì «tuǐ». yìsi shì leg. tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì flesh; «tuì» shì shēngyīn bùfen, «tuì» gàosu nǐ fāyīn.",
+   "en": "This character is 腿 — leg. It has two parts: the 月 radical is the meaning part — flesh; 退 tells you the sound: tuǐ.",
+   "audio": "863cba16adcc.mp3"
   },
   "英": {
    "kind": "char",
