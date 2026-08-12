@@ -184,6 +184,84 @@ const SRS = {
   // they are just never handed out as isolated multiple-choice.
   drillable(cards) { return cards.filter(c => c.deliver !== 'table'); },
 
+  // hz -> {py, en}, read back off the deck so a word can be shown with its
+  // reading and meaning without every card carrying copies. The gloss rides
+  // the py2hz prompt ("jīnglǐ — manager"): hz2en cards were retired for
+  // vocab on 2026-08-03 (only 成语 keep them). Mirrors drill.py word_index.
+  wordIndex(cards) {
+    const out = {};
+    for (const c of cards) {
+      const hz = c.dir === 'py2hz' ? c.answer : c.prompt;
+      const at = out[hz] || (out[hz] = {});
+      if (c.dir === 'hz2py' && !at.py) at.py = c.answer;
+      else if (c.dir === 'hz2en' && !at.en) at.en = c.answer;
+      else if (c.dir === 'py2hz' && !at.en && c.prompt.includes(' — ')) {
+        at.en = c.prompt.slice(c.prompt.indexOf(' — ') + 3);
+      }
+    }
+    return out;
+  },
+
+  // folded reading -> [hz, ...]: every word a typed answer could have been.
+  // Built from the accept lists, which the deck stores already normalised
+  // -- the same strings grading compares against, so "what word did he
+  // actually type" uses the same folding as "was it right". Sentence cards
+  // are skipped: their prompt is a whole 课文 line, not a word.
+  pinyinIndex(cards) {
+    const out = {};
+    for (const c of cards) {
+      if (c.dir !== 'hz2py' || c.cat === 'sentences') continue;
+      for (const a of (c.accept || [])) {
+        const at = out[a] || (out[a] = []);
+        if (at.indexOf(c.prompt) === -1) at.push(c.prompt);
+      }
+    }
+    return out;
+  },
+
+  // The diagnosis behind a wrong typed answer: which REAL word he typed,
+  // when it is one -- his misses are nearly always family members, and
+  // 「you typed yǐjīng — that's 已经 (already)」 names the actual confusion
+  // where 「wrong」 names nothing. Returns {hz, py, en} or null; null means
+  // the caller degrades to the plain wrong/right line. A hit among the
+  // card's own `near` list wins (the family IS the likely confusion);
+  // the card's own word is never a diagnosis (that typed answer graded
+  // correct and never reaches here).
+  diagnose(card, typed, pyIdx, words) {
+    const n = SRS.normalizePinyin(typed);
+    if (!n || (card.accept || []).indexOf(n) !== -1) return null;
+    const hits = pyIdx[n] || [];
+    const mine = card.dir === 'py2hz' ? card.answer : card.prompt;
+    const near = new Set(card.near || []);
+    const pick = hits.find(h => near.has(h)) || hits.find(h => h !== mine);
+    if (!pick) return null;
+    const info = (words || {})[pick] || {};
+    return { hz: pick, py: info.py || '', en: info.en || '' };
+  },
+
+  // "The tell": the one feature that separates this word from the family
+  // it keeps losing to, derived -- never invented -- from the stamped
+  // anatomy. Only when the confusables really share a character, exactly
+  // one character of this word appears in none of them, and that
+  // character's meaning-part has a gloss; anything less would be mush,
+  // and mush is skipped rather than padded. Returns null, or the parts
+  // the strip sets as 「the tell: 理 = king — only manager has it」:
+  // {hz, py, semEn, who}. Parts, not a sentence, so the renderer can
+  // keep the colour law (semEn is a meaning-part: celadon).
+  tellFor(card, words) {
+    const mine = card.dir === 'py2hz' ? card.answer : card.prompt;
+    const fam = (card.near || [])
+        .filter(n => [...n].some(ch => mine.includes(ch)));
+    if (!fam.length) return null;
+    const uniq = [...mine].filter(ch => !fam.some(n => n.includes(ch)));
+    if (uniq.length !== 1) return null;
+    const a = (card.anatomy || []).find(x => x.hz === uniq[0]);
+    if (!a || !a.semEn) return null;
+    const en = ((words || {})[mine] || {}).en || '';
+    const who = en.split(';')[0].split(',')[0].trim() || mine;
+    return { hz: a.hz, py: a.py || '', semEn: a.semEn, who: who };
+  },
+
   // Mirrors drill.py's KICKERS -- the ways one item can be tested.
   KICKERS: {
     hz2py: 'TYPE THE READING',

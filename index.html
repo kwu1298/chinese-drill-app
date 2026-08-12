@@ -28,8 +28,12 @@
     --dim:#5F686C;
     --rule:#2E3639;
     --cinnabar:#C8402F;   /* 朱砂 — wrong, and the closing seal */
-    --celadon:#6FA88C;    /* 青瓷 — right */
+    --celadon:#6FA88C;    /* 青瓷 — right, and the meaning-part */
     --amber:#C9A227;
+    --gold:#C9A36A;       /* the sound-part — V8's colour law: meaning is
+                             celadon, sound is amber, everywhere components
+                             appear. Warmer than --amber on purpose; it has
+                             to read beside celadon at hanzi sizes. */
 
     /* 楷体 is the face Chinese primers are set in -- brush-derived, and the
        one you learn characters from. Hero only: it is weak small. */
@@ -119,29 +123,138 @@
             margin-right:auto;text-align:center}
   #d-lesson-btns{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
 
-  /* The leech panel: the MISSED n× lead, the hand-written note, 阿姨
-     (āyí)'s ▶(s), then one row per confusable -- 「经理 (jīnglǐ) —
-     manager」, the missed word set in celadon. These classes had NO rules
-     at all: the rows rendered as three bare inline spans with no spacing
-     and no hierarchy, 「经理jīnglǐ」, which for someone who cannot read
-     bare hanzi contrasts nothing. */
+  /* The leech panel is now a wrapper: the MISSED n× lead keeps its place,
+     and below it sits the same miss desk an ordinary wrong answer gets.
+     (The old hand-rolled why/rows/script innards live in the desk now.) */
   .leech{margin-top:14px;text-align:left;background:var(--stone);
          border:1px solid var(--rule);border-radius:2px;padding:14px 16px}
   .leech .lead{font:11px var(--mono);letter-spacing:.1em;
                color:var(--cinnabar);margin-bottom:8px}
-  .leech .why{font-size:13px;line-height:1.55;color:var(--muted);
-              margin-bottom:10px}
-  .leech .lessons{display:flex;gap:6px;margin:0 0 8px;flex-wrap:wrap}
-  .leech .lessons button{width:auto;border:none;background:transparent;
-              color:var(--celadon);font-size:15px;padding:4px 10px;margin:0}
-  .leech .script{font-size:13px;line-height:1.6;color:var(--muted);
-              margin-bottom:10px}
-  .leech .row{display:flex;align-items:baseline;gap:8px;padding:5px 0;
-              flex-wrap:wrap}
-  .leech .row .hz{font-family:var(--hanzi);font-size:22px;line-height:1.2}
-  .leech .row .py{font:15px var(--mono);color:var(--paper)}
-  .leech .row .en{font-size:14px;color:var(--muted)}
-  .leech .row.this .hz,.leech .row.this .py{color:var(--celadon)}
+
+  /* ---- The miss desk. Final composition of the design review (the
+     authoritative visual spec is mockups/winner.html; miss-screen.html
+     holds the ten variants it was distilled from). Four rows, nothing
+     else: V3's diagnosis banner; the word-assembly line ("why does
+     manager have a silk and a jade?"); the anatomy card -- one block
+     per character, stacked at FULL width (side-by-side columns wrapped
+     the scripts into towers while card width sat empty), each block
+     its colored arithmetic over 阿姨 (āyí)'s script TRILINEAR (hanzi,
+     full pinyin in amber, English muted) with the character's own
+     small etym line, never a mixed zone footer; and the family,
+     demoted to a one-line strip with the tell right-aligned at its
+     end. V8's colour LAW everywhere components appear: meaning-part
+     celadon, sound-part amber. Everything left-aligned; the colored
+     arithmetic is the lone bold element. On desktop the miss state is
+     a SLIDE, not a page: the app breaks out of its reading column to
+     a bounded min(92vw, 84rem), the pre-grade furniture steps aside,
+     and the whole state fits the viewport with ZERO scroll -- fitDesk
+     folds the English lines then hides etym when the budget is tight,
+     and past that the overflow CLIPS, because a busted budget must be
+     seen, never smuggled behind a scrollbar. The :has() is
+     Chrome-fine; without it the desk stays in the narrow column,
+     which still reads. ---- */
+  .desk{margin-top:12px;text-align:left}
+  .desk .diag{background:var(--stone);border:1px solid var(--celadon);
+       border-radius:2px;padding:11px 16px;font-size:16px;line-height:1.5}
+  .desk .diag .you{color:var(--cinnabar);font-family:var(--mono)}
+  .desk .diag .hz{font-family:var(--hanzi);font-size:19px}
+  .desk .diag b{font-weight:500}
+  .desk .diag .note{margin-top:5px;font-size:12.5px;line-height:1.45;
+       color:var(--muted)}
+  .sem{color:var(--celadon)} .phon{color:var(--gold)}
+  .desk .asm{font-size:17px;line-height:1.55;color:var(--paper);
+       margin-top:12px}
+  .desk .asm .hz{font-family:var(--hanzi);font-size:21px}
+  .desk .asm .r{font:14px var(--mono);color:var(--muted)}
+  .desk .asm .op{color:var(--dim)}
+  .desk .asm .en{color:var(--muted)}
+  /* the anatomy card: one full-width block per character, accent-edged
+     in that character's colour turn (celadon, then amber) */
+  .desk .zone{background:var(--ink);border:1px solid var(--rule);
+       border-radius:2px;padding:12px 18px;margin-top:12px}
+  .desk .cb{border-left:3px solid var(--celadon);padding-left:16px;
+       margin:10px 0;display:flex;flex-direction:column;gap:5px}
+  .desk .cb.alt{border-left-color:var(--gold)}
+  /* the signature element -- the one place the screen is allowed to be
+     bold. Never wraps: a broken formula is not a formula. */
+  .desk .arith{font-family:var(--hanzi);text-align:left;line-height:1.3;
+       margin:0;white-space:nowrap;font-size:clamp(24px,2.4vw,34px)}
+  .desk .arith .op{color:var(--dim);font:400 .55em var(--sans)}
+  .desk .arith .r{font:400 .42em var(--mono);color:var(--muted)}
+  .desk .arith button{width:auto;border:none;background:transparent;
+       color:var(--celadon);font-size:.6em;padding:0 0 0 12px;margin:0;
+       vertical-align:middle}
+  .desk .l1{font-family:var(--hanzi);font-size:20px;line-height:1.5;
+       color:var(--paper)}
+  .desk .l1 button{width:auto;border:none;background:transparent;
+       color:var(--celadon);font-size:15px;padding:0 8px 0 0;margin:0}
+  .desk .l2{font:15px var(--mono);line-height:1.5;color:var(--gold)}
+  .desk .l3{font-size:14.5px;line-height:1.45;color:var(--muted)}
+  /* the collapse order when the slide budget is tight (fitDesk): the
+     English line folds behind this toggle first, then etym hides.
+     Hanzi and pinyin never fold, and nothing ever scrolls. */
+  .desk details.l3fold summary{cursor:pointer;color:var(--dim);
+       font-size:11px}
+  .desk .cet{font-size:13px;line-height:1.45;color:var(--dim)}
+  /* the family, demoted: one inline item per word, missed word celadon,
+     the tell right-aligned at the strip's end */
+  .desk .famstrip{display:flex;gap:30px;align-items:baseline;flex-wrap:wrap;
+       font-size:14.5px;color:var(--muted);margin-top:12px;
+       padding:2px 2px 0}
+  .desk .famstrip .item .hz{font-family:var(--hanzi);font-size:18px}
+  .desk .famstrip .item.this{color:var(--celadon)}
+  .desk .famstrip .tellitem{margin-left:auto}
+  .desk .famstrip .tellitem b{color:var(--paper);font-weight:500}
+  .desk .famstrip .tellitem .hz{font-family:var(--hanzi)}
+  /* on a ✓ the desk folds away -- the compact top half IS the screen */
+  details.desk summary{cursor:pointer;color:var(--celadon);font-size:13px}
+  /* THE SLIDE LAW (desktop): a miss fits the viewport, zero scroll. The
+     page column widens to the bounded card, the pre-grade furniture
+     (squares, input, options, the big reading -- all restated by the
+     banner) steps aside, the anatomy card takes the flexible row and
+     CLIPS anything past it. The phone keeps its scrolling screen. */
+  @media (min-width:960px){
+    body:has(.desk.full){max-width:min(92vw,84rem);height:100vh;
+         padding-top:20px;padding-bottom:18px}
+    body:has(.desk.full) #drill{overflow:hidden}
+    /* !important because render() sets inline display on the teach line,
+       the ▶ row and the sub -- pre-grade furniture the desk restates */
+    body:has(.desk.full) .kicker,
+    body:has(.desk.full) .tian,
+    body:has(.desk.full) #d-sub,
+    body:has(.desk.full) #d-teach,
+    body:has(.desk.full) #d-art,
+    body:has(.desk.full) #d-lesson,
+    body:has(.desk.full) #opts>.typed,
+    body:has(.desk.full) #opts>.opt,
+    body:has(.desk.full) #answer>.a{display:none !important}
+    body:has(.desk.full) #answer{margin-top:0;min-height:0}
+    body:has(.desk.full) #answer #next-btn{margin:12px auto 0;
+         padding:8px 44px}
+    body:has(.desk.full) .leech{margin-top:0}
+    /* whichever container holds the desk stretches; the desk fills it,
+       and the anatomy card is the one flexible row */
+    #answer:has(.desk.full){flex:1;display:flex;flex-direction:column;
+         min-height:0}
+    #opts:has(.desk.full){flex:1;min-height:0;margin-top:0}
+    .leech:has(.desk.full){flex:1;min-height:0;display:flex;
+         flex-direction:column;overflow:hidden}
+    #answer .desk.full,.leech .desk.full{flex:1;min-height:0;
+         display:flex;flex-direction:column;margin-top:0}
+    .desk.full .zone{flex:1;min-height:0;overflow:hidden;
+         display:flex;flex-direction:column;justify-content:space-evenly}
+    .desk.full .cb{flex:1;justify-content:center;margin:4px 0}
+    /* one line, and the whole line: nowrap, tightened until the tell's
+       last word fits -- a clipped tell would be a mistold tell */
+    .desk.full .famstrip{flex-wrap:nowrap;white-space:nowrap;
+         overflow:hidden;font-size:13.5px;gap:20px}
+    .desk.full .famstrip .item .hz{font-size:16px}
+    /* if the line still cannot hold everything, the family entries
+       ellipsize one by one; the tell never gives up a word */
+    .desk.full .famstrip .item{min-width:0;overflow:hidden;
+         text-overflow:ellipsis}
+    .desk.full .famstrip .tellitem{flex-shrink:0;overflow:visible}
+  }
 
   .opts{display:flex;flex-direction:column;gap:9px;margin-top:22px}
   .opt{display:flex;align-items:center;gap:15px;background:var(--stone);
@@ -415,7 +528,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = '5dab86f395';   // deploy-webapp.sh stamps this
+const BUILD = '4e3bd80cd8';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -823,6 +936,7 @@ function render() {
   stopLesson();
   const c = queue[idx];
   locked = false;
+  advanceHeld = false;
   $('d-kicker').textContent = SRS.KICKERS[c.dir] || 'CHOOSE THE ANSWER';
 
   // Teach at first sight, exactly as the Mac window does (drill.py's
@@ -987,92 +1101,332 @@ function renderTyped(box, c) {
   inp.focus();
 }
 
-// hz -> {py, en}, read back off the deck so a confusable can be shown with
-// its reading and meaning without every card carrying a copy of them. The
-// gloss rides the py2hz prompt ("jīnglǐ — manager"): hz2en cards were
-// retired for vocab on 2026-08-03 (only 成语 keep them), and reading the
-// gloss from them alone left every vocab row meaningless -- 「经理jīnglǐ」
-// with nothing saying what a manager is. Mirrors drill.py's word_index.
+// hz -> {py, en} and folded-pinyin -> words: both live in srs.js now
+// (SRS.wordIndex / SRS.pinyinIndex) so test-phone.js can hold the desk's
+// lookups to the deck without driving a page. Cached per deck load.
 let wordIndex = null;
 function indexWords() {
-  if (wordIndex) return wordIndex;
-  wordIndex = {};
-  for (const c of cards) {
-    const hz = c.dir === 'py2hz' ? c.answer : c.prompt;
-    const at = wordIndex[hz] || (wordIndex[hz] = {});
-    if (c.dir === 'hz2py' && !at.py) at.py = c.answer;
-    else if (c.dir === 'hz2en' && !at.en) at.en = c.answer;
-    else if (c.dir === 'py2hz' && !at.en && c.prompt.includes(' — ')) {
-      at.en = c.prompt.slice(c.prompt.indexOf(' — ') + 3);
-    }
-  }
-  return wordIndex;
+  return wordIndex || (wordIndex = SRS.wordIndex(cards));
+}
+let pyIndexCache = null;
+function pinyinIdx() {
+  return pyIndexCache || (pyIndexCache = SRS.pinyinIndex(cards));
 }
 
-// A card missed LEECH_AT times has earned an explanation rather than another
-// go at the same question. Show it beside the things it is actually losing
-// to, and wait for a tap: the auto-advance that works for an ordinary miss is
-// exactly what stops this one from ever being looked at.
-function leechPanel(c, onDone) {
-  const words = indexWords();
-  const mine = c.dir === 'py2hz' ? c.answer : c.prompt;
-  const near = c.near && c.near.length
-      ? c.near : (c.options || []).filter(o => o !== c.answer);
+/* ------------------------------ the miss desk ----------------------------
+   The winner composition from mockups/miss-screen.html, built post-grade
+   only -- nothing here can exist on screen before the answer is committed.
+   Diagnosis banner on top (what he typed, which real word that was, the
+   answer with gloss); anatomy zone left (the word reassembled from its
+   characters, then per character: colored component arithmetic, 阿姨
+   (āyí)'s script trilinear, the character's own small etym line); family
+   table right with "the tell" when it can be derived. Everything reads
+   off stamped fields and the lessons table -- no prose parsing. */
+const elx = (tag, cls, text) => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+};
+const mineOf = c =>
+    (c.dir === 'py2hz' ? c.answer : c.prompt).replace(/[【】]/g, '');
 
-  const box = document.createElement('div');
-  box.className = 'leech';
-  const lead = document.createElement('div');
-  lead.className = 'lead';
-  lead.textContent = 'MISSED ' + SRS.entryFor(state, c.id).lapses +
-                     ' TIMES — LOOK AT IT PROPERLY';
-  box.appendChild(lead);
-  if (c.hint) {
-    const why = document.createElement('div');
-    why.className = 'why';
-    why.textContent = c.hint;
-    box.appendChild(why);
+// The hand-written class note, split back off the hint: build-deck joins
+// [note-or-gloss, breakdown, family-bits] with " — ", so everything before
+// " — breakdown" is the note. No breakdown, or an unexpected shape, claims
+// nothing -- the note is a bonus, never a guess.
+function noteOf(c) {
+  const h = c.hint || '';
+  if (!h || !c.breakdown) return '';
+  if (h === c.breakdown) return '';
+  const i = h.indexOf(' — ' + c.breakdown);
+  return i > 0 ? h.slice(0, i) : '';
+}
+
+function diagBanner(c, o, words) {
+  const mine = mineOf(c);
+  const my = words[mine] || {};
+  const d = elx('div', 'diag');
+  if (o.typed != null) {
+    // Fold what he typed with the SAME normalisation grading used, and
+    // name the real word it was when it was one -- his wrong answers are
+    // nearly always family members. No match degrades to the plain line.
+    const hit = SRS.diagnose(c, o.typed, pinyinIdx(), words);
+    d.append('You typed ');
+    d.appendChild(elx('span', 'you', hit && hit.py ? hit.py : o.typed));
+    if (hit) {
+      d.append(' — that’s ');
+      d.appendChild(elx('span', 'hz', hit.hz));
+      if (hit.en) d.append(' (' + hit.en + ')');
+    }
+    d.append('. ');
+  } else if (o.picked != null) {
+    const p = words[o.picked];
+    d.append('You picked ');
+    d.appendChild(elx('span', 'you', o.picked));
+    if (p && (p.py || p.en)) {
+      d.append(' (' + [p.py, p.en].filter(Boolean).join(' — ') + ')');
+    }
+    d.append('. ');
   }
-  // 阿姨 (āyí)'s ▶(s), inside the panel: the grade is committed, so the
-  // leak rule is satisfied, and a card missed this many times is exactly
-  // the one whose characters deserve their spoken explanation. Same
-  // buttons as under the square; the tapped script sets inside the panel
-  // so it is read where the eyes already are.
-  if (lessonEntries.length) {
-    const lrow = document.createElement('div');
-    lrow.className = 'lessons';
-    buildLessonButtons(lrow);
-    box.appendChild(lrow);
-    const scr = document.createElement('div');
-    scr.className = 'script';
-    scr.style.display = 'none';
-    box.appendChild(scr);
-    lessonScriptTarget = scr;
+  d.append('The answer: ');
+  const b = elx('b');
+  if (SRS.isTyped(c)) {
+    b.append(c.answer + ' — ');
+    b.appendChild(elx('span', 'hz', mine));
+    d.appendChild(b);
+    if (my.en) d.append(' (' + my.en + ')');
+  } else if (c.dir === 'py2hz') {
+    b.appendChild(elx('span', 'hz', mine));
+    if (my.py) b.append(' (' + my.py + ')');
+    d.appendChild(b);
+    if (my.en) d.append(' — ' + my.en);
+  } else {
+    b.append(c.answer);
+    d.appendChild(b);
   }
-  // Each confusable reads 「经理 (jīnglǐ) — manager」: the reading in
-  // parens so it does not run into the word, the gloss after a dash --
-  // a contrast between words whose meanings are missing contrasts nothing.
-  const row = (hz, isMine) => {
-    const d = document.createElement('div');
-    d.className = 'row' + (isMine ? ' this' : '');
-    const info = words[hz] || {};
-    const bits = [['hz', hz]];
-    if (info.py) bits.push(['py', '(' + info.py + ')']);
-    if (info.en) bits.push(['en', '— ' + info.en]);
-    bits.forEach(([cls, text]) => {
-      const s = document.createElement('span');
-      s.className = cls;
-      s.textContent = text;
-      d.appendChild(s);
-    });
-    return d;
+  d.append('.');
+  const n = noteOf(c);
+  if (n && n !== my.en) d.appendChild(elx('div', 'note', n));
+  return d;
+}
+
+// One character's colored arithmetic: meaning-part celadon, sound-part
+// amber, every slot carrying its reading -- 王 (wáng) + 里 (lǐ) = 理 (lǐ).
+// An undrawable phonetic (经's is 𢀖) keeps a pinyin-only amber slot; a
+// hint-fit reading is marked ≈, because it suggests and must not state.
+function arithLine(r) {
+  const a = elx('div', 'arith');
+  const slot = (cls, glyph, reading) => {
+    const s = elx('span', cls, glyph);
+    if (reading) s.appendChild(elx('span', 'r', ' (' + reading + ')'));
+    a.appendChild(s);
   };
-  box.appendChild(row(mine, true));
-  near.slice(0, 3).forEach(n => box.appendChild(row(n, false)));
+  if (r.sem) slot('sem', r.sem, r.semPy || '');
+  if (r.sem && r.phonPy) a.appendChild(elx('span', 'op', ' + '));
+  if (r.phonPy) {
+    const mark = r.fit === 'exact' ? '' : '≈ ';
+    if (r.phon) slot('phon', r.phon, mark + r.phonPy);
+    else a.appendChild(elx('span', 'phon', mark + r.phonPy));
+  }
+  a.appendChild(elx('span', 'op', ' = '));
+  slot('', r.hz, r.py || '');
+  return a;
+}
 
-  const go = document.createElement('button');
-  go.className = 'primary';
+// The word reassembled from its characters -- Kevin's "why does manager
+// have a silk and a jade?" line: 经 (jīng) + 理 (lǐ) = 经理 (jīnglǐ) —
+// manager. Per-character glosses ride along only when EVERY character
+// has one; a half-glossed composition is mush, and mush degrades to the
+// plain readings rather than inventing semantics.
+function assemblyLine(c, words) {
+  const byHz = {};
+  (c.anatomy || []).forEach(r => { byHz[r.hz] = r; });
+  const mine = mineOf(c);
+  const chars = [...mine].filter(ch => HANZI_CH.test(ch));
+  if (chars.length < 2 || chars.length > 4) return null;
+  const my = words[mine] || {};
+  const glossAll = chars.every(ch => byHz[ch] && byHz[ch].en);
+  const line = elx('div', 'asm');
+  chars.forEach((ch, i) => {
+    if (i) line.appendChild(elx('span', 'op', ' + '));
+    line.appendChild(elx('span', 'hz', ch));
+    const r = byHz[ch] || {};
+    const bits = [];
+    if (r.py) bits.push(r.py);
+    if (glossAll) bits.push(r.en);
+    if (bits.length) {
+      line.appendChild(elx('span', 'r', ' (' + bits.join(', ') + ')'));
+    }
+  });
+  line.appendChild(elx('span', 'op', ' = '));
+  line.appendChild(elx('span', 'hz', mine));
+  if (my.py) line.appendChild(elx('span', 'r', ' (' + my.py + ')'));
+  if (my.en) line.appendChild(elx('span', 'en', ' — ' + my.en));
+  return line;
+}
+
+function anatomyZone(c, words) {
+  const rows = c.anatomy || [];
+  const byHz = {};
+  rows.forEach(r => { byHz[r.hz] = r; });
+  const chars = rows.map(r => r.hz);
+  // A card with no stamped anatomy can still explain itself when its
+  // lessons say something -- an intro card's radical, say.
+  for (const le of lessonEntries) {
+    if (!(le.hz in byHz) && chars.indexOf(le.hz) === -1) chars.push(le.hz);
+  }
+  if (!chars.length) return null;
+  const z = elx('div', 'zone');
+  const lesIdx = {};
+  lessonEntries.forEach((le, i) => {
+    if (!(le.hz in lesIdx)) lesIdx[le.hz] = i;
+  });
+  // One block per character, stacked at FULL card width -- V2's spine.
+  // (Side-by-side columns were tried and killed: half-width wrapped the
+  // scripts into towers while card width sat empty. Full lines are
+  // shorter lines, and shorter is what the no-scroll budget needs.)
+  // Each block takes the accent of its colour turn -- celadon, amber --
+  // and holds its arithmetic, then the trilinear script, then its own
+  // small etym line, never pooled into a zone footer.
+  let n = 0;
+  for (const ch of chars) {
+    const cb = elx('div', 'cb' + (n % 2 ? ' alt' : ''));
+    const r = byHz[ch] || { hz: ch };
+    let arith = null;
+    if (r.sem || r.phonPy) {
+      arith = arithLine(r);
+      cb.appendChild(arith);
+    }
+    // The ▶ rides the arithmetic line's end; only where the clip really
+    // shipped. A block with no arithmetic keeps it at the script head.
+    let play = null;
+    if (lesIdx[ch] !== undefined) {
+      play = elx('button', null, '▶');
+      const i = lesIdx[ch];
+      play.onclick = () => playLesson(i);
+    }
+    if (play && arith) arith.appendChild(play);
+    // 阿姨 (āyí)'s script, trilinear: the say text (clean hanzi -- what
+    // the clip pronounces), the full pinyin under it, English under
+    // that. He reads whichever layer he can; the script is content
+    // whether or not a clip shipped.
+    const le = LESSONS &&
+        (LESSONS.lessons[ch] || LESSONS.lessons['rad:' + ch]);
+    if (le) {
+      const l1 = elx('div', 'l1');
+      if (play && !arith) l1.appendChild(play);
+      l1.append(le.say || le.text);
+      cb.appendChild(l1);
+      if (le.pyline) cb.appendChild(elx('div', 'l2', le.pyline));
+      if (le.en) cb.appendChild(elx('div', 'l3', le.en));
+    }
+    const why = LESSONS && LESSONS.etym && LESSONS.etym[ch];
+    if (why) cb.appendChild(elx('div', 'cet', why));
+    if (cb.childNodes.length) {
+      z.appendChild(cb);
+      n++;
+    }
+  }
+  if (!n) return null;
+  return z;
+}
+
+// The family, demoted to a strip: one inline 「经历 jīnglì — experience」
+// per confusable, the missed word celadon, and the tell -- when it can be
+// derived -- right-aligned at the strip's end. A sub-bullet, not a column:
+// anatomy owns the screen.
+function familyStrip(c, words, fallback) {
+  const mine = mineOf(c);
+  let near = (c.near || []).slice();
+  if (!near.length && fallback) {
+    // the leech panel's old rule: never let the contrast come up empty
+    near = (c.options || []).filter(o => o !== c.answer && words[o]);
+  }
+  near = near.slice(0, 4);
+  if (!near.length) return null;
+  const strip = elx('div', 'famstrip');
+  const item = (hz, isMine) => {
+    const s = elx('span', 'item' + (isMine ? ' this' : ''));
+    const info = words[hz] || {};
+    s.appendChild(elx('span', 'hz', hz));
+    let tail = info.py ? ' ' + info.py : '';
+    if (info.en) tail += ' — ' + info.en;
+    if (tail) s.append(tail);
+    strip.appendChild(s);
+  };
+  item(mine, true);
+  near.forEach(n => item(n, false));
+  const tell = SRS.tellFor(c, words);
+  if (tell) {
+    const t = elx('span', 'item tellitem');
+    t.append('the tell: ');
+    t.appendChild(elx('span', 'hz', tell.hz));
+    t.append(' = ');
+    t.appendChild(elx('span', 'sem', tell.semEn));
+    t.append(' — only ');
+    t.appendChild(elx('b', null, tell.who));
+    t.append(' has it');
+    strip.appendChild(t);
+  }
+  return strip;
+}
+
+// The four rows of the slide, in order: diagnosis / word-assembly /
+// anatomy (the one flexible row) / family strip.
+function buildDesk(c, o) {
+  const words = indexWords();
+  const desk = elx('div', 'desk full');
+  desk.appendChild(diagBanner(c, o, words));
+  // The desk prints every script itself, trilinear; playLesson's textual
+  // echo gets a detached sink so nothing double-prints.
+  lessonScriptTarget = document.createElement('div');
+  const asm = assemblyLine(c, words);
+  if (asm) desk.appendChild(asm);
+  const az = anatomyZone(c, words);
+  if (az) desk.appendChild(az);
+  const fz = familyStrip(c, words, o.leech);
+  if (fz) desk.appendChild(fz);
+  return desk;
+}
+
+// The slide law's collapse order, measured against the real budget after
+// the desk is in the DOM: when the drill screen would overflow, the
+// English translation lines fold behind a quiet toggle first; still over,
+// the etym lines hide. The hanzi and pinyin layers never fold, and the
+// screen never scrolls -- past these two steps the overflow CLIPS, which
+// is the honest failure. Desktop only: the phone keeps its scroll.
+function fitDesk() {
+  if (window.innerWidth < 960) return;
+  const d = $('drill');
+  // Overflow hides in two places: the drill screen itself, and inside
+  // the anatomy card, whose own overflow:hidden would otherwise clip a
+  // tall block silently -- the exact failure the collapse order exists
+  // to catch before the clip does.
+  const over = () =>
+      d.scrollHeight > d.clientHeight + 1 ||
+      [...d.querySelectorAll('.desk .zone')].some(
+          z => z.scrollHeight > z.clientHeight + 1);
+  if (!over()) return;
+  d.querySelectorAll('.desk .cb .l3').forEach(l3 => {
+    const det = elx('details', 'l3fold');
+    det.appendChild(elx('summary', null, 'english'));
+    l3.replaceWith(det);
+    det.appendChild(l3);
+  });
+  if (!over()) return;
+  d.querySelectorAll('.desk .cet').forEach(e => {
+    e.style.display = 'none';
+  });
+}
+
+// On a ✓ the desk stays folded: a right answer needs no diagnosis, but
+// the anatomy remains one tap away. Opening it is a choice to study, so
+// it converts the auto-advance into a Next button rather than letting
+// the timer yank the desk away mid-read.
+function attachAnatomyCollapsed(c) {
+  lessonScriptTarget = document.createElement('div');   // same sink
+  const az = anatomyZone(c, indexWords());
+  if (!az) return;
+  const d = document.createElement('details');
+  d.className = 'desk';
+  d.appendChild(elx('summary', null, 'anatomy'));
+  d.appendChild(az);
+  d.ontoggle = () => { if (d.open) holdAdvance(); };
+  $('answer').appendChild(d);
+}
+
+// A card missed LEECH_AT times has earned the full desk plus its lead
+// line, and a wait: the auto-advance that works for an ordinary miss is
+// exactly what stops this one from ever being looked at.
+function leechPanel(c, onDone, o) {
+  const box = elx('div', 'leech');
+  box.appendChild(elx('div', 'lead',
+      'MISSED ' + SRS.entryFor(state, c.id).lapses +
+      ' TIMES — LOOK AT IT PROPERLY'));
+  box.appendChild(buildDesk(c, Object.assign({ leech: true }, o)));
+  const go = elx('button', 'primary', 'Got it');
   go.style.marginTop = '12px';
-  go.textContent = 'Got it';
   go.onclick = () => onDone();
   box.appendChild(go);
   return box;
@@ -1080,9 +1434,10 @@ function leechPanel(c, onDone) {
 
 // Called after commitLocal, so the lapse count on screen includes this miss.
 // True when the panel took over and nothing should auto-advance.
-function maybeLeech(c, ok) {
+function maybeLeech(c, ok, o) {
   if (ok || !SRS.isLeech(SRS.entryFor(state, c.id))) return false;
-  $('opts').appendChild(leechPanel(c, next));
+  $('opts').appendChild(leechPanel(c, next, o || {}));
+  fitDesk();
   return true;
 }
 
@@ -1099,13 +1454,22 @@ function submitTyped(c) {
   if (go) go.style.display = 'none';
   // Always show the tone-marked reading, right or wrong: tones are folded
   // away for grading, so this screen is the only place they get taught.
-  showAnswer(ok, c);
+  showAnswer(ok, c, !ok);
   if (ok) right++; else wrong++;
   if (navigator.vibrate) navigator.vibrate(ok ? 10 : [30, 40, 30]);
 
   commitLocal(c, ok);
-  if (maybeLeech(c, ok)) return;
-  if (ok) advanceWhenSpoken(); else waitForNext();
+  if (maybeLeech(c, ok, { typed })) return;
+  if (ok) {
+    attachAnatomyCollapsed(c);
+    advanceWhenSpoken();
+  } else {
+    // The full desk, then the wait: a miss stays on screen until asked
+    // to leave, because reading the correction is where learning happens.
+    $('answer').appendChild(buildDesk(c, { typed }));
+    waitForNext();
+    fitDesk();
+  }
 }
 
 // The graded answer, in the block above the counter. Two lines: the reading
@@ -1228,26 +1592,29 @@ function speakCard(c) {
   } catch (e) {}
 }
 
-function showAnswer(ok, c) {
+function showAnswer(ok, c, deskComing) {
   speakCard(c);
-  // The answer is spoken for; the lessons may talk now. This is the
-  // review reveal: render() built the ▶s but kept them hidden because
-  // pre-grade a lesson states the answer and would turn the test back
-  // into a teach, earning the promotion anyway (see drill_ui.js's
-  // choose()). Post-grade the answer is committed, and a just-missed
-  // review is the moment the explanation is worth the most.
-  if (lessonEntries.length) $('d-lesson').style.display = 'block';
+  // The answer is spoken for; the lessons may talk now (the post-grade
+  // reveal -- pre-grade a lesson states the answer). But when a desk is
+  // coming it carries its own ▶s trilinear, and on a ✓ with anatomy the
+  // collapsed desk does; the bare ▶ row only surfaces where neither will.
+  if (lessonEntries.length && !deskComing && !(c.anatomy || []).length) {
+    $('d-lesson').style.display = 'block';
+  }
   const box = $('answer');
   box.innerHTML = '';
   const a = document.createElement('div');
   a.className = 'a ' + (ok ? 'right' : 'wrong') +
       (SRS.isTyped(c) ? ' py' : '');
-  a.textContent = ok ? c.answer : c.answer;
+  // The ✓ is the compact success verdict -- the desk's diagnosis line
+  // replaced by a tick and the reading, per the design review.
+  a.textContent = ok ? '✓ ' + c.answer : c.answer;
   box.appendChild(a);
-  // On a miss the hint teaches. On the meaning cards (成语) the hint IS the
-  // pinyin, and hiding it on a correct answer meant a right answer never
-  // showed you how the thing is said -- exactly Kevin's complaint.
-  if (c.hint && (!ok || c.dir === 'hz2en')) {
+  // On a miss the desk now teaches (diagnosis, anatomy, family), so the
+  // old hint paragraph -- the same prose, as a wall -- stays out of its
+  // way. It still shows where no desk follows: the meaning cards (成语),
+  // whose hint IS the pinyin a right answer must still teach.
+  if (c.hint && !deskComing && (!ok || c.dir === 'hz2en')) {
     const h = document.createElement('div');
     h.className = 'h';
     h.textContent = c.hint;
@@ -1271,6 +1638,15 @@ function waitForNext() {
   $('answer').appendChild(b);
   $('foot').textContent = 'Enter for the next card';
 }
+// Opening the collapsed anatomy on a ✓ is a choice to study: cancel the
+// pending auto-advance and hand over a Next button instead, so the timer
+// cannot yank the desk away mid-read. render() re-arms the advance.
+let advanceHeld = false;
+function holdAdvance() {
+  if (advanceHeld || awaitNext) return;
+  advanceHeld = true;
+  waitForNext();
+}
 function goNext() {
   if (!awaitNext) return;
   awaitNext = false;
@@ -1282,7 +1658,7 @@ function goNext() {
 // session; whichever of ended/timeout fires first wins, once.
 function advanceWhenSpoken() {
   let fired = false;
-  const go = () => { if (!fired) { fired = true; next(); } };
+  const go = () => { if (!fired && !advanceHeld) { fired = true; next(); } };
   const t = setTimeout(go, 3500);
   if (audioEl && !audioEl.ended) {
     audioEl.onended = () => { clearTimeout(t);
@@ -1308,13 +1684,20 @@ function pick(el, opt, c) {
     if (t === c.answer) d.classList.add('right');
     else if (d === el) d.classList.add('wrong');
   });
-  showAnswer(ok, c);
+  showAnswer(ok, c, !ok);
   if (ok) right++; else wrong++;
   if (navigator.vibrate) navigator.vibrate(ok ? 10 : [30, 40, 30]);
 
   commitLocal(c, ok);
-  if (maybeLeech(c, ok)) return;
-  if (ok) advanceWhenSpoken(); else waitForNext();
+  if (maybeLeech(c, ok, { picked: opt })) return;
+  if (ok) {
+    attachAnatomyCollapsed(c);
+    advanceWhenSpoken();
+  } else {
+    $('answer').appendChild(buildDesk(c, { picked: opt }));
+    waitForNext();
+    fitDesk();
+  }
 }
 
 // The single local write path: grade, cache, queue the history line, sync.
