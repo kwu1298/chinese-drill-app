@@ -241,19 +241,58 @@
          flex-direction:column;overflow:hidden}
     #answer .desk.full,.leech .desk.full{flex:1;min-height:0;
          display:flex;flex-direction:column;margin-top:0}
+    /* blocks breathe by growing (flex:1), so the zone needs no space
+       distribution -- and must not have one: overflow under a centered
+       distribution falls back to CENTER, which shoves the FIRST line of
+       each block (the arithmetic, carrying its ▶) above the clip edge.
+       `safe center` inside the block keeps the breathing and clips from
+       the bottom, the honest end. */
     .desk.full .zone{flex:1;min-height:0;overflow:hidden;
-         display:flex;flex-direction:column;justify-content:space-evenly}
-    .desk.full .cb{flex:1;justify-content:center;margin:4px 0}
-    /* one line, and the whole line: nowrap, tightened until the tell's
-       last word fits -- a clipped tell would be a mistold tell */
-    .desk.full .famstrip{flex-wrap:nowrap;white-space:nowrap;
-         overflow:hidden;font-size:13.5px;gap:20px}
+         display:flex;flex-direction:column}
+    .desk.full .cb{flex:1;justify-content:safe center;margin:4px 0}
+    /* whole words, always: when one line cannot hold the strip it WRAPS
+       to a second, at a slightly smaller size -- the old rule ellipsized
+       the glosses instead, and "经理 jīnglǐ — m…" teaches nothing. The
+       tell keeps flex-shrink:0 and margin-left:auto, so it still sets
+       visually last, right-aligned on the final line. */
+    .desk.full .famstrip{font-size:13.5px;gap:6px 20px}
     .desk.full .famstrip .item .hz{font-size:16px}
-    /* if the line still cannot hold everything, the family entries
-       ellipsize one by one; the tell never gives up a word */
-    .desk.full .famstrip .item{min-width:0;overflow:hidden;
-         text-overflow:ellipsis}
-    .desk.full .famstrip .tellitem{flex-shrink:0;overflow:visible}
+    .desk.full .famstrip .tellitem{flex-shrink:0}
+    /* the action row is pinned: it may never be the thing that clips */
+    body:has(.desk.full) #answer #next-btn{flex:none}
+    .leech:has(.desk.full) button.primary{flex:none}
+  }
+  .leech button.primary{margin-top:12px}
+
+  /* THE COMPACT DESK: below ~780px of viewport height a desktop window is
+     a letterbox, and the full slide cannot win by folding one line at a
+     time -- so it switches to a designed variant instead of fighting.
+     Same four rows; diagnosis, assembly, arithmetic and trilinear scripts
+     sized down; English AND etym pre-folded behind toggles (fitDesk
+     builds them -- complete content one tap away, nothing silently gone);
+     famstrip wrapped. Still zero scroll. */
+  @media (min-width:960px) and (max-height:779px){
+    body:has(.desk.full){padding-top:12px;padding-bottom:10px}
+    body:has(.desk.full) .desk .diag{padding:7px 13px;font-size:14px}
+    body:has(.desk.full) .desk .diag .hz{font-size:17px}
+    body:has(.desk.full) .desk .diag .note{margin-top:3px;font-size:12px}
+    body:has(.desk.full) .desk .asm{font-size:15px;margin-top:8px}
+    body:has(.desk.full) .desk .asm .hz{font-size:19px}
+    body:has(.desk.full) .desk .arith{font-size:clamp(19px,1.9vw,26px)}
+    body:has(.desk.full) .desk .zone{padding:7px 13px;margin-top:8px}
+    body:has(.desk.full) .desk .cb{gap:3px;margin:3px 0;padding-left:13px}
+    body:has(.desk.full) .desk .l1{font-size:17px;line-height:1.45}
+    body:has(.desk.full) .desk .l2{font:13.5px var(--mono)}
+    body:has(.desk.full) .desk .l3{font-size:13px}
+    body:has(.desk.full) .desk .famstrip{margin-top:8px;font-size:12.5px}
+    body:has(.desk.full) .desk .famstrip .item .hz{font-size:15px}
+    body:has(.desk.full) .leech{padding:9px 13px}
+    body:has(.desk.full) .leech .lead{margin-bottom:5px}
+    body:has(.desk.full) .leech button.primary{margin-top:8px;
+         padding:8px 12px}
+    body:has(.desk.full) #answer #next-btn{margin:8px auto 0;
+         padding:7px 40px}
+    body:has(.desk.full) #foot{padding-top:6px;margin-bottom:4px}
   }
 
   .opts{display:flex;flex-direction:column;gap:9px;margin-top:22px}
@@ -528,7 +567,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = '4e3bd80cd8';   // deploy-webapp.sh stamps this
+const BUILD = 'ce9c1df3ac';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -976,20 +1015,11 @@ function render() {
   // speaks the answer, so the ▶s appear only after grading (showAnswer
   // unhides them), exactly like the Mac's choose()/submit() reveal; a
   // first meeting is an explanation and shows them at once.
-  lessonEntries = [];
+  lessonEntries = deskLessons(c);
   lessonScriptTarget = null;
   const lessonBox = $('d-lesson');
   lessonBox.style.display = 'none';
   $('d-script').style.display = 'none';
-  if (LESSONS) {
-    for (const key of SRS.lessonKeysFor(c)) {
-      const le = LESSONS.lessons[key];
-      if (le && LESSON_CLIPS.has(le.audio)) {
-        lessonEntries.push(Object.assign(
-            { hz: key.replace(/^rad:/, '') }, le));
-      }
-    }
-  }
   if (lessonEntries.length) {
     buildLessonButtons($('d-lesson-btns'));
     if (SRS.lessonGate(c, entry)) lessonBox.style.display = 'block';
@@ -1246,6 +1276,26 @@ function assemblyLine(c, words) {
   return line;
 }
 
+// The lessons a card can honour RIGHT NOW: recomputed at every use, never
+// snapshotted. render() used to build this list once, when the card came
+// up -- but lessons.json and manifest.json land on their own clock, so a
+// desk built off a stale empty snapshot rendered every trilinear script
+// (those read the LESSONS table live) and not one ▶ (Kevin's 1999x764
+// leech of 经理). Reading the live tables at each build restores the one
+// honest rule: a ▶ is absent only when no shipped clip exists for that
+// character.
+function deskLessons(c) {
+  const out = [];
+  if (!LESSONS) return out;
+  for (const key of SRS.lessonKeysFor(c)) {
+    const le = LESSONS.lessons[key];
+    if (le && LESSON_CLIPS.has(le.audio)) {
+      out.push(Object.assign({ hz: key.replace(/^rad:/, '') }, le));
+    }
+  }
+  return out;
+}
+
 function anatomyZone(c, words) {
   const rows = c.anatomy || [];
   const byHz = {};
@@ -1359,7 +1409,10 @@ function buildDesk(c, o) {
   const desk = elx('div', 'desk full');
   desk.appendChild(diagBanner(c, o, words));
   // The desk prints every script itself, trilinear; playLesson's textual
-  // echo gets a detached sink so nothing double-prints.
+  // echo gets a detached sink so nothing double-prints. The ▶ list is
+  // refreshed here (see deskLessons) so playLesson's indices and the desk
+  // agree on the same, current list.
+  lessonEntries = deskLessons(c);
   lessonScriptTarget = document.createElement('div');
   const asm = assemblyLine(c, words);
   if (asm) desk.appendChild(asm);
@@ -1375,10 +1428,39 @@ function buildDesk(c, o) {
 // English translation lines fold behind a quiet toggle first; still over,
 // the etym lines hide. The hanzi and pinyin layers never fold, and the
 // screen never scrolls -- past these two steps the overflow CLIPS, which
-// is the honest failure. Desktop only: the phone keeps its scroll.
+// is the honest failure (the action row is pinned by the flex chain and
+// never part of it). Desktop only: the phone keeps its scroll.
+//
+// Deterministic, where the first version was not: every run starts from
+// the unfolded state and re-asserts the stages in order, and armFitDesk
+// re-runs it after layout settles (double rAF, fonts.ready) and on every
+// resize. The old one-shot ran only at the grade moment, so a window
+// resized while the desk was up kept its English and etym fully expanded
+// while the zone clipped mid-sentence -- the collapse order misfiring.
+//
+// Below DESK_COMPACT_H the desk stops fighting and goes to the designed
+// compact variant instead: both prose layers pre-folded behind toggles
+// (English AND etym -- complete content one tap away, nothing silently
+// gone), the famstrip wrapped, everything sized down by the companion
+// media query. Same four rows, zero scroll.
+const DESK_COMPACT_H = 780;
+function foldBehindToggle(el, label) {
+  const det = elx('details', 'l3fold');
+  det.appendChild(elx('summary', null, label));
+  el.replaceWith(det);
+  det.appendChild(el);
+}
 function fitDesk() {
   if (window.innerWidth < 960) return;
   const d = $('drill');
+  if (!d.querySelector('.desk.full')) return;
+  // Stage 0: back to the state the build produced, so the order below is
+  // asserted fresh every run instead of stacking on a stale verdict.
+  d.querySelectorAll('.desk details.l3fold').forEach(det => {
+    const inner = det.querySelector('.l3,.cet');
+    if (inner) det.replaceWith(inner); else det.remove();
+  });
+  d.querySelectorAll('.desk .cet').forEach(e => { e.style.display = ''; });
   // Overflow hides in two places: the drill screen itself, and inside
   // the anatomy card, whose own overflow:hidden would otherwise clip a
   // tall block silently -- the exact failure the collapse order exists
@@ -1387,17 +1469,39 @@ function fitDesk() {
       d.scrollHeight > d.clientHeight + 1 ||
       [...d.querySelectorAll('.desk .zone')].some(
           z => z.scrollHeight > z.clientHeight + 1);
+  const foldEnglish = () => d.querySelectorAll('.desk .cb .l3').forEach(
+      l3 => foldBehindToggle(l3, 'english'));
+  if (window.innerHeight < DESK_COMPACT_H) {
+    foldEnglish();
+    d.querySelectorAll('.desk .cb .cet').forEach(
+        ce => foldBehindToggle(ce, 'story'));
+    return;
+  }
   if (!over()) return;
-  d.querySelectorAll('.desk .cb .l3').forEach(l3 => {
-    const det = elx('details', 'l3fold');
-    det.appendChild(elx('summary', null, 'english'));
-    l3.replaceWith(det);
-    det.appendChild(l3);
-  });
+  foldEnglish();                                   // FIRST: English folds
   if (!over()) return;
-  d.querySelectorAll('.desk .cet').forEach(e => {
+  d.querySelectorAll('.desk .cet').forEach(e => {  // SECOND: etym hides
     e.style.display = 'none';
   });
+}
+// Every desk gets the same three measurements: one immediate so the first
+// paint is already right, one after layout truly settles, one after the
+// fonts do (Kaiti at arithmetic sizes moves real pixels). The resize wire
+// is armed once and stays: fitDesk itself bows out when no desk is up.
+let fitWired = false;
+function refitDesk() {
+  requestAnimationFrame(() => requestAnimationFrame(fitDesk));
+}
+function armFitDesk() {
+  fitDesk();
+  refitDesk();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(refitDesk);
+  }
+  if (!fitWired) {
+    fitWired = true;
+    window.addEventListener('resize', refitDesk);
+  }
 }
 
 // On a ✓ the desk stays folded: a right answer needs no diagnosis, but
@@ -1405,6 +1509,7 @@ function fitDesk() {
 // it converts the auto-advance into a Next button rather than letting
 // the timer yank the desk away mid-read.
 function attachAnatomyCollapsed(c) {
+  lessonEntries = deskLessons(c);                       // same refresh
   lessonScriptTarget = document.createElement('div');   // same sink
   const az = anatomyZone(c, indexWords());
   if (!az) return;
@@ -1426,7 +1531,6 @@ function leechPanel(c, onDone, o) {
       ' TIMES — LOOK AT IT PROPERLY'));
   box.appendChild(buildDesk(c, Object.assign({ leech: true }, o)));
   const go = elx('button', 'primary', 'Got it');
-  go.style.marginTop = '12px';
   go.onclick = () => onDone();
   box.appendChild(go);
   return box;
@@ -1437,7 +1541,7 @@ function leechPanel(c, onDone, o) {
 function maybeLeech(c, ok, o) {
   if (ok || !SRS.isLeech(SRS.entryFor(state, c.id))) return false;
   $('opts').appendChild(leechPanel(c, next, o || {}));
-  fitDesk();
+  armFitDesk();
   return true;
 }
 
@@ -1468,7 +1572,7 @@ function submitTyped(c) {
     // to leave, because reading the correction is where learning happens.
     $('answer').appendChild(buildDesk(c, { typed }));
     waitForNext();
-    fitDesk();
+    armFitDesk();
   }
 }
 
@@ -1696,7 +1800,7 @@ function pick(el, opt, c) {
   } else {
     $('answer').appendChild(buildDesk(c, { picked: opt }));
     waitForNext();
-    fitDesk();
+    armFitDesk();
   }
 }
 
