@@ -6,7 +6,7 @@
 // A fixed name meant an installed app could keep serving the old shell
 // from cache and there was no way to tell it otherwise short of
 // deleting the app.
-const CACHE = 'chinese-097338fbea';
+const CACHE = 'chinese-ac92b0f15a';
 const SHELL = ['./', './index.html', './srs.js', './config.json',
                './manifest.webmanifest', './icon-180.png?v=du', './icon-512.png?v=du'];
 

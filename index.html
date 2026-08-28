@@ -567,7 +567,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = '097338fbea';   // deploy-webapp.sh stamps this
+const BUILD = 'ac92b0f15a';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -1163,16 +1163,14 @@ const elx = (tag, cls, text) => {
 const mineOf = c =>
     (c.dir === 'py2hz' ? c.answer : c.prompt).replace(/[【】]/g, '');
 
-// The hand-written class note, split back off the hint: build-deck joins
-// [note-or-gloss, breakdown, family-bits] with " — ", so everything before
-// " — breakdown" is the note. No breakdown, or an unexpected shape, claims
-// nothing -- the note is a bonus, never a guess.
+// The hand-written class note, stamped on the card by build-deck.
+// This used to slice it back out of the hint at " — " + c.breakdown, which
+// matched nothing once the hint carried composed stories and `breakdown`
+// carried the teach line -- two different strings, so the note silently
+// never appeared on a single card. Only 175 cards have a real note; the
+// rest correctly get nothing.
 function noteOf(c) {
-  const h = c.hint || '';
-  if (!h || !c.breakdown) return '';
-  if (h === c.breakdown) return '';
-  const i = h.indexOf(' — ' + c.breakdown);
-  return i > 0 ? h.slice(0, i) : '';
+  return c.note || '';
 }
 
 function diagBanner(c, o, words) {
