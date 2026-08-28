@@ -17,10 +17,12 @@ const SRS = {
   // Lapses before a card counts as a leech. Nothing here reschedules it --
   // see drill.py -- it only changes what the screen says after a miss.
   LEECH_AT: 4,
-  SESSION_CAP: 20,
+  // Sized to what a sitting actually is, not what one could be; the reserved
+  // new slots only work if the sitting reaches them. See drill.py.
+  SESSION_CAP: 8,
   SIBLING_MIN_GAP: 6,
-  NEW_PER_SESSION: 12,
-  NEW_RESERVED: 6,
+  NEW_PER_SESSION: 6,
+  NEW_RESERVED: 3,
   MIN_SESSION: 5,
   ORDER_SLACK: 5,
 
@@ -437,32 +439,48 @@ const SRS = {
       }
     }
 
+    // Lay the session out by alternating the two tiers, rather than emitting
+    // every review and then every new card -- the block order put the
+    // reserved new slots past the point a real sitting reaches, which made
+    // them reserved and unreachable at once. A review opens the session, then
+    // every second card is new while both tiers have cards left. See drill.py.
+    const reviews = picked.filter(p => p[1].reps > 0);
+    const fresh = picked.filter(p => p[1].reps === 0);
     const out = [];
-    for (const [isNew, tier] of [[false, picked.filter(p => p[1].reps > 0)],
-                                 [true, picked.filter(p => p[1].reps === 0)]]) {
-      const remaining = tier.slice();
-      while (remaining.length) {
-        let idxs = remaining.map((_, i) => i);
-        if (isNew) {
-          // The interleave shuffles for variety, which could put a word
-          // ahead of the explainer prereqSort placed for it. So a
-          // never-seen card whose explainer is also still waiting is not
-          // a candidate yet. Intro cards require nothing, so the candidate
-          // list cannot come up empty -- but a scheduler must not be able
-          // to deadlock on its own deck, hence the guard.
-          const waiting = new Set(remaining.map(p => SRS.provides(p[0])));
-          waiting.delete(null);
-          const ready = idxs.filter(i =>
-              !SRS.requires(remaining[i][0]).some(r => waiting.has(r)));
-          idxs = ready.length ? ready : idxs;
-        }
-        const scored = idxs.map(i => [SRS.penalty(remaining[i], out, gap), i]);
-        const best = Math.min(...scored.map(s => s[0]));
-        const near = scored.filter(s => s[0] <= best + SRS.ORDER_SLACK)
-                           .map(s => s[1]);
-        const pick = near[Math.floor(Math.random() * near.length)];
-        out.push(remaining.splice(pick, 1)[0]);
+
+    // Which tier it is comes from the list handed in rather than a flag
+    // beside it: passing the two out of step would silently drop the prereq
+    // guard that keeps a teaching chain in order.
+    const take = (remaining) => {
+      let idxs = remaining.map((_, i) => i);
+      if (remaining === fresh) {
+        // The greedy pick shuffles for variety, which could put a word
+        // ahead of the explainer prereqSort placed for it. So a never-seen
+        // card whose explainer is also still waiting is not a candidate
+        // yet. Intro cards require nothing, so the candidate list cannot
+        // come up empty -- but a scheduler must not be able to deadlock on
+        // its own deck, hence the guard. Picks only ever come out of one
+        // tier, so interleaving cannot reorder a chain.
+        const waiting = new Set(remaining.map(p => SRS.provides(p[0])));
+        waiting.delete(null);
+        const ready = idxs.filter(i =>
+            !SRS.requires(remaining[i][0]).some(r => waiting.has(r)));
+        idxs = ready.length ? ready : idxs;
       }
+      const scored = idxs.map(i => [SRS.penalty(remaining[i], out, gap), i]);
+      const best = Math.min(...scored.map(s => s[0]));
+      const near = scored.filter(s => s[0] <= best + SRS.ORDER_SLACK)
+                         .map(s => s[1]);
+      const pick = near[Math.floor(Math.random() * near.length)];
+      return remaining.splice(pick, 1)[0];
+    };
+
+    while (reviews.length || fresh.length) {
+      // Odd positions go to new material; whichever tier outlives the
+      // other then drains from there.
+      const isNew = fresh.length > 0 &&
+                    (reviews.length === 0 || out.length % 2 === 1);
+      out.push(take(isNew ? fresh : reviews));
     }
     return out;
   },

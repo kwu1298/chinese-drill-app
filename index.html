@@ -567,7 +567,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = 'ce9c1df3ac';   // deploy-webapp.sh stamps this
+const BUILD = '097338fbea';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -989,17 +989,19 @@ function render() {
   teachEl.textContent = teach;
   teachEl.style.display = teach ? 'block' : 'none';
 
-  // The radical's pictograph, first sight only, gated on the teach line
-  // being up for the same reason it is: on a review this card is a test,
-  // and a sketch of an eye hands over "eye" while the prompt is still on
-  // screen. Same c.teach && one-glyph gate as drill_ui.js. The SVGs ride
-  // the Pages deploy (deploy-webapp.sh copies assets/radicals in), so the
+  // The radical's pictograph, first sight only -- gated on first sight
+  // itself, not the teach line: a radical card no longer carries teach
+  // text (its note IS the answer), but its first meeting still earns the
+  // sketch. On a review this card is a test, and a sketch of an eye hands
+  // over "eye" while the prompt is still on screen. Same first-sight &&
+  // one-glyph gate as drill_ui.js (c.first there). The SVGs ride the
+  // Pages deploy (deploy-webapp.sh copies assets/radicals in), so the
   // stamped path resolves relatively; a deck built before the art, or a
   // deploy that missed it, just renders the card as before (onerror).
   const artEl = $('d-art');
   artEl.innerHTML = '';
   artEl.style.display = 'none';
-  if (teach && c.image && [...c.prompt].length === 1) {
+  if (SRS.firstSight(entry) && c.image && [...c.prompt].length === 1) {
     const im = document.createElement('img');
     im.src = './' + c.image;
     im.alt = '';
@@ -1717,8 +1719,13 @@ function showAnswer(ok, c, deskComing) {
   // On a miss the desk now teaches (diagnosis, anatomy, family), so the
   // old hint paragraph -- the same prose, as a wall -- stays out of its
   // way. It still shows where no desk follows: the meaning cards (成语),
-  // whose hint IS the pinyin a right answer must still teach.
-  if (c.hint && !deskComing && (!ok || c.dir === 'hz2en')) {
+  // whose hint IS the pinyin a right answer must still teach, and every
+  // first sight -- the teach line is component facts only now (it cannot
+  // state the answer), so the story arrives here, right or wrong: the
+  // meeting still owes the meeting's lesson. showAnswer runs before
+  // commitLocal, so the entry is still pre-grade.
+  const held = SRS.firstSight(SRS.entryFor(state, c.id));
+  if (c.hint && !deskComing && (!ok || c.dir === 'hz2en' || held)) {
     const h = document.createElement('div');
     h.className = 'h';
     h.textContent = c.hint;
