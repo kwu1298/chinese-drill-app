@@ -485,7 +485,7 @@
     <button onclick="start('hardest')">Trouble</button>
     <button onclick="start('lesson')">Latest</button>
   </div>
-  <button onclick="location.href='./story.html'">Today's story<small>a few sentences, only characters you know</small></button>
+  <button onclick="location.href='./story.html'">Today's story<small>a few sentences to practise reading</small></button>
   <!-- The paradigm grid is inherited from the Arabic fork and unused here:
        it is built around an eight-person pronoun table and the matching
        round names those paradigm keys directly. Component families are the
@@ -578,7 +578,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = '6ed76015ee';   // deploy-webapp.sh stamps this
+const BUILD = 'a060467aed';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
