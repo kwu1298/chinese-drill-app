@@ -21,8 +21,9 @@ const SRS = {
   // new slots only work if the sitting reaches them. See drill.py.
   SESSION_CAP: 8,
   SIBLING_MIN_GAP: 6,
-  NEW_PER_SESSION: 6,
-  NEW_RESERVED: 3,
+  NEW_PER_SESSION: 2,
+  NEW_PER_DAY: 4,
+  NEW_RESERVED: 1,
   MIN_SESSION: 5,
   ORDER_SLACK: 5,
 
@@ -52,16 +53,9 @@ const SRS = {
     return entry.reps === 0 && (entry.lapses || 0) === 0;
   },
 
-  // What the phone shows above the options as teaching, mirroring the
-  // `teach` field drill.py's build_payload sends the Mac window: the card's
-  // breakdown, on first sight only. On a review this is a test, and nothing
-  // that states the answer may be on screen before the grade -- the same
-  // rule that keeps a decompose review's ▶ hidden until the answer is in.
-  // (Yes, on an exact-fit phonetic first sight this hands over the folded
-  // reading, and a first-sight right still promotes to KNOWN_MIN. Accepted
-  // on purpose -- see drill.py's build_payload comment.)
+  // Kept for older callers: automatic teaching is disabled for every history.
   teachFor(card, entry) {
-    return SRS.firstSight(entry) ? (card.breakdown || '') : '';
+    return ''; // Nothing teaches automatically, including a first encounter.
   },
 
   // Every lesson key this card may offer, mirroring drill.py's payload
@@ -75,13 +69,34 @@ const SRS = {
     return card.lessonKeys || (card.lessonKey ? [card.lessonKey] : []);
   },
 
-  // Whether the ▶s may be on screen BEFORE the grade: only alongside the
-  // teach line -- a first meeting is an explanation. Every other showing
-  // earns its ▶s when the answer is committed (showAnswer reveals them,
-  // the Mac's choose()/submit() do the same), because a lesson states the
-  // answer and nothing that states the answer may precede the grade.
+  // Explanation audio is never a pre-answer hint.
   lessonGate(card, entry) {
-    return SRS.teachFor(card, entry) !== '';
+    return false; // Explanation audio is available only after answering.
+  },
+
+  gradeAttempt(entry, correct, card, now, assisted) {
+    now = now || new Date();
+    const e = SRS.grade(entry, correct, now);
+    const first = SRS.firstSight(entry);
+    if (first) e.introduced = SRS.iso(now);
+    if (assisted || (correct && first && !SRS.isTyped(card))) {
+      const wait = assisted ? SRS.LEARNING_STEPS_MIN[0] : SRS.GRADUATED_MIN;
+      e.step = assisted ? 1 : SRS.LEARNING_STEPS_MIN.length;
+      e.interval_min = wait;
+      e.due = SRS.iso(new Date(now.getTime() + wait * 60000));
+    }
+    if (entry.lastExposure && SRS.isTyped(card) && !assisted) {
+      const lag = (now - new Date(entry.lastExposure)) / 86400000;
+      for (const days of [1, 7]) {
+        if (lag >= days) {
+          const key = 'recall' + days;
+          e[key + 'Total'] = (e[key + 'Total'] || 0) + 1;
+          e[key + 'Right'] = (e[key + 'Right'] || 0) + Number(correct);
+        }
+      }
+    }
+    e.lastExposure = SRS.iso(now);
+    return e;
   },
 
   grade(entry, correct, now) {
@@ -398,6 +413,7 @@ const SRS = {
         if (options.length > 1) {
           const pref = SRS.preferredDir(b, options.map(ce => ce[0].dir));
           pick = options.slice().sort((x, y) =>
+            ((x[0].dir === "hz2py" ? 0 : 1) - (y[0].dir === "hz2py" ? 0 : 1)) ||
             ((used[x[0].dir] || 0) - (used[y[0].dir] || 0)) ||
             ((x[0].dir === pref ? 0 : 1) - (y[0].dir === pref ? 0 : 1)))[0];
         }
@@ -408,8 +424,8 @@ const SRS = {
       return [primary, held];
     };
 
-    const [seenPrimary, seenHeld] = arrange(pairs.filter(p => p[1].reps > 0));
-    let [newPrimary, newHeld] = arrange(pairs.filter(p => p[1].reps === 0));
+    const [seenPrimary, seenHeld] = arrange(pairs.filter(p => p[1].reps + (p[1].lapses || 0) > 0));
+    let [newPrimary, newHeld] = arrange(pairs.filter(p => p[1].reps + (p[1].lapses || 0) === 0));
 
     const reviewed = new Set(seenPrimary.map(p => SRS.baseOf(p[0].id)));
     newHeld = newHeld.concat(newPrimary.filter(p => reviewed.has(SRS.baseOf(p[0].id))));
@@ -434,7 +450,10 @@ const SRS = {
     if (picked.length < SRS.MIN_SESSION) {
       for (const extra of [seenHeld, newHeld]) {
         if (picked.length < cap) {
-          picked = picked.concat(extra.slice(0, cap - picked.length));
+          let room = cap - picked.length;
+          if (extra === newHeld) room = Math.min(room, Math.max(0, limitNew -
+            picked.filter(p => p[1].reps + (p[1].lapses || 0) === 0).length));
+          picked = picked.concat(extra.slice(0, room));
         }
       }
     }
@@ -444,8 +463,8 @@ const SRS = {
     // reserved new slots past the point a real sitting reaches, which made
     // them reserved and unreachable at once. A review opens the session, then
     // every second card is new while both tiers have cards left. See drill.py.
-    const reviews = picked.filter(p => p[1].reps > 0);
-    const fresh = picked.filter(p => p[1].reps === 0);
+    const reviews = picked.filter(p => p[1].reps + (p[1].lapses || 0) > 0);
+    const fresh = picked.filter(p => p[1].reps + (p[1].lapses || 0) === 0);
     const out = [];
 
     // Which tier it is comes from the list handed in rather than a flag
@@ -491,6 +510,12 @@ const SRS = {
   selectQueue(cards, state, mode, now, newCap) {
     now = now || new Date();
     cards = SRS.drillable(cards);
+    if (mode !== 'new') {
+      const today = SRS.iso(now).slice(0, 10);
+      const introduced = Object.values(state).filter(e => (e.introduced || '').slice(0, 10) === today).length;
+      newCap = Math.min(newCap == null ? SRS.NEW_PER_SESSION : newCap,
+                        Math.max(0, SRS.NEW_PER_DAY - introduced));
+    }
     if (mode === 'due') {
       return SRS.orderQueue(SRS.dueCards(cards, state, now),
                             undefined, undefined, newCap);

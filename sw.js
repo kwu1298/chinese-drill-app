@@ -6,8 +6,8 @@
 // A fixed name meant an installed app could keep serving the old shell
 // from cache and there was no way to tell it otherwise short of
 // deleting the app.
-const CACHE = 'chinese-ac92b0f15a';
-const SHELL = ['./', './index.html', './srs.js', './config.json',
+const CACHE = 'chinese-6ed76015ee';
+const SHELL = ['./', './index.html', './srs.js', './practice.js', './config.json',
                './manifest.webmanifest', './icon-180.png?v=du', './icon-512.png?v=du'];
 
 self.addEventListener('install', e => {
@@ -58,8 +58,8 @@ self.addEventListener('push', e => {
 
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  e.waitUntil(clients.matchAll({ type: 'window' }).then(list => {
-    for (const c of list) { if ('focus' in c) return c.focus(); }
+  e.waitUntil(clients.matchAll({ type: 'window' }).then(async list => {
+    for (const c of list) { if ('focus' in c) { await c.navigate(e.notification.data.url || './?practice=due'); return c.focus(); } }
     return clients.openWindow(e.notification.data.url || './');
   }));
 });

@@ -20,12 +20,10 @@
   "rad:门",
   "rad:纟",
   "场",
-  "起",
   "饭",
   "到",
   "球",
   "游",
-  "去",
   "情",
   "机",
   "请",
@@ -59,7 +57,6 @@
   "影",
   "得",
   "快",
-  "息",
   "攻",
   "校",
   "清",
@@ -141,8 +138,6 @@
   "块",
   "城",
   "境",
-  "士",
-  "处",
   "妹",
   "姥",
   "姨",
@@ -182,7 +177,6 @@
   "检",
   "椅",
   "楼",
-  "死",
   "汽",
   "河",
   "泳",
@@ -192,7 +186,6 @@
   "澡",
   "灯",
   "烧",
-  "牧",
   "狠",
   "猛",
   "理",
@@ -435,15 +428,6 @@
    "en": "This character is 场 — the 场 from 市场 (shìchǎng, market (for groceries)). It has two parts: 土 is the meaning part — soil; the sound part hints at the reading — a bit like yáng. For example: 商场 (shāngchǎng, shopping mall), 机场 (jī chǎng, airport).",
    "audio": "7479862a0d18.mp3"
   },
-  "起": {
-   "kind": "char",
-   "py": "qǐ",
-   "text": "这个字是「起」(qǐ)。意思是 to rise。它有两个部分：「走」(zǒu) 是意思部分，意思是 walk；「巳」(sì) 是声音部分——发音有一点像「巳」(sì)。比如：「对不起」(duìbuqǐ)、「一起」(yìqǐ)。",
-   "say": "这个字是「起」。意思是 to rise。它有两个部分：「走」是意思部分，意思是 walk；「巳」是声音部分，发音有一点像「巳」。比如：「对不起」、「一起」。",
-   "pyline": "zhège zì shì «qǐ». yìsi shì to rise. tā yǒu liǎng ge bùfen: «zǒu» shì yìsi bùfen, yìsi shì walk; «sì» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «sì». bǐrú: «duìbuqǐ», «yìqǐ».",
-   "en": "This character is 起 — to rise. It has two parts: 走 is the meaning part — walk; 巳 hints at the sound — a bit like sì. For example: 对不起 (duìbuqǐ, I'm sorry), 一起 (yìqǐ, together).",
-   "audio": "11ab23edd5df.mp3"
-  },
   "饭": {
    "kind": "char",
    "py": "fàn",
@@ -479,15 +463,6 @@
    "pyline": "zhège zì shì «yóu». shì «yóuxì» de «yóu». tā yǒu liǎng ge bùfen: «sāndiǎnshuǐ» shì yìsi bùfen, yìsi shì water; «yóu» shì shēngyīn bùfen, «yóu» gàosu nǐ fāyīn. bǐrú: «yóukè», «lǚ yóu».",
    "en": "This character is 游 — the 游 from 游戏 (yóuxì, game). It has two parts: the 氵 radical is the meaning part — water; 斿 tells you the sound: yóu. For example: 游客 (yóukè, tourist), 旅游 (lǚ yóu, to travel).",
    "audio": "4153fe7e1273.mp3"
-  },
-  "去": {
-   "kind": "char",
-   "py": "qù",
-   "text": "这个字是「去」(qù)。意思是 to go。它有两个部分：「厶」(私字儿 sīzìr) 是意思部分，意思是 private；「土」(tǔ) 是声音部分——发音有一点像「土」(tǔ)。比如：「过去」(guòqù)、「去年」(qùnián)。",
-   "say": "这个字是「去」。意思是 to go。它有两个部分：「私字儿」是意思部分，意思是 private；「土」是声音部分，发音有一点像「土」。比如：「过去」、「去年」。",
-   "pyline": "zhège zì shì «qù». yìsi shì to go. tā yǒu liǎng ge bùfen: «sīzìr» shì yìsi bùfen, yìsi shì private; «tǔ» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «tǔ». bǐrú: «guòqù», «qùnián».",
-   "en": "This character is 去 — to go. It has two parts: the 厶 radical is the meaning part — private; 土 hints at the sound — a bit like tǔ. For example: 过去 (guòqù, the past), 去年 (qùnián, last year).",
-   "audio": "63f4db8703bb.mp3"
   },
   "情": {
    "kind": "char",
@@ -785,15 +760,6 @@
    "pyline": "zhège zì shì «kuài». yìsi shì fast. tā yǒu liǎng ge bùfen: «shùxīnpáng» shì yìsi bùfen, yìsi shì heart; «guài» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «guài». bǐrú: «kuàidì», «kuàilè».",
    "en": "This character is 快 — fast. It has two parts: the 忄 radical is the meaning part — heart; 夬 hints at the sound — a bit like guài. For example: 快递 (kuàidì, express delivery), 快乐 (kuàilè, happy).",
    "audio": "7e838dcbd532.mp3"
-  },
-  "息": {
-   "kind": "char",
-   "py": "xi",
-   "text": "这个字是「息」(xi)。是「休息」(xiūxi) 的「息」。它有两个部分：「心」(心字底 xīnzìdǐ) 是意思部分，意思是 heart；「自」(zì) 是声音部分——发音有一点像「自」(zì)。比如：「气息」(qìxī)、「现在休息」(Xiànzài xiūxi)。",
-   "say": "这个字是「息」。是「休息」的「息」。它有两个部分：「心字底」是意思部分，意思是 heart；「自」是声音部分，发音有一点像「自」。比如：「气息」、「现在休息」。",
-   "pyline": "zhège zì shì «xi». shì «xiūxi» de «xi». tā yǒu liǎng ge bùfen: «xīnzìdǐ» shì yìsi bùfen, yìsi shì heart; «zì» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «zì». bǐrú: «qìxī», «Xiànzài xiūxi».",
-   "en": "This character is 息 — the 息 from 休息 (xiūxi, to rest). It has two parts: the 心 radical is the meaning part — heart; 自 hints at the sound — a bit like zì. For example: 气息 (qìxī, scent), 现在休息 (Xiànzài xiūxi, Now let's take a break).",
-   "audio": "cdc2fadda231.mp3"
   },
   "攻": {
    "kind": "char",
@@ -1221,11 +1187,11 @@
   "神": {
    "kind": "char",
    "py": "shén",
-   "text": "这个字是「神」(shén)。是「神奇」(shénqí) 的「神」。它有两个部分：「礻」(示字旁 shìzìpáng) 是意思部分，意思是 altar; spirit；「申」(shēn) 是声音部分——「申」告诉你发音：shén。比如：「神仙」(shénxiān)。",
-   "say": "这个字是「神」。是「神奇」的「神」。它有两个部分：「示字旁」是意思部分，意思是 altar; spirit；「申」是声音部分，「申」告诉你发音。比如：「神仙」。",
-   "pyline": "zhège zì shì «shén». shì «shénqí» de «shén». tā yǒu liǎng ge bùfen: «shìzìpáng» shì yìsi bùfen, yìsi shì altar; spirit; «shēn» shì shēngyīn bùfen, «shēn» gàosu nǐ fāyīn. bǐrú: «shénxiān».",
-   "en": "This character is 神 — the 神 from 神奇 (shénqí, magical). It has two parts: the 礻 radical is the meaning part — altar; spirit; 申 tells you the sound: shén. For example: 神仙 (shénxiān, immortal).",
-   "audio": "7d3fd035bb05.mp3"
+   "text": "这个字是「神」(shén)。是「神奇」(shénqí) 的「神」。它有两个部分：「礻」(示字旁 shìzìpáng) 是意思部分，意思是 altar；「申」(shēn) 是声音部分——「申」告诉你发音：shén。比如：「神仙」(shénxiān)。",
+   "say": "这个字是「神」。是「神奇」的「神」。它有两个部分：「示字旁」是意思部分，意思是 altar；「申」是声音部分，「申」告诉你发音。比如：「神仙」。",
+   "pyline": "zhège zì shì «shén». shì «shénqí» de «shén». tā yǒu liǎng ge bùfen: «shìzìpáng» shì yìsi bùfen, yìsi shì altar; «shēn» shì shēngyīn bùfen, «shēn» gàosu nǐ fāyīn. bǐrú: «shénxiān».",
+   "en": "This character is 神 — the 神 from 神奇 (shénqí, magical). It has two parts: the 礻 radical is the meaning part — altar; 申 tells you the sound: shén. For example: 神仙 (shénxiān, immortal).",
+   "audio": "31881fcf853c.mp3"
   },
   "箱": {
    "kind": "char",
@@ -1523,24 +1489,6 @@
    "pyline": "zhège zì shì «jìng». shì «huánjìng» de «jìng». tā yǒu liǎng ge bùfen: «tǔ» shì yìsi bùfen, yìsi shì soil; «jìng» shì shēngyīn bùfen, «jìng» gàosu nǐ fāyīn.",
    "en": "This character is 境 — the 境 from 环境 (huánjìng, environment). It has two parts: 土 is the meaning part — soil; 竟 tells you the sound: jìng.",
    "audio": "5e9711eff5a5.mp3"
-  },
-  "士": {
-   "kind": "char",
-   "py": "shì",
-   "text": "这个字是「士」(shì)。是「女士」(nǚshì) 的「士」。它有两个部分：「一」(yì) 是意思部分，意思是 one；「十」(shí) 是声音部分——「十」告诉你发音：shì。",
-   "say": "这个字是「士」。是「女士」的「士」。它有两个部分：「一」是意思部分，意思是 one；「十」是声音部分，「十」告诉你发音。",
-   "pyline": "zhège zì shì «shì». shì «nǚshì» de «shì». tā yǒu liǎng ge bùfen: «yì» shì yìsi bùfen, yìsi shì one; «shí» shì shēngyīn bùfen, «shí» gàosu nǐ fāyīn.",
-   "en": "This character is 士 — the 士 from 女士 (nǚshì, lady). It has two parts: 一 is the meaning part — one; 十 tells you the sound: shì.",
-   "audio": "cb3ffd04c700.mp3"
-  },
-  "处": {
-   "kind": "char",
-   "py": "chù",
-   "text": "这个字是「处」(chù)。是「处所」(chùsuǒ) 的「处」。它有两个部分：「夂」(折文旁 zhéwénpáng) 是意思部分，意思是 go；「卜」(bǔ) 是声音部分——发音有一点像「卜」(bǔ)。",
-   "say": "这个字是「处」。是「处所」的「处」。它有两个部分：「折文旁」是意思部分，意思是 go；「卜」是声音部分，发音有一点像「卜」。",
-   "pyline": "zhège zì shì «chù». shì «chùsuǒ» de «chù». tā yǒu liǎng ge bùfen: «zhéwénpáng» shì yìsi bùfen, yìsi shì go; «bǔ» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «bǔ».",
-   "en": "This character is 处 — the 处 from 处所 (chùsuǒ, a place). It has two parts: the 夂 radical is the meaning part — go; 卜 hints at the sound — a bit like bǔ.",
-   "audio": "4d5198809f7b.mp3"
   },
   "妹": {
    "kind": "char",
@@ -1893,15 +1841,6 @@
    "en": "This character is 楼 — building. It has two parts: the 木 radical is the meaning part — tree; 娄 tells you the sound: lóu.",
    "audio": "8a346a59591c.mp3"
   },
-  "死": {
-   "kind": "char",
-   "py": "sǐ",
-   "text": "这个字是「死」(sǐ)。是「死亡」(sǐwáng) 的「死」。它有两个部分：「歹」(dǎi) 是意思部分，意思是 bad；「匕」(bǐ) 是声音部分——发音有一点像「匕」(bǐ)。",
-   "say": "这个字是「死」。是「死亡」的「死」。它有两个部分：「歹」是意思部分，意思是 bad；「匕」是声音部分，发音有一点像「匕」。",
-   "pyline": "zhège zì shì «sǐ». shì «sǐwáng» de «sǐ». tā yǒu liǎng ge bùfen: «dǎi» shì yìsi bùfen, yìsi shì bad; «bǐ» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «bǐ».",
-   "en": "This character is 死 — the 死 from 死亡 (sǐwáng, death). It has two parts: 歹 is the meaning part — bad; 匕 hints at the sound — a bit like bǐ.",
-   "audio": "68f1cd4d0731.mp3"
-  },
   "汽": {
    "kind": "char",
    "py": "qì",
@@ -1982,15 +1921,6 @@
    "pyline": "zhège zì shì «shāo». shì «fā shāo» de «shāo». tā yǒu liǎng ge bùfen: «huǒzìpáng» shì yìsi bùfen, yìsi shì fire; «yáo» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «yáo».",
    "en": "This character is 烧 — the 烧 from 发烧 (fā shāo, to have a fever). It has two parts: the 火 radical is the meaning part — fire; 尧 hints at the sound — a bit like yáo.",
    "audio": "54ddc5e0e79e.mp3"
-  },
-  "牧": {
-   "kind": "char",
-   "py": "mù",
-   "text": "这个字是「牧」(mù)。是「牧场」(mù chǎng) 的「牧」。它有两个部分：「牛」(niú) 是意思部分，意思是 cow；「攵」(pū) 是声音部分——发音有一点像「攵」(pū)。",
-   "say": "这个字是「牧」。是「牧场」的「牧」。它有两个部分：「牛」是意思部分，意思是 cow；「反文旁」是声音部分，提示发音。",
-   "pyline": "zhège zì shì «mù». shì «mù chǎng» de «mù». tā yǒu liǎng ge bùfen: «niú» shì yìsi bùfen, yìsi shì cow; «fǎnwénpáng» shì shēngyīn bùfen, tíshì fāyīn.",
-   "en": "This character is 牧 — the 牧 from 牧场 (mù chǎng, pasture / grazing land / ranch). It has two parts: 牛 is the meaning part — cow; 攵 hints at the sound — a bit like pū.",
-   "audio": "55af0af12598.mp3"
   },
   "狠": {
    "kind": "char",
@@ -2705,7 +2635,6 @@
   "南": "a bell-shaped pot in the oldest graphs; nothing in it sounds like nán — know it from 南方 (nánfāng) and 南京 (Nánjīng)",
   "卡": "上 (shàng) and 下 (xià) welded into one — stuck in between; borrowed for the English word card: 信用卡 (xìnyòngkǎ)",
   "历": "厂 (a cliff overhang) sheltering 力 (lì), which gives the sound — the road already walked, and the calendar that counts it: history; to pass through. 历史 (lìshǐ), 经历 (jīnglì)",
-  "去": "a striding figure over 厶 (the mouth of a dwelling) in the old graph — someone stepping out and away: to go, to leave. 出去 (chūqù), 去年 (qùnián)",
   "参": "a star-cluster graph gone abstract — to join in: 参加 (cānjiā)",
   "双": "又 (yòu, a hand) doubled — a pair of hands: a pair",
   "叔": "尗 (shū, beans on the vine — the sound) + 又 (a hand): the bean-picker; borrowed for father's younger brother. 叔叔 (shūshu)",
@@ -2758,8 +2687,6 @@
   "垃": "土 (tǔ, earth) + 立 (lì) — only ever in 垃圾 (lājī), garbage; learn the word, not the parts",
   "城": "土 (tǔ, rammed-earth walls) + 成 (chéng), which gives the sound — the walled town: a city. 城市 (chéngshì)",
   "境": "土 (tǔ, the ground) + 竟 (jìng, the very end — also gives the sound): where the land runs out — a border; surroundings. 环境 (huánjìng)",
-  "士": "an axe-blade of office in the oldest graphs — a man of rank: a scholar, a gentleman. 十 (shí) happens to give the sound (shí→shì). 女士 (nǚshì)",
-  "处": "夂 (a trailing foot) stopping at a stool (the 卜 (bǔ) shape, once 几 (jī)) — where you come to rest: a place; to deal with. 处所 (chùsuǒ)",
   "备": "夂 (a foot going out) to the 田 (tián, field) — gear laid out for the trip: to prepare. 准备 (zhǔnbèi)",
   "复": "a foot going back over the road in the old graph — again, to repeat: 复习 (fùxí)",
   "外": "夕 (xī, evening) + 卜 (bǔ, divination) — divining at night, outside the proper hour: outside",
@@ -2844,7 +2771,6 @@
   "性": "忄 (heart) + 生 (shēng, born) — the heart you are born with: nature; same 生 (shēng) sound-shift as 姓 (xìng)",
   "怪": "忄 (heart) + 圣 (as written: a hand over dirt) — the heart prickling at it: strange. 奇怪 (qíguài)",
   "恨": "忄 (the heart) + 艮 (gěn), which hints the sound (gěn→hèn): the heart dug in and unmoving — to hate, to resent",
-  "息": "自 (zì, a nose) over 心 (xīn, the heart) — breath drawn down to the heart: to rest; a breath. 休息 (xiūxi)",
   "您": "你 (nǐ, you) set over 心 (xīn, heart) — you, taken to heart: the polite you. 您好 (nín hǎo)",
   "情": "忄 (the heart) + 青 (qīng), which gives the sound (qīng→qíng): what the heart holds — feeling. 事情 (shìqing), 感情 (gǎnqíng)",
   "惯": "忄 (the heart) + 贯 (guàn, coins strung on one cord — also gives the sound): the heart running along its string — habit, used to. 习惯 (xíguàn)",
@@ -2942,7 +2868,6 @@
   "歌": "哥 (gē, which gives the sound) + 欠 (a figure with mouth open, breath leaving): breath shaped into tune — a song. 唱歌 (chànggē)",
   "正": "一 (yī, the line) + 止 (zhǐ, a foot) — a foot stopping exactly at the line: upright, exactly. 正在 (zhèngzài)",
   "步": "two feet, one planted, one stepping — a step: 跑步 (pǎobù)",
-  "死": "歹 (stripped bones) + 匕 (bǐ, a person bowed low) — the living kneeling over what remains: to die. 死亡 (sǐwáng)",
   "毒": "rank growth over 母 (mǔ, mother) — the herb that mothers too much: poison. 病毒 (bìngdú)",
   "气": "wisps of rising vapor — breath, air: 天气 (tiānqì), and the temper in 生气 (shēngqì)",
   "水": "a stream down the middle with drops flying off — water itself, a picture",
@@ -2975,7 +2900,6 @@
   "父": "a hand holding the axe (or the rod) — the father: 父亲 (fùqīn)",
   "爷": "父 (fù, father) on top — the old 爺 (yé) had 耶 (yé) below it for sound: grandpa. 爷爷 (yéye)",
   "爸": "父 (fù, father) + 巴 (bā), which gives the sound: dad. 爸爸 (bàba)",
-  "牧": "牛 (niú, an ox) + 攵 (a hand swinging a stick) — driving the herd: to herd, to graze. 牧场 (mùchǎng)",
   "物": "牛 (niú, an ox — the old measure of what you owned) + 勿 (wù), which gives the sound: things. 动物 (dòngwù), 礼物 (lǐwù)",
   "特": "牛 (niú, bull) + 寺 (sì, court) — the bull picked out from the herd for the rite: special. 特别 (tèbié)",
   "狂": "犭 (dog) + 王 (wáng, the rough sound side) — a dog that thinks it is king: mad. 疯狂 (fēngkuáng)",
@@ -3139,7 +3063,6 @@
   "贷": "代 (dài, to stand in — also gives the sound) over 贝 (bèi, money): money standing in for money you don't have — a loan. 贷款 (dàikuǎn)",
   "费": "弗 (fú, hints at fèi) + 贝 (bèi, money) — money flying apart: expense; 免费 (miǎnfèi), free",
   "走": "a man flinging his arms over a striding foot — running: to go, to walk",
-  "起": "走 (the running radical) + 己 (jǐ), which hints the sound (jǐ→qǐ): getting to your feet — to rise, to begin. 一起 (yìqǐ), 起床 (qǐchuáng)",
   "超": "走 (the running radical) + 召 (zhào), which hints the sound (zhào→chāo): overtaking at a run — to exceed; super. 超市 (chāoshì), 超级 (chāojí)",
   "越": "走 (the running radical) + 戉 (yuè, an old axe — here just the sound): to cross over, to exceed. 越来越 (yuèláiyuè)",
   "趣": "走 (the running radical) + 取 (qǔ, to grab — also gives the sound, qǔ→qù): what you run over to grab — interest, delight. 感兴趣 (gǎn xìngqù)",

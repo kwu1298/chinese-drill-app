@@ -376,7 +376,7 @@
          margin-top:auto;padding-top:20px}
   .facts b{color:var(--muted);font-weight:400}
 
-  /* ---- characters known: the number a reader actually grows. Cards flatter
+  /* ---- characters encountered: the number a reader actually grows. Cards flatter
      (three words can share one hanzi); this only moves when a new character
      enters the eye. A hairline bar walks it to the next milestone. ---- */
   .known{text-align:center;margin-top:10px;font:12px var(--mono);
@@ -416,7 +416,7 @@
                        inset 0 0 0 4px var(--cinnabar)}
   .seal.sig .g{font-size:28px;margin-top:0}
   /* A crossed milestone earns the seal one bigger stamping: the count of
-     characters known, cut into the stone. Same stamp keyframe, no more. */
+     characters encountered, cut into the stone. Same stamp keyframe, no more. */
   .seal.sig.milestone{width:90px;height:90px;
             box-shadow:inset 0 0 0 1px rgba(245,239,228,.28),
                        inset 0 0 0 5px var(--cinnabar)}
@@ -465,6 +465,7 @@
   <!-- Distinct hanzi met at least once — the real progress number for a
        learner who is here to READ — and the walk to the next milestone. -->
   <div class="known" id="h-known"></div>
+  <div class="sub" id="h-retention"></div>
   <div class="kbar" id="h-kbar"><i></i></div>
 
   <!-- The week as practice squares: one cell a day, filled if you sat down.
@@ -473,6 +474,11 @@
   <div class="weekcap" id="h-cap"></div>
 
   <button class="primary" onclick="start('due')">Start<small id="b-sub"></small></button>
+  <p class="sub">After lunch, before returning to work. Eight steps are enough.</p>
+  <div style="display:flex;gap:8px">
+    <button onclick="pauseReminders(false)">Remind me later</button>
+    <button onclick="pauseReminders(true)">Skip reminders today</button>
+  </div>
   <div class="modes">
     <button onclick="startCrank()">30 minutes</button>
     <button onclick="startSort()">Sort</button>
@@ -502,6 +508,10 @@
   <div id="d-teach"></div>
   <div id="d-lesson"><div id="d-lesson-btns"></div><div id="d-script"></div></div>
   <div class="opts" id="opts"></div>
+  <div id="help-controls" style="display:flex;gap:8px">
+    <button id="hint-btn" onclick="requestHint()">Hint</button>
+    <button onclick="revealAnswer()">Show answer</button>
+  </div>
   <div id="answer"></div>
   <div id="foot"></div>
 </div>
@@ -560,6 +570,7 @@
 </div>
 
 <script src="./srs.js"></script>
+<script src="./practice.js"></script>
 <script>
 'use strict';
 /* Progress lives in a private GitHub repo that this page and the Mac both
@@ -567,7 +578,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = 'ac92b0f15a';   // deploy-webapp.sh stamps this
+const BUILD = '6ed76015ee';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -575,6 +586,7 @@ let pendingReviews = JSON.parse(localStorage.getItem('pendingReviews') || '[]');
 let reviewDays = {};                    // day -> [done, right] from repo history
 let queue = [], idx = 0, right = 0, wrong = 0, locked = false, crankEnd = 0;
 let crankNewLeft = 0;                   // new-card budget for the whole crank
+let assisted = false, shownAt = 0, sessionId = '', unaidedRight = 0;
 let sessionKnown = null;                // known-char set when the sitting began
 let pushBusy = false, pushDirty = false;
 
@@ -713,21 +725,25 @@ async function pushState() {
   }
 }
 
+let flushingReviews = false;
 async function flushReviews() {
-  if (!pendingReviews.length) return;
+  if (flushingReviews || !pendingReviews.length) return;
+  flushingReviews = true;
+  const batch = pendingReviews.slice();
   try {
     for (let attempt = 0; attempt < 4; attempt++) {
       const f = await getFile('reviews-phone.jsonl');
-      const text = (f.text || '') + pendingReviews.join('\n') + '\n';
+      const text = (f.text || '') + batch.filter(line => !(f.text || '').split('\n').includes(line)).join('\n') + '\n';
       const sha = await putFile('reviews-phone.jsonl', text, f.sha,
                                 'phone: session history');
       if (sha) {
-        pendingReviews = [];
-        localStorage.setItem('pendingReviews', '[]');
+        pendingReviews = pendingReviews.filter(line => !batch.includes(line));
+        localStorage.setItem('pendingReviews', JSON.stringify(pendingReviews));
         return;
       }
     }
   } catch (e) { /* stays pending; next flush retries */ }
+  finally { flushingReviews = false; }
 }
 
 async function loadAll() {
@@ -771,6 +787,7 @@ async function loadAll() {
       seen.add(line);
       try {
         const r = JSON.parse(line);
+        if (r.practice) continue;
         const d = r.ts.slice(0, 10);
         reviewDays[d] = reviewDays[d] || [0, 0];
         reviewDays[d][0]++; if (r.correct) reviewDays[d][1]++;
@@ -792,7 +809,7 @@ async function loadAll() {
 function localToday() { return SRS.iso(new Date()).slice(0, 10); }
 let days = {};                          // day -> [done, right], for the week
 
-/* ----------------------- characters known ------------------------------- */
+/* ----------------------- characters encountered ------------------------------- */
 /* Distinct hanzi across the prompts of every card met at least once. This is
    the number a READER grows -- card counts flatter it (three words can share
    one character), so the two are shown as different things. Milestones are
@@ -805,8 +822,8 @@ const HANZI_CH = /[一-鿿]/;               // 一-鿿
 function knownCharSet() {
   const set = new Set();
   for (const c of cards) {
-    if (SRS.entryFor(state, c.id).reps > 0) {
-      for (const ch of String(c.prompt || '').replace(/[【】]/g, '')) {
+    if (SRS.entryFor(state, c.id).reps + SRS.entryFor(state, c.id).lapses > 0) {
+      for (const ch of String((c.dir === 'py2hz' ? c.answer : c.prompt) || '').replace(/[【】]/g, '')) {
         if (HANZI_CH.test(ch)) set.add(ch);
       }
     }
@@ -824,7 +841,7 @@ function summary() {
   const due = SRS.dueCards(cards, state, now).length;
   days = Object.assign({}, reviewDays);
   for (const line of pendingReviews) {
-    const r = JSON.parse(line); const d = r.ts.slice(0, 10);
+    const r = JSON.parse(line); if (r.practice) continue; const d = r.ts.slice(0, 10);
     days[d] = days[d] || [0, 0]; days[d][0]++; if (r.correct) days[d][1]++;
   }
   const today = days[localToday()] || [0, 0];
@@ -840,7 +857,7 @@ function summary() {
 function renderHome() {
   const s = summary();
   $('h-due').innerHTML = s.due > 0
-      ? s.due + '<em>cards due</em>'
+      ? Math.min(SRS.SESSION_CAP, s.due) + '<em>steps, then done</em>'
       : '<span style="font-size:.5em">caught up</span><em>nothing waiting</em>';
   $('h-due').style.color = s.due > 0 ? '' : 'var(--green)';
   // "cards", not "characters": the line right below counts real characters,
@@ -852,8 +869,13 @@ function renderHome() {
   // The characters-known line, and a hairline bar walking the stretch from
   // the last milestone to the next. Past the final milestone the bar retires.
   const nextM = MILESTONES.find(m => m > s.known) || null;
-  $('h-known').innerHTML = '<b>' + s.known + '</b> characters known' +
+  $('h-known').innerHTML = '<b>' + s.known + '</b> characters encountered' +
       (nextM ? ' <span class="nx">· next ' + nextM + '</span>' : '');
+  $('h-retention').textContent = [1, 7].map(d => {
+    const total = Object.values(state).reduce((n, e) => n + (e['recall' + d + 'Total'] || 0), 0);
+    const right = Object.values(state).reduce((n, e) => n + (e['recall' + d + 'Right'] || 0), 0);
+    return total ? right + '/' + total + ' recalled after ' + d + '+ days' : 'Building ' + d + '-day recall history';
+  }).join(' · ');
   const kbar = $('h-kbar');
   if (nextM) {
     const prevM = MILESTONES.filter(m => m <= s.known).pop() || 0;
@@ -939,8 +961,11 @@ function start(mode) {
   // Snapshot the known set once per sitting -- a crank re-enters start()
   // every round -- so the done screen can diff what this sitting added.
   if (sessionKnown === null) sessionKnown = knownCharSet();
-  queue = q.map(([card]) => card);
-  idx = 0; right = 0; wrong = 0;
+  queue = Practice.start(q.map(([card, entry]) => Object.assign({}, card, {first: SRS.firstSight(entry)})));
+  Practice.contextFinish(queue);
+  sessionId = 'phone-' + Date.now();
+  logSession('start');
+  idx = 0; right = 0; wrong = 0; unaidedRight = 0;
   show('drill'); render();
 }
 let crankMode = 'due';
@@ -974,9 +999,14 @@ function render() {
   if (audioEl) { try { audioEl.pause(); } catch (e) {} }
   stopLesson();
   const c = queue[idx];
-  locked = false;
+  locked = false; assisted = false; shownAt = Date.now();
+  awaitNext = false;
+  $('help-controls').style.display = 'flex';
+  $('hint-btn').style.display = c.cue ? 'block' : 'none';
+  $('hint-btn').disabled = false;
   advanceHeld = false;
-  $('d-kicker').textContent = SRS.KICKERS[c.dir] || 'CHOOSE THE ANSWER';
+  $('d-kicker').textContent = c.transfer ? 'READ ALOUD · TYPE THE BRACKETED WORD'
+      : c.practice ? 'TRY AGAIN WITHOUT HELP' : SRS.KICKERS[c.dir] || 'CHOOSE THE ANSWER';
 
   // Teach at first sight, exactly as the Mac window does (drill.py's
   // build_payload sends `teach` there; the phone builds its own payloads,
@@ -989,34 +1019,11 @@ function render() {
   teachEl.textContent = teach;
   teachEl.style.display = teach ? 'block' : 'none';
 
-  // The radical's pictograph, first sight only -- gated on first sight
-  // itself, not the teach line: a radical card no longer carries teach
-  // text (its note IS the answer), but its first meeting still earns the
-  // sketch. On a review this card is a test, and a sketch of an eye hands
-  // over "eye" while the prompt is still on screen. Same first-sight &&
-  // one-glyph gate as drill_ui.js (c.first there). The SVGs ride the
-  // Pages deploy (deploy-webapp.sh copies assets/radicals in), so the
-  // stamped path resolves relatively; a deck built before the art, or a
-  // deploy that missed it, just renders the card as before (onerror).
+  // No artwork, scripts, or pronunciation labels before the answer.
   const artEl = $('d-art');
   artEl.innerHTML = '';
   artEl.style.display = 'none';
-  if (SRS.firstSight(entry) && c.image && [...c.prompt].length === 1) {
-    const im = document.createElement('img');
-    im.src = './' + c.image;
-    im.alt = '';
-    im.onload = () => { artEl.style.display = 'block'; };
-    artEl.appendChild(im);
-  }
 
-  // 阿姨 (āyí)'s spoken lessons, mirroring drill.py's rules: one ▶ per
-  // explained character in the word (经理 offers 经's and 理's, labeled
-  // when there is more than one), and only for clips that really shipped
-  // -- the deploy writes lessons/manifest.json from the mp3s it actually
-  // copied, so a visible ▶ always plays. On a REVIEW a lesson literally
-  // speaks the answer, so the ▶s appear only after grading (showAnswer
-  // unhides them), exactly like the Mac's choose()/submit() reveal; a
-  // first meeting is an explanation and shows them at once.
   lessonEntries = deskLessons(c);
   lessonScriptTarget = null;
   const lessonBox = $('d-lesson');
@@ -1405,21 +1412,19 @@ function familyStrip(c, words, fallback) {
 // The four rows of the slide, in order: diagnosis / word-assembly /
 // anatomy (the one flexible row) / family strip.
 function buildDesk(c, o) {
-  const words = indexWords();
   const desk = elx('div', 'desk full');
-  desk.appendChild(diagBanner(c, o, words));
-  // The desk prints every script itself, trilinear; playLesson's textual
-  // echo gets a detached sink so nothing double-prints. The ▶ list is
-  // refreshed here (see deskLessons) so playLesson's indices and the desk
-  // agree on the same, current list.
+  const explanation = c.transfer && c.context
+      ? c.context.sentenceReading + ' — ' + c.context.sentenceMeaning
+      : c.explanation || c.hint || '';
+  desk.appendChild(elx('div', 'note', explanation));
   lessonEntries = deskLessons(c);
   lessonScriptTarget = document.createElement('div');
-  const asm = assemblyLine(c, words);
-  if (asm) desk.appendChild(asm);
-  const az = anatomyZone(c, words);
-  if (az) desk.appendChild(az);
-  const fz = familyStrip(c, words, o.leech);
-  if (fz) desk.appendChild(fz);
+  const detail = anatomyZone(c, indexWords());
+  if (detail) {
+    const more = elx('details');
+    more.appendChild(elx('summary', null, 'Character details'));
+    more.appendChild(detail); desk.appendChild(more);
+  }
   return desk;
 }
 
@@ -1515,7 +1520,7 @@ function attachAnatomyCollapsed(c) {
   if (!az) return;
   const d = document.createElement('details');
   d.className = 'desk';
-  d.appendChild(elx('summary', null, 'anatomy'));
+  d.appendChild(elx('summary', null, 'Character details'));
   d.appendChild(az);
   d.ontoggle = () => { if (d.open) holdAdvance(); };
   $('answer').appendChild(d);
@@ -1528,7 +1533,7 @@ function leechPanel(c, onDone, o) {
   const box = elx('div', 'leech');
   box.appendChild(elx('div', 'lead',
       'MISSED ' + SRS.entryFor(state, c.id).lapses +
-      ' TIMES — LOOK AT IT PROPERLY'));
+      ' TIMES — LET’S MAKE A CONNECTION'));
   box.appendChild(buildDesk(c, Object.assign({ leech: true }, o)));
   const go = elx('button', 'primary', 'Got it');
   go.onclick = () => onDone();
@@ -1566,7 +1571,8 @@ function submitTyped(c) {
   if (maybeLeech(c, ok, { typed })) return;
   if (ok) {
     attachAnatomyCollapsed(c);
-    advanceWhenSpoken();
+    if (c.first || assisted || c.transfer) waitForNext();
+    else advanceWhenSpoken();
   } else {
     // The full desk, then the wait: a miss stays on screen until asked
     // to leave, because reading the correction is where learning happens.
@@ -1627,6 +1633,7 @@ function stopLesson() {
 // on every hanzi) lands under the buttons, so eyes and ears get the same
 // lesson. Mirrors drill_ui.js's playLesson.
 function playLesson(i) {
+  if (!locked) return;
   i = i || 0;
   const was = lessonPlaying;
   if (lessonEl) { stopLesson(); if (was === i) return; }
@@ -1697,6 +1704,7 @@ function speakCard(c) {
 }
 
 function showAnswer(ok, c, deskComing) {
+  $('d-teach').style.display = 'none';
   speakCard(c);
   // The answer is spoken for; the lessons may talk now (the post-grade
   // reveal -- pre-grade a lesson states the answer). But when a desk is
@@ -1712,7 +1720,7 @@ function showAnswer(ok, c, deskComing) {
       (SRS.isTyped(c) ? ' py' : '');
   // The ✓ is the compact success verdict -- the desk's diagnosis line
   // replaced by a tick and the reading, per the design review.
-  a.textContent = ok ? '✓ ' + c.answer : c.answer;
+  a.textContent = ok ? (assisted ? 'With help · ' : '✓ ') + c.answer : c.answer;
   box.appendChild(a);
   // On a miss the desk now teaches (diagnosis, anatomy, family), so the
   // old hint paragraph -- the same prose, as a wall -- stays out of its
@@ -1723,10 +1731,13 @@ function showAnswer(ok, c, deskComing) {
   // meeting still owes the meeting's lesson. showAnswer runs before
   // commitLocal, so the entry is still pre-grade.
   const held = SRS.firstSight(SRS.entryFor(state, c.id));
-  if (c.hint && !deskComing && (!ok || c.dir === 'hz2en' || held)) {
+  const explanation = c.transfer && c.context
+      ? c.context.sentenceReading + ' — ' + c.context.sentenceMeaning
+      : c.explanation || c.hint;
+  if (explanation && !deskComing && (!ok || c.dir === 'hz2en' || held || assisted || c.transfer)) {
     const h = document.createElement('div');
     h.className = 'h';
-    h.textContent = c.hint;
+    h.textContent = explanation;
     box.appendChild(h);
   }
 }
@@ -1745,7 +1756,7 @@ function waitForNext() {
   b.textContent = 'Next';
   b.onclick = goNext;
   $('answer').appendChild(b);
-  $('foot').textContent = 'Enter for the next card';
+  $('foot').textContent = assisted ? 'Helped practice · Enter to continue' : 'Enter for the next card';
 }
 // Opening the collapsed anatomy on a ✓ is a choice to study: cancel the
 // pending auto-advance and hand over a Next button instead, so the timer
@@ -1801,7 +1812,8 @@ function pick(el, opt, c) {
   if (maybeLeech(c, ok, { picked: opt })) return;
   if (ok) {
     attachAnatomyCollapsed(c);
-    advanceWhenSpoken();
+    if (c.first || assisted || c.transfer) waitForNext();
+    else advanceWhenSpoken();
   } else {
     $('answer').appendChild(buildDesk(c, { picked: opt }));
     waitForNext();
@@ -1812,19 +1824,81 @@ function pick(el, opt, c) {
 // The single local write path: grade, cache, queue the history line, sync.
 // Both the card drill and the table game go through here so they can never
 // drift apart in how they touch the schedule.
+async function pauseReminders(skip) {
+  const prefs = {skipDay: skip ? localToday() : '',
+    snoozeUntil: skip ? '' : SRS.iso(new Date(Date.now() + 3600000))};
+  // Persist the request until an online sync succeeds; don't claim remote
+  // reminders are paused when the phone could not save the preference.
+  localStorage.setItem('pendingRoutine', JSON.stringify(prefs));
+  await syncRoutine();
+}
+async function syncRoutine() {
+  const pending = localStorage.getItem('pendingRoutine');
+  if (!pending) return;
+  try {
+    for (let n = 0; n < 3; n++) {
+      const f = await getFile('routine.json');
+      if (await putFile('routine.json', pending, f.sha)) {
+        if (localStorage.getItem('pendingRoutine') === pending) localStorage.removeItem('pendingRoutine');
+        status('Reminder preference saved. It takes effect at the next Mac sync.');
+        return;
+      }
+    }
+    throw new Error('conflict');
+  } catch (e) { status('Reminder preference saved here; waiting for a connection to sync.', true); }
+}
+function requestHint() {
+  if (locked || !queue[idx].cue) return;
+  assisted = true;
+  $('d-teach').textContent = queue[idx].cue;
+  $('d-teach').style.display = 'block';
+  $('hint-btn').disabled = true;
+  $('foot').textContent = 'Helped practice · try the reading, then check';
+}
+function revealAnswer() {
+  if (locked) return;
+  assisted = true;
+  const c = queue[idx];
+  if (SRS.isTyped(c)) {
+    $('typed-input').value = '?'; submitTyped(c);
+    $('typed-input').parentNode.style.display = 'none';
+  }
+  else pick(null, '', c);
+}
+function logSession(event) {
+  const key = 'practiceSessions';
+  const logs = JSON.parse(localStorage.getItem(key) || '[]');
+  logs.push({id: sessionId, event, ts: SRS.iso(new Date()), steps: queue.length});
+  localStorage.setItem(key, JSON.stringify(logs.slice(-200)));
+}
 function commitLocal(c, ok) {
   const now = new Date();
-  state[c.id] = SRS.grade(SRS.entryFor(state, c.id), ok, now);
-  localStorage.setItem('cachedState', JSON.stringify(state));
-  pendingReviews.push(JSON.stringify({
-    ts: SRS.iso(now), id: c.id, correct: ok, cat: c.cat, dir: c.dir }));
+  if (ok && !assisted) unaidedRight++;
+  $('help-controls').style.display = 'none';
+  if (!c.practice) {
+    state[c.id] = SRS.gradeAttempt(SRS.entryFor(state, c.id), ok, c, now, assisted);
+    localStorage.setItem('cachedState', JSON.stringify(state));
+    pushState();
+  }
+  pendingReviews.push(JSON.stringify({ts: SRS.iso(now), id: c.id, correct: ok,
+    cat: c.cat, dir: c.dir, assisted, practice: !!c.practice,
+    responseMs: Date.now() - shownAt, session: sessionId,
+    phase: c.transfer ? 'context' : c.practice ? 'retry' : 'recall'}));
   localStorage.setItem('pendingReviews', JSON.stringify(pendingReviews));
-  pushState();
+  Practice.repair(queue, idx, ok, assisted);
 }
 
 function next() {
   idx++;
   if (idx < queue.length) { render(); return; }
+  logSession('complete');
+  if (pendingReviews.length) {
+    const last = JSON.parse(pendingReviews[pendingReviews.length - 1]);
+    last.sessionComplete = true;
+    pendingReviews[pendingReviews.length - 1] = JSON.stringify(last);
+    localStorage.setItem('pendingReviews', JSON.stringify(pendingReviews));
+  }
+  localStorage.setItem('practiceDoneDay', localToday());
   flushReviews();
   const more = crankEnd && Date.now() < crankEnd - 20000;
   // Every set ends on the paradigm: retrieval practice with both sides
@@ -1847,9 +1921,9 @@ function sessionDone(matchSecs, ladderMsg) {
   crankEnd = 0;
   const line = $('done-line');
   line.className = 'score';
-  line.innerHTML = right + '<em>of ' + (right + wrong) + ' right</em>';
+  line.innerHTML = (right + wrong) + '<em>steps complete</em>';
   const due = SRS.dueCards(cards, state, new Date()).length;
-  const tail = due > 0 ? due + ' more still due' : 'all caught up';
+  const tail = unaidedRight + ' correct without hints. You can stop here.';
   const bits = [];
   if (ladderMsg) bits.push(ladderMsg);
   if (matchSecs != null) bits.push('matched in ' + matchSecs + 's');
@@ -2392,7 +2466,11 @@ async function boot() {
   if (!TOKEN) { show('setup'); return; }
   try {
     await loadAll();
+    await syncRoutine();
     goHome();
+    if (new URLSearchParams(location.search).get('practice') === 'due') {
+      history.replaceState(null, '', location.pathname); start('due');
+    }
   } catch (e) {
     // loadAll() has already restored the cached deck by the time it throws,
     // so a dropped connection or a rate limit is no reason to stop studying
@@ -2441,6 +2519,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { flushReviews(); }
   else if ($('home').classList.contains('on') && TOKEN) {
     checkForUpdate();
+    syncRoutine();
     loadAll().then(renderHome).catch(e => {
       if (!e.authFailed) return;
       show('setup');
