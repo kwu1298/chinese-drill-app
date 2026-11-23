@@ -599,13 +599,15 @@ const SRS = {
     let pool;
     if (chapter !== null) {
       pool = cards.filter(c => c.lesson === chapter);
-      // Textbook words first; never-seen class extras wait (drill.py).
+      // Textbook words first; never-seen extras, phrases and sentences wait
+      // until every core card has been met; explainers never (drill.py).
       const unmet = c => {
         const e = SRS.entryFor(state, c.id);
         return e.reps + (e.lapses || 0) === 0;
       };
       if (pool.some(c => c.core && unmet(c))) {
-        pool = pool.filter(c => c.core || c.cat !== 'vocab' || !unmet(c));
+        pool = pool.filter(c => c.core || c.cat === 'intro' ||
+                                c.cat === 'decompose' || !unmet(c));
       }
     } else if (mode === 'vocab' || mode === 'sentences') {
       pool = cards.filter(c => c.cat === mode);

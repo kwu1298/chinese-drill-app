@@ -559,7 +559,7 @@
     <div class="bar"><i id="c-words-bar"></i></div>
   </div>
   <div class="meter">
-    <div class="row"><span>Passages read clean</span><b id="c-reads"></b></div>
+    <div class="row"><span>Readings passed clean</span><b id="c-reads"></b></div>
     <div class="bar"><i id="c-reads-bar"></i></div>
   </div>
   <div class="sub" id="c-state" style="margin-top:14px"></div>
@@ -669,7 +669,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = '1386fff31c';   // deploy-webapp.sh stamps this
+const BUILD = '3680266c86';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -2574,7 +2574,7 @@ function chapterLine(ch) {
     return 'done' + (ch.readsDue ? ' · ' + ch.readsDue + ' to re-read' : '');
   }
   const parts = [ch.wordsLearned + ' of ' + ch.words + ' words learned'];
-  if (ch.reads) parts.push(ch.readsPassed + ' of ' + ch.reads + ' passages read');
+  if (ch.reads) parts.push(ch.readsPassed + ' of ' + ch.reads + ' readings passed');
   if (ch.readsDue) parts.push(ch.readsDue + ' to re-read');
   return parts.join(' · ');
 }
@@ -2590,16 +2590,19 @@ function renderChapterButton() {
   b.appendChild(elx('small', '', chapterLine(cur)));
   b.onclick = () => openChapter(cur.tag);
 }
-// The book's 课文 first (what class covered), then the passage written for
-// the chapter, which is the real test: text you have never seen.
+// The book's 课文 first (what class covered), then every word in a
+// sentence, then the passages written for the chapter -- the real test:
+// text you have never seen.
+const KIND_ORDER = {book: 0, sentences: 1, story: 2};
 function passagesOf(tag) {
   return cards.filter(c => c.deliver === 'passage' && c.lesson === tag)
-      .sort((a, b) => (a.kind !== 'book') - (b.kind !== 'book') || a.n - b.n);
+      .sort((a, b) => (KIND_ORDER[a.kind] ?? 3) - (KIND_ORDER[b.kind] ?? 3) || a.n - b.n);
 }
 function pageSpan(p) { return p && p.length === 2 ? p[0] + '–' + p[1] : ''; }
 function passageLabel(c) {
   if (c.kind === 'book') return '课文 in your book · pages ' + pageSpan(c.bookPages);
-  return '短文' + (c.n > 1 ? cnNum(c.n) : '') + ' · a passage you have not seen';
+  if (c.kind === 'sentences') return '句子 · every word, in a sentence (' + c.lines.length + ')';
+  return '短文' + cnNum(c.n || 1) + ' · a passage you have not seen';
 }
 function passageState(c) {
   const e = SRS.entryFor(state, c.id);
@@ -2623,10 +2626,10 @@ function openChapter(tag) {
   $('c-reads').textContent = ch.readsPassed + ' / ' + ch.reads;
   $('c-reads-bar').style.width = pct(ch.readsPassed, ch.reads);
   $('c-state').textContent = ch.done
-      ? 'Chapter done. Its passages come back now and then for a re-read.'
+      ? 'Chapter done. Its readings come back now and then for a re-read.'
       : ch.wordsLearned < ch.words
         ? 'A word counts as learned once you get it right without help, and again after a gap.'
-        : 'Every word learned. Now read each passage through clean.';
+        : 'Every word learned. Now read each one through clean.';
 
   // What a session here would hold: this chapter's due reviews and new words.
   const nowIso = SRS.iso(new Date());
@@ -2737,7 +2740,8 @@ function openRead(id) {
   const box = $('r-lines');
   box.innerHTML = '';
   if (card.kind === 'book') { openBookRead(card, n); return; }
-  $('r-kicker').textContent = 'CHAPTER ' + n + ' · 短文 · READ ALOUD';
+  $('r-kicker').textContent = 'CHAPTER ' + n + ' · ' +
+      (card.kind === 'sentences' ? '句子' : '短文' + cnNum(card.n || 1)) + ' · READ ALOUD';
   $('r-scene').textContent = card.chapterTitle || '';
   $('r-help').textContent = 'Read the whole thing aloud, start to finish. ' +
       'Tap any word you can’t read.';
