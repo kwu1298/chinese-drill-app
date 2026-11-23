@@ -24,43 +24,45 @@
   "到",
   "球",
   "游",
+  "地",
   "情",
   "机",
+  "菜",
+  "语",
   "请",
   "吃",
-  "地",
   "很",
   "服",
   "样",
+  "照",
   "现",
   "病",
   "经",
-  "菜",
   "试",
   "远",
   "钟",
   "题",
   "吗",
   "园",
+  "得",
   "忙",
   "想",
   "房",
   "放",
   "新",
-  "照",
-  "语",
+  "物",
   "问",
   "馆",
   "刚",
   "客",
   "帮",
   "影",
-  "得",
   "快",
   "攻",
   "校",
   "清",
-  "物",
+  "烧",
+  "理",
   "站",
   "级",
   "花",
@@ -90,10 +92,13 @@
   "廊",
   "张",
   "忘",
+  "愿",
   "抱",
+  "换",
   "接",
   "搬",
   "晴",
+  "望",
   "板",
   "根",
   "梯",
@@ -101,6 +106,7 @@
   "注",
   "爬",
   "爸",
+  "瓶",
   "百",
   "睛",
   "睡",
@@ -115,6 +121,7 @@
   "运",
   "钢",
   "钱",
+  "颜",
   "鲤",
   "份",
   "低",
@@ -149,7 +156,6 @@
   "怒",
   "恨",
   "惯",
-  "愿",
   "慢",
   "懂",
   "托",
@@ -160,14 +166,12 @@
   "拥",
   "指",
   "按",
-  "换",
   "据",
   "提",
   "操",
   "故",
   "教",
   "斧",
-  "望",
   "期",
   "李",
   "村",
@@ -185,11 +189,8 @@
   "演",
   "澡",
   "灯",
-  "烧",
   "狠",
   "猛",
-  "理",
-  "瓶",
   "界",
   "疯",
   "症",
@@ -251,7 +252,6 @@
   "零",
   "雹",
   "震",
-  "颜",
   "饱",
   "骑",
   "鼻"
@@ -464,6 +464,15 @@
    "en": "This character is 游 — the 游 from 游戏 (yóuxì, game). It has two parts: the 氵 radical is the meaning part — water; 斿 tells you the sound: yóu. For example: 游客 (yóukè, tourist), 旅游 (lǚ yóu, to travel).",
    "audio": "4153fe7e1273.mp3"
   },
+  "地": {
+   "kind": "char",
+   "py": "dì",
+   "text": "这个字是「地」(dì)。是「地图」(dìtú) 的「地」。它有两个部分：「土」(tǔ) 是意思部分，意思是 soil；「也」(yě) 是声音部分——发音有一点像「也」(yě)。比如：「地方」(dìfang)、「本地」(běndì)。",
+   "say": "这个字是「地」。是「地图」的「地」。它有两个部分：「土」是意思部分，意思是 soil；「也」是声音部分，发音有一点像「也」。比如：「地方」、「本地」。",
+   "pyline": "zhège zì shì «dì». shì «dìtú» de «dì». tā yǒu liǎng ge bùfen: «tǔ» shì yìsi bùfen, yìsi shì soil; «yě» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «yě». bǐrú: «dìfang», «běndì».",
+   "en": "This character is 地 — the 地 from 地图 (dìtú, map). It has two parts: 土 is the meaning part — soil; 也 hints at the sound — a bit like yě. For example: 地方 (dìfang, place), 本地 (běndì, local).",
+   "audio": "0c1d939d3fa4.mp3"
+  },
   "情": {
    "kind": "char",
    "py": "qíng",
@@ -482,6 +491,24 @@
    "en": "This character is 机 — the 机 from 飞机 (fēi jī, airplane). It has two parts: the 木 radical is the meaning part — tree; 几 tells you the sound: jī. For example: 手机 (shǒujī, cell phone), 机场 (jī chǎng, airport).",
    "audio": "8c65cd095bd1.mp3"
   },
+  "菜": {
+   "kind": "char",
+   "py": "cài",
+   "text": "这个字是「菜」(cài)。意思是 dishes。它有两个部分：「艹」(草字头 cǎozìtóu) 是意思部分，意思是 grass；「采」(cǎi) 是声音部分——「采」告诉你发音：cài。比如：「菜单」(càidān)、「生菜」(shēngcài)。",
+   "say": "这个字是「菜」。意思是 dishes。它有两个部分：「草字头」是意思部分，意思是 grass；「采」是声音部分，「采」告诉你发音。比如：「菜单」、「生菜」。",
+   "pyline": "zhège zì shì «cài». yìsi shì dishes. tā yǒu liǎng ge bùfen: «cǎozìtóu» shì yìsi bùfen, yìsi shì grass; «cǎi» shì shēngyīn bùfen, «cǎi» gàosu nǐ fāyīn. bǐrú: «càidān», «shēngcài».",
+   "en": "This character is 菜 — dishes. It has two parts: the 艹 radical is the meaning part — grass; 采 tells you the sound: cài. For example: 菜单 (càidān, menu), 生菜 (shēngcài, lettuce).",
+   "audio": "f1cb16439363.mp3"
+  },
+  "语": {
+   "kind": "char",
+   "py": "yǔ",
+   "text": "这个字是「语」(yǔ)。是「无语」(wúyǔ) 的「语」。它有两个部分：「讠」(言字旁 yánzìpáng) 是意思部分，意思是 words；「吾」(wú) 是声音部分——发音有一点像「吾」(wú)。比如：「汉语」(Hànyǔ)、「汉语老师」(Hànyǔ lǎoshī)。",
+   "say": "这个字是「语」。是「无语」的「语」。它有两个部分：「言字旁」是意思部分，意思是 words；「吾」是声音部分，发音有一点像「吾」。比如：「汉语」、「汉语老师」。",
+   "pyline": "zhège zì shì «yǔ». shì «wúyǔ» de «yǔ». tā yǒu liǎng ge bùfen: «yánzìpáng» shì yìsi bùfen, yìsi shì words; «wú» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «wú». bǐrú: «Hànyǔ», «Hànyǔ lǎoshī».",
+   "en": "This character is 语 — the 语 from 无语 (wúyǔ, speechless). It has two parts: the 讠 radical is the meaning part — words; 吾 hints at the sound — a bit like wú. For example: 汉语 (Hànyǔ, Chinese language), 汉语老师 (Hànyǔ lǎoshī, Chinese teacher).",
+   "audio": "1ecdec38bb75.mp3"
+  },
   "请": {
    "kind": "char",
    "py": "qǐng",
@@ -499,15 +526,6 @@
    "pyline": "zhège zì shì «chī». yìsi shì to eat. tā yǒu liǎng ge bùfen: «kǒuzìpáng» shì yìsi bùfen, yìsi shì mouth; «qǐ» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «qǐ». bǐrú: «hǎo chī», «chī yào».",
    "en": "This character is 吃 — to eat. It has two parts: the 口 radical is the meaning part — mouth; 乞 hints at the sound — a bit like qǐ. For example: 好吃 (hǎo chī, delicious), 吃药 (chī yào, to take medicine).",
    "audio": "e16740ec4d35.mp3"
-  },
-  "地": {
-   "kind": "char",
-   "py": "dì",
-   "text": "这个字是「地」(dì)。是「地图」(dìtú) 的「地」。它有两个部分：「土」(tǔ) 是意思部分，意思是 soil；「也」(yě) 是声音部分——发音有一点像「也」(yě)。比如：「地方」(dìfang)、「本地」(běndì)。",
-   "say": "这个字是「地」。是「地图」的「地」。它有两个部分：「土」是意思部分，意思是 soil；「也」是声音部分，发音有一点像「也」。比如：「地方」、「本地」。",
-   "pyline": "zhège zì shì «dì». shì «dìtú» de «dì». tā yǒu liǎng ge bùfen: «tǔ» shì yìsi bùfen, yìsi shì soil; «yě» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «yě». bǐrú: «dìfang», «běndì».",
-   "en": "This character is 地 — the 地 from 地图 (dìtú, map). It has two parts: 土 is the meaning part — soil; 也 hints at the sound — a bit like yě. For example: 地方 (dìfang, place), 本地 (běndì, local).",
-   "audio": "0c1d939d3fa4.mp3"
   },
   "很": {
    "kind": "char",
@@ -536,6 +554,15 @@
    "en": "This character is 样 — the 样 from 怎么样 (zěn me yàng, how). It has two parts: the 木 radical is the meaning part — tree; 羊 tells you the sound: yàng. For example: 一样 (yíyàng, same), 咋样 (zǎyàng, how's it going (colloquial)).",
    "audio": "14b826ceb081.mp3"
   },
+  "照": {
+   "kind": "char",
+   "py": "zhào",
+   "text": "这个字是「照」(zhào)。是「照顾」(zhàogù) 的「照」。它有两个部分：「灬」(四点底 sìdiǎndǐ) 是意思部分，意思是 fire；「昭」(zhāo) 是声音部分——「昭」告诉你发音：zhào。比如：「护照」(hùzhào)、「照片」(zhàopiàn)。",
+   "say": "这个字是「照」。是「照顾」的「照」。它有两个部分：「四点底」是意思部分，意思是 fire；「昭」是声音部分，「昭」告诉你发音。比如：「护照」、「照片」。",
+   "pyline": "zhège zì shì «zhào». shì «zhàogù» de «zhào». tā yǒu liǎng ge bùfen: «sìdiǎndǐ» shì yìsi bùfen, yìsi shì fire; «zhāo» shì shēngyīn bùfen, «zhāo» gàosu nǐ fāyīn. bǐrú: «hùzhào», «zhàopiàn».",
+   "en": "This character is 照 — the 照 from 照顾 (zhàogù, to look after). It has two parts: the 灬 radical is the meaning part — fire; 昭 tells you the sound: zhào. For example: 护照 (hùzhào, passport), 照片 (zhàopiàn, picture).",
+   "audio": "7885b47ca422.mp3"
+  },
   "现": {
    "kind": "char",
    "py": "xiàn",
@@ -562,15 +589,6 @@
    "pyline": "zhège zì shì «jīng». shì «yǐjīng» de «jīng». tā yǒu liǎng ge bùfen: «jiǎosīpáng» shì yìsi bùfen, yìsi shì silk; shēngyīn bùfen gàosu nǐ fāyīn. bǐrú: «jīnglǐ», «jīnglì».",
    "en": "This character is 经 — the 经 from 已经 (yǐjīng, already). It has two parts: the 纟 radical is the meaning part — silk; the sound part tells you the reading: jīng. For example: 经理 (jīnglǐ, manager), 经历 (jīnglì, experience).",
    "audio": "408088b2cd34.mp3"
-  },
-  "菜": {
-   "kind": "char",
-   "py": "cài",
-   "text": "这个字是「菜」(cài)。意思是 dishes。它有两个部分：「艹」(草字头 cǎozìtóu) 是意思部分，意思是 grass；「采」(cǎi) 是声音部分——「采」告诉你发音：cài。比如：「菜单」(càidān)、「生菜」(shēngcài)。",
-   "say": "这个字是「菜」。意思是 dishes。它有两个部分：「草字头」是意思部分，意思是 grass；「采」是声音部分，「采」告诉你发音。比如：「菜单」、「生菜」。",
-   "pyline": "zhège zì shì «cài». yìsi shì dishes. tā yǒu liǎng ge bùfen: «cǎozìtóu» shì yìsi bùfen, yìsi shì grass; «cǎi» shì shēngyīn bùfen, «cǎi» gàosu nǐ fāyīn. bǐrú: «càidān», «shēngcài».",
-   "en": "This character is 菜 — dishes. It has two parts: the 艹 radical is the meaning part — grass; 采 tells you the sound: cài. For example: 菜单 (càidān, menu), 生菜 (shēngcài, lettuce).",
-   "audio": "f1cb16439363.mp3"
   },
   "试": {
    "kind": "char",
@@ -626,6 +644,15 @@
    "en": "This character is 园 — garden. It has two parts: the 囗 radical is the meaning part — enclosure; 元 tells you the sound: yuán. For example: 公园 (gōngyuán, park), 去公园 (qù gōngyuán, to go to the park).",
    "audio": "0bbf21de60b5.mp3"
   },
+  "得": {
+   "kind": "char",
+   "py": "de",
+   "text": "这个字是「得」(de)。是「觉得」(juéde) 的「得」。它有两个部分：「彳」(双人旁 shuāngrénpáng) 是意思部分，意思是 step with left foot；声音部分告诉你发音：dé。比如：「记得」(jìde)、「得到」(dé dào)。",
+   "say": "这个字是「得」。是「觉得」的「得」。它有两个部分：「双人旁」是意思部分，意思是 step with left foot；声音部分告诉你发音。比如：「记得」、「得到」。",
+   "pyline": "zhège zì shì «de». shì «juéde» de «de». tā yǒu liǎng ge bùfen: «shuāngrénpáng» shì yìsi bùfen, yìsi shì step with left foot; shēngyīn bùfen gàosu nǐ fāyīn. bǐrú: «jìde», «dé dào».",
+   "en": "This character is 得 — the 得 from 觉得 (juéde, to feel). It has two parts: the 彳 radical is the meaning part — step with left foot; the sound part tells you the reading: dé. For example: 记得 (jìde, to remember), 得到 (dé dào, to get / to obtain / to receive).",
+   "audio": "d3f3b8591826.mp3"
+  },
   "忙": {
    "kind": "char",
    "py": "máng",
@@ -671,23 +698,14 @@
    "en": "This character is 新 — new. It has two parts: 斤 is the meaning part — axe; 亲 hints at the sound — a bit like qīn. For example: 新鲜 (xīnxiān, fresh), 新闻 (xīnwén, news).",
    "audio": "c7fe34299602.mp3"
   },
-  "照": {
+  "物": {
    "kind": "char",
-   "py": "zhào",
-   "text": "这个字是「照」(zhào)。是「照顾」(zhàogù) 的「照」。它有两个部分：「灬」(四点底 sìdiǎndǐ) 是意思部分，意思是 fire；「昭」(zhāo) 是声音部分——「昭」告诉你发音：zhào。比如：「护照」(hùzhào)、「照片」(zhàopiàn)。",
-   "say": "这个字是「照」。是「照顾」的「照」。它有两个部分：「四点底」是意思部分，意思是 fire；「昭」是声音部分，「昭」告诉你发音。比如：「护照」、「照片」。",
-   "pyline": "zhège zì shì «zhào». shì «zhàogù» de «zhào». tā yǒu liǎng ge bùfen: «sìdiǎndǐ» shì yìsi bùfen, yìsi shì fire; «zhāo» shì shēngyīn bùfen, «zhāo» gàosu nǐ fāyīn. bǐrú: «hùzhào», «zhàopiàn».",
-   "en": "This character is 照 — the 照 from 照顾 (zhàogù, to look after). It has two parts: the 灬 radical is the meaning part — fire; 昭 tells you the sound: zhào. For example: 护照 (hùzhào, passport), 照片 (zhàopiàn, picture).",
-   "audio": "7885b47ca422.mp3"
-  },
-  "语": {
-   "kind": "char",
-   "py": "yǔ",
-   "text": "这个字是「语」(yǔ)。是「无语」(wúyǔ) 的「语」。它有两个部分：「讠」(言字旁 yánzìpáng) 是意思部分，意思是 words；「吾」(wú) 是声音部分——发音有一点像「吾」(wú)。比如：「汉语」(Hànyǔ)、「汉语老师」(Hànyǔ lǎoshī)。",
-   "say": "这个字是「语」。是「无语」的「语」。它有两个部分：「言字旁」是意思部分，意思是 words；「吾」是声音部分，发音有一点像「吾」。比如：「汉语」、「汉语老师」。",
-   "pyline": "zhège zì shì «yǔ». shì «wúyǔ» de «yǔ». tā yǒu liǎng ge bùfen: «yánzìpáng» shì yìsi bùfen, yìsi shì words; «wú» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «wú». bǐrú: «Hànyǔ», «Hànyǔ lǎoshī».",
-   "en": "This character is 语 — the 语 from 无语 (wúyǔ, speechless). It has two parts: the 讠 radical is the meaning part — words; 吾 hints at the sound — a bit like wú. For example: 汉语 (Hànyǔ, Chinese language), 汉语老师 (Hànyǔ lǎoshī, Chinese teacher).",
-   "audio": "1ecdec38bb75.mp3"
+   "py": "wù",
+   "text": "这个字是「物」(wù)。是「动物」(dòngwù) 的「物」。它有两个部分：「牛」(niú) 是意思部分，意思是 cow；「勿」(wù) 是声音部分——「勿」告诉你发音：wù。比如：「礼物」(lǐwù)、「货物」(huòwù)。",
+   "say": "这个字是「物」。是「动物」的「物」。它有两个部分：「牛」是意思部分，意思是 cow；「勿」是声音部分，「勿」告诉你发音。比如：「礼物」、「货物」。",
+   "pyline": "zhège zì shì «wù». shì «dòngwù» de «wù». tā yǒu liǎng ge bùfen: «niú» shì yìsi bùfen, yìsi shì cow; «wù» shì shēngyīn bùfen, «wù» gàosu nǐ fāyīn. bǐrú: «lǐwù», «huòwù».",
+   "en": "This character is 物 — the 物 from 动物 (dòngwù, animal). It has two parts: 牛 is the meaning part — cow; 勿 tells you the sound: wù. For example: 礼物 (lǐwù, gift), 货物 (huòwù, goods).",
+   "audio": "a94d548e3548.mp3"
   },
   "问": {
    "kind": "char",
@@ -743,15 +761,6 @@
    "en": "This character is 影 — shadow. It has two parts: the 彡 radical is the meaning part — hair; 景 hints at the sound — a bit like jǐng. For example: 电影 (diànyǐng, movie), 影响 (yǐngxiǎng, (to) influence).",
    "audio": "77c935f31d55.mp3"
   },
-  "得": {
-   "kind": "char",
-   "py": "de",
-   "text": "这个字是「得」(de)。是「觉得」(juéde) 的「得」。它有两个部分：「彳」(双人旁 shuāngrénpáng) 是意思部分，意思是 step with left foot；声音部分告诉你发音：dé。比如：「记得」(jìde)、「得到」(dé dào)。",
-   "say": "这个字是「得」。是「觉得」的「得」。它有两个部分：「双人旁」是意思部分，意思是 step with left foot；声音部分告诉你发音。比如：「记得」、「得到」。",
-   "pyline": "zhège zì shì «de». shì «juéde» de «de». tā yǒu liǎng ge bùfen: «shuāngrénpáng» shì yìsi bùfen, yìsi shì step with left foot; shēngyīn bùfen gàosu nǐ fāyīn. bǐrú: «jìde», «dé dào».",
-   "en": "This character is 得 — the 得 from 觉得 (juéde, to feel). It has two parts: the 彳 radical is the meaning part — step with left foot; the sound part tells you the reading: dé. For example: 记得 (jìde, to remember), 得到 (dé dào, to get / to obtain / to receive).",
-   "audio": "d3f3b8591826.mp3"
-  },
   "快": {
    "kind": "char",
    "py": "kuài",
@@ -788,14 +797,23 @@
    "en": "This character is 清 — clear. It has two parts: the 氵 radical is the meaning part — water; 青 tells you the sound: qīng. For example: 清楚 (qīngchu, clear), 清水 (qīngshuǐ, clear water).",
    "audio": "5827c1366a4a.mp3"
   },
-  "物": {
+  "烧": {
    "kind": "char",
-   "py": "wù",
-   "text": "这个字是「物」(wù)。是「动物」(dòngwù) 的「物」。它有两个部分：「牛」(niú) 是意思部分，意思是 cow；「勿」(wù) 是声音部分——「勿」告诉你发音：wù。比如：「礼物」(lǐwù)、「货物」(huòwù)。",
-   "say": "这个字是「物」。是「动物」的「物」。它有两个部分：「牛」是意思部分，意思是 cow；「勿」是声音部分，「勿」告诉你发音。比如：「礼物」、「货物」。",
-   "pyline": "zhège zì shì «wù». shì «dòngwù» de «wù». tā yǒu liǎng ge bùfen: «niú» shì yìsi bùfen, yìsi shì cow; «wù» shì shēngyīn bùfen, «wù» gàosu nǐ fāyīn. bǐrú: «lǐwù», «huòwù».",
-   "en": "This character is 物 — the 物 from 动物 (dòngwù, animal). It has two parts: 牛 is the meaning part — cow; 勿 tells you the sound: wù. For example: 礼物 (lǐwù, gift), 货物 (huòwù, goods).",
-   "audio": "a94d548e3548.mp3"
+   "py": "shāo",
+   "text": "这个字是「烧」(shāo)。是「发烧」(fā shāo) 的「烧」。它有两个部分：「火」(火字旁 huǒzìpáng) 是意思部分，意思是 fire；「尧」(yáo) 是声音部分——发音有一点像「尧」(yáo)。",
+   "say": "这个字是「烧」。是「发烧」的「烧」。它有两个部分：「火字旁」是意思部分，意思是 fire；「尧」是声音部分，发音有一点像「尧」。",
+   "pyline": "zhège zì shì «shāo». shì «fā shāo» de «shāo». tā yǒu liǎng ge bùfen: «huǒzìpáng» shì yìsi bùfen, yìsi shì fire; «yáo» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «yáo».",
+   "en": "This character is 烧 — the 烧 from 发烧 (fā shāo, to have a fever). It has two parts: the 火 radical is the meaning part — fire; 尧 hints at the sound — a bit like yáo.",
+   "audio": "54ddc5e0e79e.mp3"
+  },
+  "理": {
+   "kind": "char",
+   "py": "lǐ",
+   "text": "这个字是「理」(lǐ)。是「经理」(jīnglǐ) 的「理」。它有两个部分：「王」(wáng) 是意思部分，意思是 jade；「里」(lǐ) 是声音部分——「里」告诉你发音：lǐ。",
+   "say": "这个字是「理」。是「经理」的「理」。它有两个部分：「王」是意思部分，意思是 jade；「里」是声音部分，「里」告诉你发音。",
+   "pyline": "zhège zì shì «lǐ». shì «jīnglǐ» de «lǐ». tā yǒu liǎng ge bùfen: «wáng» shì yìsi bùfen, yìsi shì jade; «lǐ» shì shēngyīn bùfen, «lǐ» gàosu nǐ fāyīn.",
+   "en": "This character is 理 — the 理 from 经理 (jīnglǐ, manager). It has two parts: 王 is the meaning part — jade; 里 tells you the sound: lǐ.",
+   "audio": "1b6e5d7b90ff.mp3"
   },
   "站": {
    "kind": "char",
@@ -1058,6 +1076,15 @@
    "en": "This character is 忘 — to forget. It has two parts: the 心 radical is the meaning part — heart; 亡 tells you the sound: wàng. For example: 忘记 (wàngjì, to forget).",
    "audio": "8dbb917923da.mp3"
   },
+  "愿": {
+   "kind": "char",
+   "py": "yuàn",
+   "text": "这个字是「愿」(yuàn)。是「愿意」(yuànyi) 的「愿」。它有两个部分：「心」(心字底 xīnzìdǐ) 是意思部分，意思是 heart；「原」(yuán) 是声音部分——「原」告诉你发音：yuàn。",
+   "say": "这个字是「愿」。是「愿意」的「愿」。它有两个部分：「心字底」是意思部分，意思是 heart；「原」是声音部分，「原」告诉你发音。",
+   "pyline": "zhège zì shì «yuàn». shì «yuànyi» de «yuàn». tā yǒu liǎng ge bùfen: «xīnzìdǐ» shì yìsi bùfen, yìsi shì heart; «yuán» shì shēngyīn bùfen, «yuán» gàosu nǐ fāyīn.",
+   "en": "This character is 愿 — the 愿 from 愿意 (yuànyi, would like to). It has two parts: the 心 radical is the meaning part — heart; 原 tells you the sound: yuàn.",
+   "audio": "0cceeaaeacd6.mp3"
+  },
   "抱": {
    "kind": "char",
    "py": "bào",
@@ -1066,6 +1093,15 @@
    "pyline": "zhège zì shì «bào». yìsi shì to hug. tā yǒu liǎng ge bùfen: «tíshǒupáng» shì yìsi bùfen, yìsi shì hand; «bāo» shì shēngyīn bùfen, «bāo» gàosu nǐ fāyīn. bǐrú: «Yōngbào».",
    "en": "This character is 抱 — to hug. It has two parts: the 扌 radical is the meaning part — hand; 包 tells you the sound: bào. For example: 拥抱 (Yōngbào, To embrace).",
    "audio": "16d8c506ab56.mp3"
+  },
+  "换": {
+   "kind": "char",
+   "py": "huàn",
+   "text": "这个字是「换」(huàn)。意思是 to change。它有两个部分：「扌」(提手旁 tíshǒupáng) 是意思部分，意思是 hand；「奂」(huàn) 是声音部分——「奂」告诉你发音：huàn。",
+   "say": "这个字是「换」。意思是 to change。它有两个部分：「提手旁」是意思部分，意思是 hand；「奂」是声音部分，「奂」告诉你发音。",
+   "pyline": "zhège zì shì «huàn». yìsi shì to change. tā yǒu liǎng ge bùfen: «tíshǒupáng» shì yìsi bùfen, yìsi shì hand; «huàn» shì shēngyīn bùfen, «huàn» gàosu nǐ fāyīn.",
+   "en": "This character is 换 — to change. It has two parts: the 扌 radical is the meaning part — hand; 奂 tells you the sound: huàn.",
+   "audio": "05438ef974b6.mp3"
   },
   "接": {
    "kind": "char",
@@ -1093,6 +1129,15 @@
    "pyline": "zhège zì shì «qíng». yìsi shì clear (of weather). tā yǒu liǎng ge bùfen: «rìzìpáng» shì yìsi bùfen, yìsi shì sun; «qīng» shì shēngyīn bùfen, «qīng» gàosu nǐ fāyīn. bǐrú: «qíngtiān».",
    "en": "This character is 晴 — clear (of weather). It has two parts: the 日 radical is the meaning part — sun; 青 tells you the sound: qíng. For example: 晴天 (qíngtiān, a sunny day).",
    "audio": "4efb40d6bb9a.mp3"
+  },
+  "望": {
+   "kind": "char",
+   "py": "wàng",
+   "text": "这个字是「望」(wàng)。是「希望」(xī wàng) 的「望」。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 moon；「亡」(wáng) 是声音部分——「亡」告诉你发音：wàng。",
+   "say": "这个字是「望」。是「希望」的「望」。它有两个部分：「月字旁」是意思部分，意思是 moon；「亡」是声音部分，「亡」告诉你发音。",
+   "pyline": "zhège zì shì «wàng». shì «xī wàng» de «wàng». tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì moon; «wáng» shì shēngyīn bùfen, «wáng» gàosu nǐ fāyīn.",
+   "en": "This character is 望 — the 望 from 希望 (xī wàng, to hope). It has two parts: the 月 radical is the meaning part — moon; 亡 tells you the sound: wàng.",
+   "audio": "210063c158c8.mp3"
   },
   "板": {
    "kind": "char",
@@ -1156,6 +1201,15 @@
    "pyline": "zhège zì shì «bà». yìsi shì dad. tā yǒu liǎng ge bùfen: «fù» shì yìsi bùfen, yìsi shì father; «bā» shì shēngyīn bùfen, «bā» gàosu nǐ fāyīn. bǐrú: «bàba».",
    "en": "This character is 爸 — dad. It has two parts: 父 is the meaning part — father; 巴 tells you the sound: bà. For example: 爸爸 (bàba, dad).",
    "audio": "9975219ba821.mp3"
+  },
+  "瓶": {
+   "kind": "char",
+   "py": "píng",
+   "text": "这个字是「瓶」(píng)。是「瓶子」(píngzi) 的「瓶」。它有两个部分：「瓦」(wǎ) 是意思部分，意思是 tile；「并」(bìng) 是声音部分——发音有一点像「并」(bìng)。",
+   "say": "这个字是「瓶」。是「瓶子」的「瓶」。它有两个部分：「瓦」是意思部分，意思是 tile；「并」是声音部分，发音有一点像「并」。",
+   "pyline": "zhège zì shì «píng». shì «píngzi» de «píng». tā yǒu liǎng ge bùfen: «wǎ» shì yìsi bùfen, yìsi shì tile; «bìng» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «bìng».",
+   "en": "This character is 瓶 — the 瓶 from 瓶子 (píngzi, bottle). It has two parts: 瓦 is the meaning part — tile; 并 hints at the sound — a bit like bìng.",
+   "audio": "586d5db482ca.mp3"
   },
   "百": {
    "kind": "char",
@@ -1282,6 +1336,15 @@
    "pyline": "zhège zì shì «qián». yìsi shì money. tā yǒu liǎng ge bùfen: «jīnzìpáng» shì yìsi bùfen, yìsi shì gold; «jiān» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «jiān». bǐrú: «kuài qián».",
    "en": "This character is 钱 — money. It has two parts: the 钅 radical is the meaning part — gold; 戋 hints at the sound — a bit like jiān. For example: 块钱 (kuài qián, money).",
    "audio": "04c68fadf627.mp3"
+  },
+  "颜": {
+   "kind": "char",
+   "py": "yán",
+   "text": "这个字是「颜」(yán)。是「颜色」(yán sè) 的「颜」。它有两个部分：「页」(yè) 是意思部分，意思是 page；「彦」(yàn) 是声音部分——「彦」告诉你发音：yán。",
+   "say": "这个字是「颜」。是「颜色」的「颜」。它有两个部分：「页」是意思部分，意思是 page；「彦」是声音部分，「彦」告诉你发音。",
+   "pyline": "zhège zì shì «yán». shì «yán sè» de «yán». tā yǒu liǎng ge bùfen: «yè» shì yìsi bùfen, yìsi shì page; «yàn» shì shēngyīn bùfen, «yàn» gàosu nǐ fāyīn.",
+   "en": "This character is 颜 — the 颜 from 颜色 (yán sè, color). It has two parts: 页 is the meaning part — page; 彦 tells you the sound: yán.",
+   "audio": "10c66fd44972.mp3"
   },
   "鲤": {
    "kind": "char",
@@ -1589,15 +1652,6 @@
    "en": "This character is 惯 — the 惯 from 习惯 (xíguàn, to be used to). It has two parts: the 忄 radical is the meaning part — heart; 贯 tells you the sound: guàn.",
    "audio": "5adf05e76e42.mp3"
   },
-  "愿": {
-   "kind": "char",
-   "py": "yuàn",
-   "text": "这个字是「愿」(yuàn)。是「愿意」(yuànyi) 的「愿」。它有两个部分：「心」(心字底 xīnzìdǐ) 是意思部分，意思是 heart；「原」(yuán) 是声音部分——「原」告诉你发音：yuàn。",
-   "say": "这个字是「愿」。是「愿意」的「愿」。它有两个部分：「心字底」是意思部分，意思是 heart；「原」是声音部分，「原」告诉你发音。",
-   "pyline": "zhège zì shì «yuàn». shì «yuànyi» de «yuàn». tā yǒu liǎng ge bùfen: «xīnzìdǐ» shì yìsi bùfen, yìsi shì heart; «yuán» shì shēngyīn bùfen, «yuán» gàosu nǐ fāyīn.",
-   "en": "This character is 愿 — the 愿 from 愿意 (yuànyi, would like to). It has two parts: the 心 radical is the meaning part — heart; 原 tells you the sound: yuàn.",
-   "audio": "0cceeaaeacd6.mp3"
-  },
   "慢": {
    "kind": "char",
    "py": "màn",
@@ -1688,15 +1742,6 @@
    "en": "This character is 按 — the 按 from 按摩 (ànmó, to massage). It has two parts: the 扌 radical is the meaning part — hand; 安 tells you the sound: àn.",
    "audio": "1b4ea0df2802.mp3"
   },
-  "换": {
-   "kind": "char",
-   "py": "huàn",
-   "text": "这个字是「换」(huàn)。意思是 to change。它有两个部分：「扌」(提手旁 tíshǒupáng) 是意思部分，意思是 hand；「奂」(huàn) 是声音部分——「奂」告诉你发音：huàn。",
-   "say": "这个字是「换」。意思是 to change。它有两个部分：「提手旁」是意思部分，意思是 hand；「奂」是声音部分，「奂」告诉你发音。",
-   "pyline": "zhège zì shì «huàn». yìsi shì to change. tā yǒu liǎng ge bùfen: «tíshǒupáng» shì yìsi bùfen, yìsi shì hand; «huàn» shì shēngyīn bùfen, «huàn» gàosu nǐ fāyīn.",
-   "en": "This character is 换 — to change. It has two parts: the 扌 radical is the meaning part — hand; 奂 tells you the sound: huàn.",
-   "audio": "05438ef974b6.mp3"
-  },
   "据": {
    "kind": "char",
    "py": "jù",
@@ -1750,15 +1795,6 @@
    "pyline": "zhège zì shì «fǔ». shì «fǔtou» de «fǔ». tā yǒu liǎng ge bùfen: «jīn» shì yìsi bùfen, yìsi shì axe; «fù» shì shēngyīn bùfen, «fù» gàosu nǐ fāyīn.",
    "en": "This character is 斧 — the 斧 from 斧头 (fǔtou, axe). It has two parts: 斤 is the meaning part — axe; 父 tells you the sound: fǔ.",
    "audio": "98d093d4796e.mp3"
-  },
-  "望": {
-   "kind": "char",
-   "py": "wàng",
-   "text": "这个字是「望」(wàng)。是「希望」(xī wàng) 的「望」。它有两个部分：「月」(月字旁 yuèzìpáng) 是意思部分，意思是 moon；「亡」(wáng) 是声音部分——「亡」告诉你发音：wàng。",
-   "say": "这个字是「望」。是「希望」的「望」。它有两个部分：「月字旁」是意思部分，意思是 moon；「亡」是声音部分，「亡」告诉你发音。",
-   "pyline": "zhège zì shì «wàng». shì «xī wàng» de «wàng». tā yǒu liǎng ge bùfen: «yuèzìpáng» shì yìsi bùfen, yìsi shì moon; «wáng» shì shēngyīn bùfen, «wáng» gàosu nǐ fāyīn.",
-   "en": "This character is 望 — the 望 from 希望 (xī wàng, to hope). It has two parts: the 月 radical is the meaning part — moon; 亡 tells you the sound: wàng.",
-   "audio": "210063c158c8.mp3"
   },
   "期": {
    "kind": "char",
@@ -1913,15 +1949,6 @@
    "en": "This character is 灯 — light. It has two parts: the 火 radical is the meaning part — fire; 丁 hints at the sound — a bit like dīng.",
    "audio": "a6d46fc74875.mp3"
   },
-  "烧": {
-   "kind": "char",
-   "py": "shāo",
-   "text": "这个字是「烧」(shāo)。是「发烧」(fā shāo) 的「烧」。它有两个部分：「火」(火字旁 huǒzìpáng) 是意思部分，意思是 fire；「尧」(yáo) 是声音部分——发音有一点像「尧」(yáo)。",
-   "say": "这个字是「烧」。是「发烧」的「烧」。它有两个部分：「火字旁」是意思部分，意思是 fire；「尧」是声音部分，发音有一点像「尧」。",
-   "pyline": "zhège zì shì «shāo». shì «fā shāo» de «shāo». tā yǒu liǎng ge bùfen: «huǒzìpáng» shì yìsi bùfen, yìsi shì fire; «yáo» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «yáo».",
-   "en": "This character is 烧 — the 烧 from 发烧 (fā shāo, to have a fever). It has two parts: the 火 radical is the meaning part — fire; 尧 hints at the sound — a bit like yáo.",
-   "audio": "54ddc5e0e79e.mp3"
-  },
   "狠": {
    "kind": "char",
    "py": "hěn",
@@ -1939,24 +1966,6 @@
    "pyline": "zhège zì shì «měng». shì «měnghǔ» de «měng». tā yǒu liǎng ge bùfen: «fǎnquǎnpáng» shì yìsi bùfen, yìsi shì dog; «mèng» shì shēngyīn bùfen, «mèng» gàosu nǐ fāyīn.",
    "en": "This character is 猛 — the 猛 from 猛虎 (měnghǔ, a fierce tiger). It has two parts: the 犭 radical is the meaning part — dog; 孟 tells you the sound: měng.",
    "audio": "db4f8cefc539.mp3"
-  },
-  "理": {
-   "kind": "char",
-   "py": "lǐ",
-   "text": "这个字是「理」(lǐ)。是「经理」(jīnglǐ) 的「理」。它有两个部分：「王」(wáng) 是意思部分，意思是 jade；「里」(lǐ) 是声音部分——「里」告诉你发音：lǐ。",
-   "say": "这个字是「理」。是「经理」的「理」。它有两个部分：「王」是意思部分，意思是 jade；「里」是声音部分，「里」告诉你发音。",
-   "pyline": "zhège zì shì «lǐ». shì «jīnglǐ» de «lǐ». tā yǒu liǎng ge bùfen: «wáng» shì yìsi bùfen, yìsi shì jade; «lǐ» shì shēngyīn bùfen, «lǐ» gàosu nǐ fāyīn.",
-   "en": "This character is 理 — the 理 from 经理 (jīnglǐ, manager). It has two parts: 王 is the meaning part — jade; 里 tells you the sound: lǐ.",
-   "audio": "1b6e5d7b90ff.mp3"
-  },
-  "瓶": {
-   "kind": "char",
-   "py": "píng",
-   "text": "这个字是「瓶」(píng)。是「瓶子」(píngzi) 的「瓶」。它有两个部分：「瓦」(wǎ) 是意思部分，意思是 tile；「并」(bìng) 是声音部分——发音有一点像「并」(bìng)。",
-   "say": "这个字是「瓶」。是「瓶子」的「瓶」。它有两个部分：「瓦」是意思部分，意思是 tile；「并」是声音部分，发音有一点像「并」。",
-   "pyline": "zhège zì shì «píng». shì «píngzi» de «píng». tā yǒu liǎng ge bùfen: «wǎ» shì yìsi bùfen, yìsi shì tile; «bìng» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «bìng».",
-   "en": "This character is 瓶 — the 瓶 from 瓶子 (píngzi, bottle). It has two parts: 瓦 is the meaning part — tile; 并 hints at the sound — a bit like bìng.",
-   "audio": "586d5db482ca.mp3"
   },
   "界": {
    "kind": "char",
@@ -2506,15 +2515,6 @@
    "pyline": "zhège zì shì «zhèn». shì «zhènyāng» de «zhèn». tā yǒu liǎng ge bùfen: «yǔ» shì yìsi bùfen, yìsi shì rain; «chén» shì shēngyīn bùfen, fāyīn yǒu yìdiǎn xiàng «chén».",
    "en": "This character is 震 — the 震 from 震央 (zhènyāng, epicentre). It has two parts: 雨 is the meaning part — rain; 辰 hints at the sound — a bit like chén.",
    "audio": "16171d046c3e.mp3"
-  },
-  "颜": {
-   "kind": "char",
-   "py": "yán",
-   "text": "这个字是「颜」(yán)。是「颜色」(yán sè) 的「颜」。它有两个部分：「页」(yè) 是意思部分，意思是 page；「彦」(yàn) 是声音部分——「彦」告诉你发音：yán。",
-   "say": "这个字是「颜」。是「颜色」的「颜」。它有两个部分：「页」是意思部分，意思是 page；「彦」是声音部分，「彦」告诉你发音。",
-   "pyline": "zhège zì shì «yán». shì «yán sè» de «yán». tā yǒu liǎng ge bùfen: «yè» shì yìsi bùfen, yìsi shì page; «yàn» shì shēngyīn bùfen, «yàn» gàosu nǐ fāyīn.",
-   "en": "This character is 颜 — the 颜 from 颜色 (yán sè, color). It has two parts: 页 is the meaning part — page; 彦 tells you the sound: yán.",
-   "audio": "10c66fd44972.mp3"
   },
   "饱": {
    "kind": "char",

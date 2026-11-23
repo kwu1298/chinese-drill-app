@@ -199,7 +199,76 @@ const SRS = {
   // Cards tagged deliver:"table" are a paradigm the grid and the matching
   // round teach as a system. They keep their schedule and their history --
   // they are just never handed out as isolated multiple-choice.
-  drillable(cards) { return cards.filter(c => c.deliver !== 'table'); },
+  // "table" groups are taught as a grid; "passage" cards are whole 课文
+  // read on the reading screen. Neither is a flashcard. Mirrors drill.py's
+  // UNDRILLED.
+  drillable(cards) {
+    return cards.filter(c => c.deliver !== 'table' && c.deliver !== 'passage');
+  },
+
+  // --- chapters: port of drill.py's chapter_of / is_learned /
+  // chapter_status / current_chapter. Derived, never stored, so the Mac and
+  // the phone agree on where you are. test-queue.{py,js} hold them together.
+  chapterOf(card) {
+    const m = /^b3-(\d\d)$/.exec(card.lesson || '');
+    return m && Number(m[1]) ? Number(m[1]) : null;
+  },
+
+  isLearned(entry) {
+    return (entry.reps || 0) > 0 &&
+           (entry.step || 0) >= SRS.LEARNING_STEPS_MIN.length;
+  },
+
+  // Needs the whole deck, passages included.
+  chapterStatus(cards, state, now) {
+    const nowIso = SRS.iso(now || new Date());
+    const chapters = {};
+    for (const card of cards) {
+      const n = SRS.chapterOf(card);
+      if (n === null) continue;
+      const ch = chapters[n] || (chapters[n] =
+          {n, tag: card.lesson, title: '', words: {}, wordOrder: [], reads: []});
+      const e = SRS.entryFor(state, card.id);
+      if (card.deliver === 'passage') {
+        ch.title = ch.title || card.chapterTitle || '';
+        ch.reads.push({
+          id: card.id,
+          kind: card.kind || 'text',
+          passed: SRS.isLearned(e),
+          due: e.reps + (e.lapses || 0) > 0 && e.due <= nowIso,
+        });
+      } else if (card.core && card.cat === 'vocab') {
+        const b = SRS.baseOf(card.id);
+        if (!ch.words[b]) {
+          ch.words[b] = {seen: false, learned: true};
+          ch.wordOrder.push(b);
+        }
+        const w = ch.words[b];
+        w.seen = w.seen || e.reps + (e.lapses || 0) > 0;
+        w.learned = w.learned && SRS.isLearned(e);
+      }
+    }
+    return Object.keys(chapters).map(Number).sort((a, b) => a - b).map(n => {
+      const ch = chapters[n];
+      const words = ch.wordOrder.map(b => ch.words[b]);
+      const learned = words.filter(w => w.learned).length;
+      const passed = ch.reads.filter(r => r.passed).length;
+      return {
+        n, tag: ch.tag, title: ch.title,
+        words: words.length,
+        wordsSeen: words.filter(w => w.seen).length,
+        wordsLearned: learned,
+        reads: ch.reads.length,
+        readsPassed: passed,
+        readsDue: ch.reads.filter(r => r.due).length,
+        done: learned === words.length && passed === ch.reads.length,
+      };
+    });
+  },
+
+  currentChapter(status) {
+    return status.find(ch => !ch.done) || status[status.length - 1] || null;
+  },
 
   // hz -> {py, en}, read back off the deck so a word can be shown with its
   // reading and meaning without every card carrying copies. The gloss rides
@@ -510,19 +579,35 @@ const SRS = {
   selectQueue(cards, state, mode, now, newCap) {
     now = now || new Date();
     cards = SRS.drillable(cards);
-    if (mode !== 'new') {
+    // "chapter:b3-04" studies one Book 3 chapter; choosing it is deliberate,
+    // so the daily drip does not apply. Mirrors drill.py.
+    const chapter = mode.startsWith('chapter:') ? mode.slice(8) : null;
+    if (mode !== 'new' && chapter === null) {
       const today = SRS.iso(now).slice(0, 10);
       const introduced = Object.values(state).filter(e => (e.introduced || '').slice(0, 10) === today).length;
       newCap = Math.min(newCap == null ? SRS.NEW_PER_SESSION : newCap,
                         Math.max(0, SRS.NEW_PER_DAY - introduced));
     }
     if (mode === 'due') {
-      return SRS.orderQueue(SRS.dueCards(cards, state, now),
-                            undefined, undefined, newCap);
+      // New Book 3 chapter cards are met through their chapter, in order.
+      return SRS.orderQueue(
+          SRS.dueCards(cards, state, now).filter(p =>
+              !(SRS.chapterOf(p[0]) && p[1].reps + (p[1].lapses || 0) === 0)),
+          undefined, undefined, newCap);
     }
 
     let pool;
-    if (mode === 'vocab' || mode === 'sentences') {
+    if (chapter !== null) {
+      pool = cards.filter(c => c.lesson === chapter);
+      // Textbook words first; never-seen class extras wait (drill.py).
+      const unmet = c => {
+        const e = SRS.entryFor(state, c.id);
+        return e.reps + (e.lapses || 0) === 0;
+      };
+      if (pool.some(c => c.core && unmet(c))) {
+        pool = pool.filter(c => c.core || c.cat !== 'vocab' || !unmet(c));
+      }
+    } else if (mode === 'vocab' || mode === 'sentences') {
       pool = cards.filter(c => c.cat === mode);
     } else if (SRS.KICKERS[mode]) {
       pool = cards.filter(c => c.dir === mode);
@@ -553,7 +638,8 @@ const SRS = {
     }
     // Pressing "New cards" is a deliberate choice, so the per-session drip
     // that protects the scheduled firings does not apply to it.
-    if ((newCap === undefined || newCap === null) && mode === 'new') {
+    if ((newCap === undefined || newCap === null) &&
+        (mode === 'new' || chapter !== null)) {
       newCap = SRS.SESSION_CAP;
     }
     return SRS.orderQueue(pool.map(c => [c, SRS.entryFor(state, c.id)]),

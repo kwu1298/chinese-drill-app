@@ -442,6 +442,55 @@
   #setup h1{font-size:26px;font-family:var(--sans);font-weight:500;
             letter-spacing:0}
   :focus-visible{outline:2px solid var(--muted);outline-offset:2px}
+
+  /* ---- chapters: Book 3 one chapter at a time -------------------------
+     The chapter is the unit of study: learn its textbook words, then read
+     its texts end to end. Progress is derived (SRS.chapterStatus), never
+     stored, so the Mac and this page agree without syncing anything new. */
+  #chapter,#chapters,#read{overflow-y:auto;-webkit-overflow-scrolling:touch;
+                           padding-bottom:18px}
+  #chapter > button,#chapters > button,#read > button{flex:none}
+  .ch-title{font:400 30px/1.25 var(--hanzi);text-align:center;margin-top:12px}
+  .meter{margin-top:18px}
+  .meter .row{display:flex;justify-content:space-between;font-size:13px;
+              color:var(--muted);margin-bottom:6px}
+  .meter .row b{color:var(--paper);font-weight:500;
+                font-variant-numeric:tabular-nums}
+  .meter .bar{height:3px;background:var(--rule);border-radius:2px;overflow:hidden}
+  .meter .bar i{display:block;height:100%;background:var(--celadon)}
+  .seclabel{font-size:10px;font-weight:500;letter-spacing:.22em;color:var(--dim);
+            text-transform:uppercase;margin:24px 0 8px}
+  button .tick{color:var(--celadon)}
+  button.due{border-color:var(--gold)}
+  button.due small{color:var(--gold)}
+  #chapters button{text-align:left}
+  #chapters button .n{display:inline-block;min-width:1.8em;color:var(--dim);
+                      font-family:var(--mono);font-size:13px}
+  #chapters button .hz{font-family:var(--hanzi);font-size:17px}
+  #chapters button small{padding-left:1.8em}
+  #chapters button.cur{border-color:var(--celadon)}
+  #b-chapter .hz{font-family:var(--hanzi);font-size:18px}
+
+  /* The reading test: characters only, speaker names small and dim. Tap a
+     word you cannot read; Check lays the book's pinyin under each line. */
+  .r-scene{font:400 15px var(--hanzi);color:var(--muted);text-align:center;
+           margin-top:6px}
+  .r-lines{margin-top:16px}
+  .r-line{margin:0 0 14px}
+  .r-line .who{font-size:11px;letter-spacing:.08em;color:var(--dim);
+               margin-bottom:2px;font-family:var(--hanzi)}
+  .r-line .hz{font:400 25px/1.75 var(--hanzi);word-break:break-all}
+  .r-line .hz span.w{border-radius:3px;cursor:pointer;
+                     transition:background .12s}
+  .r-line .hz span.w.miss{background:rgba(200,64,47,.28);
+                          box-shadow:0 2px 0 var(--cinnabar)}
+  .r-line .py{display:none;font:14.5px/1.5 var(--mono);color:var(--gold);
+              margin-top:2px}
+  #read.checked .r-line .py{display:block}
+  .r-help{font-size:13px;color:var(--muted);text-align:center;margin:6px 0 12px;
+          line-height:1.5}
+  .r-result{text-align:center;margin:8px 0 14px;font-size:15px;line-height:1.55}
+  .r-result .hz{font-family:var(--hanzi);font-size:19px}
 </style>
 </head>
 <body>
@@ -475,6 +524,8 @@
 
   <button class="primary" onclick="start('due')">Start<small id="b-sub"></small></button>
   <p class="sub">After lunch, before returning to work. Eight steps are enough.</p>
+  <!-- Book 3, chapter by chapter: the one you are on. -->
+  <button id="b-chapter" onclick="openChapter()" style="display:none"></button>
   <div style="display:flex;gap:8px">
     <button onclick="pauseReminders(false)">Remind me later</button>
     <button onclick="pauseReminders(true)">Skip reminders today</button>
@@ -483,7 +534,7 @@
     <button onclick="startCrank()">30 minutes</button>
     <button onclick="startSort()">Sort</button>
     <button onclick="start('hardest')">Trouble</button>
-    <button onclick="start('lesson')">Latest</button>
+    <button onclick="openChapters()">Chapters</button>
   </div>
   <button onclick="location.href='./story.html'">Today's story<small>a few sentences to practise reading</small></button>
   <!-- The paradigm grid is inherited from the Arabic fork and unused here:
@@ -498,6 +549,45 @@
        a dashboard. -->
   <div class="facts" id="h-facts"></div>
   <div class="status" id="h-status"></div>
+</div>
+
+<div id="chapter" class="screen">
+  <div class="kicker" id="c-kicker"></div>
+  <div class="ch-title" id="c-title"></div>
+  <div class="meter">
+    <div class="row"><span>Words learned</span><b id="c-words"></b></div>
+    <div class="bar"><i id="c-words-bar"></i></div>
+  </div>
+  <div class="meter">
+    <div class="row"><span>Passages read clean</span><b id="c-reads"></b></div>
+    <div class="bar"><i id="c-reads-bar"></i></div>
+  </div>
+  <div class="sub" id="c-state" style="margin-top:14px"></div>
+  <div class="seclabel">1 · Learn the words</div>
+  <button class="primary" id="c-study">Study this chapter<small id="c-study-sub"></small></button>
+  <div class="seclabel">2 · Read it end to end</div>
+  <div id="c-reads-list"></div>
+  <div class="seclabel">&nbsp;</div>
+  <button onclick="openChapters()">All chapters</button>
+  <button onclick="goHome()">Home</button>
+</div>
+
+<div id="chapters" class="screen">
+  <div class="kicker">HSK 3 · 第三册 · CHAPTERS</div>
+  <div class="sub" style="margin-bottom:14px">Done means every textbook word learned and every passage read clean.</div>
+  <div id="cl-list"></div>
+  <button onclick="goHome()">Home</button>
+</div>
+
+<div id="read" class="screen">
+  <div class="kicker" id="r-kicker"></div>
+  <div class="r-scene" id="r-scene"></div>
+  <div class="r-help" id="r-help"></div>
+  <div class="r-lines" id="r-lines"></div>
+  <div class="r-result" id="r-result"></div>
+  <button class="primary" id="r-main"></button>
+  <button id="r-alt" style="display:none"></button>
+  <button id="r-back">Back to the chapter</button>
 </div>
 
 <div id="drill" class="screen">
@@ -565,7 +655,8 @@
        in this app cinnabar means "wrong", and a 10-of-12 session was being
        greeted by a giant red block. -->
   <div class="seal sig" id="done-seal"><div class="g">读</div></div>
-  <button class="primary" onclick="start('due')">Again</button>
+  <button class="primary" onclick="again()">Again</button>
+  <button id="done-chapter" onclick="openChapter(lastChapter)" style="display:none"></button>
   <button onclick="goHome()">Home</button>
 </div>
 
@@ -578,7 +669,7 @@
    conflicting write fails cleanly, gets merged per-card, and retries --
    the two devices cannot overwrite each other's answers. */
 
-const BUILD = 'a060467aed';   // deploy-webapp.sh stamps this
+const BUILD = '1386fff31c';   // deploy-webapp.sh stamps this
 let CFG = null;
 let TOKEN = localStorage.getItem('ghtok') || '';
 let cards = [], state = {}, stateSha = null;
@@ -822,6 +913,7 @@ const HANZI_CH = /[一-鿿]/;               // 一-鿿
 function knownCharSet() {
   const set = new Set();
   for (const c of cards) {
+    if (c.deliver === 'passage') continue;     // a whole text is not "met"
     if (SRS.entryFor(state, c.id).reps + SRS.entryFor(state, c.id).lapses > 0) {
       for (const ch of String((c.dir === 'py2hz' ? c.answer : c.prompt) || '').replace(/[【】]/g, '')) {
         if (HANZI_CH.test(ch)) set.add(ch);
@@ -838,7 +930,10 @@ function lsPut(key, val) {
 }
 function summary() {
   const now = new Date();
-  const due = SRS.dueCards(cards, state, now).length;
+  // What Start would actually serve. Counting every due card overstated it:
+  // never-seen chapter cards are "due" from day one but only come through
+  // their chapter, and the daily new-card drip caps the rest.
+  const due = SRS.selectQueue(cards, state, 'due', now).length;
   days = Object.assign({}, reviewDays);
   for (const line of pendingReviews) {
     const r = JSON.parse(line); if (r.practice) continue; const d = r.ts.slice(0, 10);
@@ -849,7 +944,7 @@ function summary() {
   const d = new Date();
   if (!days[localToday()]) d.setDate(d.getDate() - 1);
   while (days[SRS.iso(d).slice(0, 10)]) { streak++; d.setDate(d.getDate() - 1); }
-  const seenCards = cards.filter(c => SRS.entryFor(state, c.id).reps > 0).length;
+  const seenCards = SRS.drillable(cards).filter(c => SRS.entryFor(state, c.id).reps > 0).length;
   return { due, today: today[0],
            acc: today[0] ? Math.round(100 * today[1] / today[0]) : null,
            streak, seenCards, known: knownCharSet().size };
@@ -862,9 +957,10 @@ function renderHome() {
   $('h-due').style.color = s.due > 0 ? '' : 'var(--green)';
   // "cards", not "characters": the line right below counts real characters,
   // and the two numbers must not read as the same thing disagreeing.
+  const deckN = SRS.drillable(cards).length;   // passages are read, not carded
   $('h-sub').textContent = s.seenCards
-      ? s.seenCards + ' of ' + cards.length + ' cards met'
-      : cards.length + ' cards, none met yet';
+      ? s.seenCards + ' of ' + deckN + ' cards met'
+      : deckN + ' cards, none met yet';
 
   // The characters-known line, and a hairline bar walking the stretch from
   // the last milestone to the next. Past the final milestone the bar retires.
@@ -913,10 +1009,11 @@ function renderHome() {
   const facts = [];
   facts.push('<b>' + s.today + '</b> today');
   if (s.acc !== null) facts.push('<b>' + s.acc + '%</b> right');
-  const raw = cards.length ? 100 * s.seenCards / cards.length : 0;
+  const raw = deckN ? 100 * s.seenCards / deckN : 0;
   facts.push('<b>' + (raw > 0 && raw < 1 ? raw.toFixed(1) : Math.round(raw))
              + '%</b> of the deck');
   $('h-facts').innerHTML = facts.join('<span style="opacity:.4">·</span>');
+  renderChapterButton();
   $('b-sub').textContent = s.due > 0
       ? Math.min(s.due, SRS.SESSION_CAP) + ' cards waiting' : 'practice round';
   if (navigator.setAppBadge) {
@@ -948,6 +1045,8 @@ function goHome() { show('home'); renderHome(); flushReviews(); }
 
 /* -------------------------------- drill --------------------------------- */
 function start(mode) {
+  lastMode = mode;
+  if (mode.startsWith('chapter:')) lastChapter = mode.slice(8);
   const cap = crankEnd ? crankNewLeft : undefined;
   let q = SRS.selectQueue(cards, state, mode, new Date(), cap);
   if (!q.length && crankEnd && mode === 'due') {
@@ -1931,6 +2030,17 @@ function sessionDone(matchSecs, ladderMsg) {
   $('done-sub').textContent = bits.join('   ·   ');
 
   clearDoneExtras();
+  const dc = $('done-chapter');
+  const chNow = lastMode.startsWith('chapter:') &&
+      chapterStatusNow().find(ch => ch.tag === lastChapter);
+  if (chNow) {
+    dc.style.display = '';
+    dc.innerHTML = '';
+    dc.append('Chapter ' + chNow.n);
+    dc.appendChild(elx('small', '', chapterLine(chNow)));
+  } else {
+    dc.style.display = 'none';
+  }
   // The spark: what this sitting concretely changed. New characters are the
   // diff against the snapshot start() took; a right answer is a card that
   // will not be asked again today.
@@ -2442,6 +2552,342 @@ async function enablePush() {
   } catch (e) { status('push setup failed: ' + e.message, true); }
 }
 
+/* ------------------------------- chapters -------------------------------- */
+// Book 3, one chapter at a time: learn the chapter's textbook words, then
+// read its passages end to end. Where you are is derived from the deck and
+// the per-card state (SRS.chapterStatus, ported from drill.py), never
+// stored, so the Mac's home screen and this page always agree.
+let lastMode = 'due';
+let lastChapter = null;                 // tag of the chapter last opened
+
+const CN_DIGIT = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+function cnNum(n) {
+  if (n < 10) return CN_DIGIT[n];
+  const tens = Math.floor(n / 10), ones = n % 10;
+  return (tens > 1 ? CN_DIGIT[tens] : '') + '十' + (ones ? CN_DIGIT[ones] : '');
+}
+function chapterName(ch) { return ch.title || '第' + cnNum(ch.n) + '课'; }
+function pct(a, b) { return (b ? Math.round(100 * a / b) : 0) + '%'; }
+function chapterStatusNow() { return SRS.chapterStatus(cards, state, new Date()); }
+function chapterLine(ch) {
+  if (ch.done) {
+    return 'done' + (ch.readsDue ? ' · ' + ch.readsDue + ' to re-read' : '');
+  }
+  const parts = [ch.wordsLearned + ' of ' + ch.words + ' words learned'];
+  if (ch.reads) parts.push(ch.readsPassed + ' of ' + ch.reads + ' passages read');
+  if (ch.readsDue) parts.push(ch.readsDue + ' to re-read');
+  return parts.join(' · ');
+}
+function renderChapterButton() {
+  const cur = SRS.currentChapter(chapterStatusNow());
+  const b = $('b-chapter');
+  if (!cur) { b.style.display = 'none'; return; }
+  b.style.display = '';
+  b.className = cur.readsDue ? 'due' : '';
+  b.innerHTML = '';
+  b.append('Chapter ' + cur.n + ' · ');
+  b.appendChild(elx('span', 'hz', chapterName(cur)));
+  b.appendChild(elx('small', '', chapterLine(cur)));
+  b.onclick = () => openChapter(cur.tag);
+}
+// The book's 课文 first (what class covered), then the passage written for
+// the chapter, which is the real test: text you have never seen.
+function passagesOf(tag) {
+  return cards.filter(c => c.deliver === 'passage' && c.lesson === tag)
+      .sort((a, b) => (a.kind !== 'book') - (b.kind !== 'book') || a.n - b.n);
+}
+function pageSpan(p) { return p && p.length === 2 ? p[0] + '–' + p[1] : ''; }
+function passageLabel(c) {
+  if (c.kind === 'book') return '课文 in your book · pages ' + pageSpan(c.bookPages);
+  return '短文' + (c.n > 1 ? cnNum(c.n) : '') + ' · a passage you have not seen';
+}
+function passageState(c) {
+  const e = SRS.entryFor(state, c.id);
+  const nowIso = SRS.iso(new Date());
+  if (e.reps + (e.lapses || 0) === 0) return {cls: '', text: 'not read yet'};
+  if (SRS.isLearned(e)) {
+    if (e.due <= nowIso) return {cls: 'due', text: 'time to re-read it'};
+    return {cls: '', text: '✓ read clean · re-read ' + e.due.slice(5, 10).replace('-', '/')};
+  }
+  return {cls: 'due', text: 'not clean yet · read it again'};
+}
+function openChapter(tag) {
+  const st = chapterStatusNow();
+  const ch = st.find(c => c.tag === tag) || SRS.currentChapter(st);
+  if (!ch) { status('No Book 3 chapters in this deck yet.'); return; }
+  lastChapter = ch.tag;
+  $('c-kicker').textContent = 'CHAPTER ' + ch.n + ' · 第' + cnNum(ch.n) + '课';
+  $('c-title').textContent = ch.title;
+  $('c-words').textContent = ch.wordsLearned + ' / ' + ch.words;
+  $('c-words-bar').style.width = pct(ch.wordsLearned, ch.words);
+  $('c-reads').textContent = ch.readsPassed + ' / ' + ch.reads;
+  $('c-reads-bar').style.width = pct(ch.readsPassed, ch.reads);
+  $('c-state').textContent = ch.done
+      ? 'Chapter done. Its passages come back now and then for a re-read.'
+      : ch.wordsLearned < ch.words
+        ? 'A word counts as learned once you get it right without help, and again after a gap.'
+        : 'Every word learned. Now read each passage through clean.';
+
+  // What a session here would hold: this chapter's due reviews and new words.
+  const nowIso = SRS.iso(new Date());
+  const mine = SRS.drillable(cards).filter(c => c.lesson === ch.tag);
+  const fresh = mine.filter(c => SRS.entryFor(state, c.id).reps +
+                                 (SRS.entryFor(state, c.id).lapses || 0) === 0).length;
+  const due = mine.filter(c => {
+    const e = SRS.entryFor(state, c.id);
+    return e.reps + (e.lapses || 0) > 0 && e.due <= nowIso;
+  }).length;
+  $('c-study-sub').textContent = (due || fresh)
+      ? [due ? due + ' due' : '', fresh ? fresh + ' never seen' : '']
+            .filter(Boolean).join(' · ') + ' · 8 at a time'
+      : 'all ' + mine.length + ' cards met · practise anyway';
+  $('c-study').onclick = () => start('chapter:' + ch.tag);
+
+  const list = $('c-reads-list');
+  list.innerHTML = '';
+  const ps = passagesOf(ch.tag);
+  if (!ps.length) list.appendChild(elx('div', 'sub', 'No passages for this chapter yet.'));
+  for (const c of ps) {
+    const ps_ = passageState(c);
+    const b = document.createElement('button');
+    b.className = ps_.cls;
+    b.append(passageLabel(c));
+    b.appendChild(elx('small', '', ps_.text));
+    b.onclick = () => openRead(c.id);
+    list.appendChild(b);
+  }
+  show('chapter');
+  $('chapter').scrollTop = 0;
+}
+function openChapters() {
+  const st = chapterStatusNow();
+  const cur = SRS.currentChapter(st);
+  const list = $('cl-list');
+  list.innerHTML = '';
+  for (const ch of st) {
+    const b = document.createElement('button');
+    if (cur && ch.tag === cur.tag) b.className = 'cur';
+    b.appendChild(elx('span', 'n', String(ch.n)));
+    b.appendChild(elx('span', 'hz', chapterName(ch)));
+    if (ch.done) b.appendChild(elx('span', 'tick', '  ✓'));
+    const untouched = !ch.done && ch.wordsSeen === 0 && ch.readsPassed === 0;
+    b.appendChild(elx('small', '', untouched ? 'not started' : chapterLine(ch)));
+    b.onclick = () => openChapter(ch.tag);
+    list.appendChild(b);
+  }
+  show('chapters');
+  $('chapters').scrollTop = 0;
+}
+function again() { start(lastMode); }
+
+/* ----------------------------- reading test ------------------------------ */
+// A passage in characters only. Read it aloud end to end and tap any word
+// you cannot read; Check lays the book's pinyin under each line so you can
+// tap what you read wrong. A clean read passes the passage (graded like a
+// card, so it comes back to re-read on a spacing schedule); every tapped
+// word fails its typed-reading card, so it comes back in your sessions.
+let RD = null;
+let segDict = null;
+function segmentDict() {
+  // word -> its plain typed-reading card ids. 多音字 cards ("地@慢慢地") are
+  // left out: which reading a tap meant is not something the tap says.
+  const dict = new Map();
+  for (const c of cards) {
+    if (c.cat !== 'vocab' || c.dir !== 'hz2py') continue;
+    const item = c.id.split(':')[1];
+    const w = item.split('@')[0];
+    if ([...w].length > 4 || ![...w].every(ch => HANZI_CH.test(ch))) continue;
+    if (!dict.has(w)) dict.set(w, []);
+    if (item.indexOf('@') === -1) dict.get(w).push(c.id);
+  }
+  return dict;
+}
+function segment(text) {
+  // Greedy longest match against the deck's words, so a tap marks a whole
+  // word (打算), not half of one. Unknown runs fall back to one character.
+  const chars = [...text], out = [];
+  let i = 0;
+  while (i < chars.length) {
+    if (!HANZI_CH.test(chars[i])) {
+      let j = i;
+      while (j < chars.length && !HANZI_CH.test(chars[j])) j++;
+      out.push({t: chars.slice(i, j).join(''), w: false});
+      i = j;
+      continue;
+    }
+    let len = Math.min(4, chars.length - i);
+    while (len > 1 && !(segDict.has(chars.slice(i, i + len).join('')) &&
+                        chars.slice(i, i + len).every(ch => HANZI_CH.test(ch)))) len--;
+    out.push({t: chars.slice(i, i + len).join(''), w: true});
+    i += len;
+  }
+  return out;
+}
+function openRead(id) {
+  const card = cards.find(c => c.id === id);
+  if (!card) return;
+  segDict = segmentDict();
+  RD = {card, marks: new Set(), words: {}, checked: false, done: false,
+        shownAt: Date.now()};
+  const n = SRS.chapterOf(card);
+  $('read').classList.remove('checked');
+  $('r-alt').style.display = 'none';
+  $('r-result').innerHTML = '';
+  $('r-back').onclick = () => openChapter(card.lesson);
+  const box = $('r-lines');
+  box.innerHTML = '';
+  if (card.kind === 'book') { openBookRead(card, n); return; }
+  $('r-kicker').textContent = 'CHAPTER ' + n + ' · 短文 · READ ALOUD';
+  $('r-scene').textContent = card.chapterTitle || '';
+  $('r-help').textContent = 'Read the whole thing aloud, start to finish. ' +
+      'Tap any word you can’t read.';
+  card.lines.forEach((line, li) => {
+    const row = elx('div', 'r-line', '');
+    if (line.who) row.appendChild(elx('div', 'who', line.who));
+    const hz = elx('div', 'hz', '');
+    segment(line.hz).forEach((sg, si) => {
+      if (!sg.w) { hz.append(sg.t); return; }
+      const k = li + ':' + si;
+      RD.words[k] = sg.t;
+      const sp = elx('span', 'w', sg.t);
+      sp.onclick = () => {
+        if (RD.done) return;
+        if (RD.marks.has(k)) { RD.marks.delete(k); sp.classList.remove('miss'); }
+        else { RD.marks.add(k); sp.classList.add('miss'); }
+        if (RD.checked) setReadButton();
+      };
+      hz.appendChild(sp);
+    });
+    row.appendChild(hz);
+    row.appendChild(elx('div', 'py', line.py));
+    box.appendChild(row);
+  });
+  const main = $('r-main');
+  main.style.display = '';
+  main.textContent = 'Check';
+  main.onclick = checkRead;
+  show('read');
+  $('read').scrollTop = 0;
+}
+// The textbook's own 课文 stay in the book; this card says where they are
+// and takes your word for how it went. Honest is the only useful setting.
+function openBookRead(card, n) {
+  $('r-kicker').textContent = 'CHAPTER ' + n + ' · 课文 · IN YOUR BOOK';
+  $('r-scene').textContent = card.chapterTitle || '';
+  $('r-help').innerHTML = '';
+  const help = $('r-help');
+  help.append('Open HSK标准教程3 to pages ' + pageSpan(card.bookPages) +
+      (card.pdfPages ? ' (PDF pages ' + pageSpan(card.pdfPages) + ')' : '') +
+      '. Cover the pinyin and read all four 课文 aloud, start to finish.');
+  help.appendChild(document.createElement('br'));
+  help.appendChild(document.createElement('br'));
+  help.append('Clean means every character, with no stopping to work one out.');
+  const main = $('r-main'), alt = $('r-alt');
+  main.style.display = '';
+  main.textContent = 'I read it all clean';
+  main.onclick = () => finishBookRead(true);
+  alt.style.display = '';
+  alt.textContent = 'I got stuck somewhere';
+  alt.onclick = () => finishBookRead(false);
+  show('read');
+  $('read').scrollTop = 0;
+}
+function finishBookRead(clean) {
+  if (RD.done) return;
+  RD.done = true;
+  const now = new Date(), c = RD.card;
+  state[c.id] = SRS.gradeAttempt(SRS.entryFor(state, c.id), clean, c, now, false);
+  pendingReviews.push(JSON.stringify({
+      ts: SRS.iso(now), id: c.id, correct: clean, cat: c.cat, dir: c.dir,
+      assisted: false, practice: false, responseMs: Date.now() - RD.shownAt,
+      session: 'phone-read-' + Date.now(), phase: 'reading'}));
+  localStorage.setItem('cachedState', JSON.stringify(state));
+  localStorage.setItem('pendingReviews', JSON.stringify(pendingReviews));
+  pushState();
+  flushReviews();
+  $('r-alt').style.display = 'none';
+  $('r-result').textContent = clean
+      ? '✓ Logged. It comes back for a re-read on ' +
+        state[c.id].due.slice(5, 10).replace('-', '/') + '.'
+      : 'Logged. Study the chapter’s words, then read the 课文 again — it has to be clean to count.';
+  const main = $('r-main');
+  main.textContent = clean ? 'Back to the chapter' : 'Study this chapter now';
+  main.onclick = clean ? () => openChapter(c.lesson) : () => start('chapter:' + c.lesson);
+}
+function setReadButton() {
+  const m = new Set([...RD.marks].map(k => RD.words[k])).size;
+  $('r-main').textContent = m
+      ? 'Finish · ' + m + (m === 1 ? ' word' : ' words') + ' to work on'
+      : 'Finish · I read it all';
+}
+function checkRead() {
+  RD.checked = true;
+  $('read').classList.add('checked');
+  $('r-help').textContent = 'The book’s pinyin is under each line. ' +
+      'Tap anything you read wrong, then finish.';
+  setReadButton();
+  $('r-main').onclick = finishRead;
+}
+function finishRead() {
+  if (RD.done) return;
+  RD.done = true;
+  const now = new Date(), c = RD.card;
+  const clean = RD.marks.size === 0;
+  const session = 'phone-read-' + Date.now();
+  const log = (card, ok, ms) => pendingReviews.push(JSON.stringify({
+      ts: SRS.iso(now), id: card.id, correct: ok, cat: card.cat, dir: card.dir,
+      assisted: false, practice: false, responseMs: ms, session,
+      phase: 'reading'}));
+  state[c.id] = SRS.gradeAttempt(SRS.entryFor(state, c.id), clean, c, now, false);
+  log(c, clean, Date.now() - RD.shownAt);
+
+  const byId = new Map(cards.map(x => [x.id, x]));
+  const missed = [...new Set([...RD.marks].map(k => RD.words[k]))];
+  const drilled = [], loose = [];
+  for (const w of missed) {
+    const ids = segDict.get(w) || [];
+    if (!ids.length) { loose.push(w); continue; }
+    drilled.push(w);
+    for (const id of ids) {
+      const wc = byId.get(id);
+      state[id] = SRS.gradeAttempt(SRS.entryFor(state, id), false, wc, now, false);
+      log(wc, false, 0);
+    }
+  }
+  localStorage.setItem('cachedState', JSON.stringify(state));
+  localStorage.setItem('pendingReviews', JSON.stringify(pendingReviews));
+  pushState();
+  flushReviews();
+
+  const res = $('r-result');
+  res.innerHTML = '';
+  if (clean) {
+    const e = state[c.id];
+    res.appendChild(elx('div', '', '✓ Read clean. It comes back for a re-read on ' +
+        e.due.slice(5, 10).replace('-', '/') + '.'));
+  } else {
+    if (drilled.length) {
+      const d = elx('div', '', 'Back in your sessions from today: ');
+      d.appendChild(elx('span', 'hz', drilled.join('、')));
+      res.appendChild(d);
+    }
+    if (loose.length) {
+      const d = elx('div', 'sub', 'Not cards yet: ');
+      d.appendChild(elx('span', 'hz', loose.join('、')));
+      res.appendChild(d);
+    }
+    res.appendChild(elx('div', 'sub', 'Read it again once those are solid. It has to be clean to count.'));
+  }
+  const main = $('r-main');
+  if (clean) {
+    main.textContent = 'Back to the chapter';
+    main.onclick = () => openChapter(c.lesson);
+  } else {
+    main.textContent = 'Study this chapter now';
+    main.onclick = () => start('chapter:' + c.lesson);
+  }
+}
+
 /* -------------------------------- boot ----------------------------------- */
 async function saveToken() {
   TOKEN = $('tok').value.trim();
@@ -2468,8 +2914,13 @@ async function boot() {
     await loadAll();
     await syncRoutine();
     goHome();
-    if (new URLSearchParams(location.search).get('practice') === 'due') {
+    const qs = new URLSearchParams(location.search);
+    if (qs.get('practice') === 'due') {
       history.replaceState(null, '', location.pathname); start('due');
+    } else if (qs.get('chapter')) {
+      // The Mac's home screen links here: ?chapter=b3-04 (or =current).
+      history.replaceState(null, '', location.pathname);
+      openChapter(qs.get('chapter'));
     }
   } catch (e) {
     // loadAll() has already restored the cached deck by the time it throws,
