@@ -31,6 +31,7 @@
   "游",
   "照",
   "菜",
+  "情",
   "新",
   "样",
   "经",
@@ -39,7 +40,6 @@
   "请",
   "问",
   "吃",
-  "情",
   "想",
   "园",
   "孩",
@@ -48,6 +48,7 @@
   "物",
   "现",
   "病",
+  "站",
   "跟",
   "近",
   "远",
@@ -63,7 +64,6 @@
   "校",
   "烧",
   "理",
-  "站",
   "认",
   "超",
   "刚",
@@ -527,6 +527,15 @@
    "en": "This character is 菜 — dishes. It has two parts: the 艹 radical is the meaning part — grass; 采 tells you the sound: cài. For example: 菜单 (càidān, menu), 生菜 (shēngcài, lettuce).",
    "audio": "f1cb16439363.mp3"
   },
+  "情": {
+   "kind": "char",
+   "py": "qíng",
+   "text": "这个字是「情」(qíng)。意思是 feeling。它有两个部分：「忄」(竖心旁 shùxīnpáng) 是意思部分，意思是 heart；「青」(qīng) 是声音部分——「青」告诉你发音：qíng。比如：「事情」(shìqing)、「感情」(gǎnqíng)。",
+   "say": "这个字是「情」。意思是 feeling。它有两个部分：「竖心旁」是意思部分，意思是 heart；「青」是声音部分，「青」告诉你发音。比如：「事情」、「感情」。",
+   "pyline": "zhège zì shì «qíng». yìsi shì feeling. tā yǒu liǎng ge bùfen: «shùxīnpáng» shì yìsi bùfen, yìsi shì heart; «qīng» shì shēngyīn bùfen, «qīng» gàosu nǐ fāyīn. bǐrú: «shìqing», «gǎnqíng».",
+   "en": "This character is 情 — feeling. It has two parts: the 忄 radical is the meaning part — heart; 青 tells you the sound: qíng. For example: 事情 (shìqing, matter), 感情 (gǎnqíng, feelings).",
+   "audio": "8b4538559703.mp3"
+  },
   "新": {
    "kind": "char",
    "py": "xīn",
@@ -599,15 +608,6 @@
    "en": "This character is 吃 — to eat. It has two parts: the 口 radical is the meaning part — mouth; 乞 hints at the sound — a bit like qǐ. For example: 好吃 (hǎo chī, delicious), 吃药 (chī yào, to take medicine).",
    "audio": "e16740ec4d35.mp3"
   },
-  "情": {
-   "kind": "char",
-   "py": "qíng",
-   "text": "这个字是「情」(qíng)。意思是 feeling。它有两个部分：「忄」(竖心旁 shùxīnpáng) 是意思部分，意思是 heart；「青」(qīng) 是声音部分——「青」告诉你发音：qíng。比如：「事情」(shìqing)、「感情」(gǎnqíng)。",
-   "say": "这个字是「情」。意思是 feeling。它有两个部分：「竖心旁」是意思部分，意思是 heart；「青」是声音部分，「青」告诉你发音。比如：「事情」、「感情」。",
-   "pyline": "zhège zì shì «qíng». yìsi shì feeling. tā yǒu liǎng ge bùfen: «shùxīnpáng» shì yìsi bùfen, yìsi shì heart; «qīng» shì shēngyīn bùfen, «qīng» gàosu nǐ fāyīn. bǐrú: «shìqing», «gǎnqíng».",
-   "en": "This character is 情 — feeling. It has two parts: the 忄 radical is the meaning part — heart; 青 tells you the sound: qíng. For example: 事情 (shìqing, matter), 感情 (gǎnqíng, feelings).",
-   "audio": "8b4538559703.mp3"
-  },
   "想": {
    "kind": "char",
    "py": "xiǎng",
@@ -679,6 +679,15 @@
    "pyline": "zhège zì shì «bìng». shì «shēngbìng» de «bìng». tā yǒu liǎng ge bùfen: «bìngzìpáng» shì yìsi bùfen, yìsi shì sick; «bǐng» shì shēngyīn bùfen, «bǐng» gàosu nǐ fāyīn. bǐrú: «bìngrén», «bìngdú».",
    "en": "This character is 病 — the 病 from 生病 (shēngbìng, to fall ill). It has two parts: the 疒 radical is the meaning part — sick; 丙 tells you the sound: bìng. For example: 病人 (bìngrén, patient), 病毒 (bìngdú, virus).",
    "audio": "36856d1ff875.mp3"
+  },
+  "站": {
+   "kind": "char",
+   "py": "zhàn",
+   "text": "这个字是「站」(zhàn)。意思是 to stand。它有两个部分：「立」(lì) 是意思部分，意思是 stand；「占」(zhàn) 是声音部分——「占」告诉你发音：zhàn。比如：「火车站」(huǒ chē zhàn)、「站起来」(zhàn qǐ)。",
+   "say": "这个字是「站」。意思是 to stand。它有两个部分：「立」是意思部分，意思是 stand；「占」是声音部分，「占」告诉你发音。比如：「火车站」、「站起来」。",
+   "pyline": "zhège zì shì «zhàn». yìsi shì to stand. tā yǒu liǎng ge bùfen: «lì» shì yìsi bùfen, yìsi shì stand; «zhàn» shì shēngyīn bùfen, «zhàn» gàosu nǐ fāyīn. bǐrú: «huǒ chē zhàn», «zhàn qǐ».",
+   "en": "This character is 站 — to stand. It has two parts: 立 is the meaning part — stand; 占 tells you the sound: zhàn. For example: 火车站 (huǒ chē zhàn, train station), 站起来 (zhàn qǐ, lai stand up).",
+   "audio": "0d13cf14d8ac.mp3"
   },
   "跟": {
    "kind": "char",
@@ -814,15 +823,6 @@
    "pyline": "zhège zì shì «lǐ». shì «jīnglǐ» de «lǐ». tā yǒu liǎng ge bùfen: «wáng» shì yìsi bùfen, yìsi shì jade; «lǐ» shì shēngyīn bùfen, «lǐ» gàosu nǐ fāyīn.",
    "en": "This character is 理 — the 理 from 经理 (jīnglǐ, manager). It has two parts: 王 is the meaning part — jade; 里 tells you the sound: lǐ.",
    "audio": "1b6e5d7b90ff.mp3"
-  },
-  "站": {
-   "kind": "char",
-   "py": "zhàn",
-   "text": "这个字是「站」(zhàn)。意思是 to stand。它有两个部分：「立」(lì) 是意思部分，意思是 stand；「占」(zhàn) 是声音部分——「占」告诉你发音：zhàn。比如：「火车站」(huǒ chē zhàn)、「站起来」(zhàn qǐ)。",
-   "say": "这个字是「站」。意思是 to stand。它有两个部分：「立」是意思部分，意思是 stand；「占」是声音部分，「占」告诉你发音。比如：「火车站」、「站起来」。",
-   "pyline": "zhège zì shì «zhàn». yìsi shì to stand. tā yǒu liǎng ge bùfen: «lì» shì yìsi bùfen, yìsi shì stand; «zhàn» shì shēngyīn bùfen, «zhàn» gàosu nǐ fāyīn. bǐrú: «huǒ chē zhàn», «zhàn qǐ».",
-   "en": "This character is 站 — to stand. It has two parts: 立 is the meaning part — stand; 占 tells you the sound: zhàn. For example: 火车站 (huǒ chē zhàn, train station), 站起来 (zhàn qǐ, lai stand up).",
-   "audio": "0d13cf14d8ac.mp3"
   },
   "认": {
    "kind": "char",
